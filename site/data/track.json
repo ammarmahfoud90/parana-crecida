@@ -1,0 +1,264 @@
+{
+ "schema": 1,
+ "note": "When the crest now in the river is due at the gauges below it, from travel times measured over the whole record. It says when, not how high. The range is every leg at its fast end against every leg at its slow end, not a confidence interval.",
+ "generated_for": "2026-10-29",
+ "as_of": "2026-10-27",
+ "reason": null,
+ "anchor": {
+  "series_id": "26263",
+  "name": "Empedrado",
+  "river_km": 717.2,
+  "peak_day": "2026-10-23",
+  "peak_value": 6.22,
+  "last_day": "2026-10-27",
+  "last_value": 6.21,
+  "days_since_peak": 4,
+  "rise_m": 4.2,
+  "fall_m": 0.01,
+  "confirmed": false
+ },
+ "projections": [
+  {
+   "series_id": "26264",
+   "name": "Bella Vista",
+   "river_km": 786.0,
+   "km_from_anchor": 68.8,
+   "expected": "2026-10-25",
+   "earliest": "2026-10-25",
+   "latest": "2026-10-26",
+   "days_ahead": -4,
+   "legs": 1,
+   "percentile_now": 100.0,
+   "state": "rising",
+   "timing": "overdue"
+  },
+  {
+   "series_id": "26265",
+   "name": "Goya",
+   "river_km": 869.5,
+   "km_from_anchor": 152.3,
+   "expected": "2026-10-26",
+   "earliest": "2026-10-26",
+   "latest": "2026-10-28",
+   "days_ahead": -3,
+   "legs": 2,
+   "percentile_now": 98.7,
+   "state": "rising",
+   "timing": "due"
+  },
+  {
+   "series_id": "26267",
+   "name": "Esquina",
+   "river_km": 1000.8,
+   "km_from_anchor": 283.6,
+   "expected": "2026-10-29",
+   "earliest": "2026-10-28",
+   "latest": "2026-11-01",
+   "days_ahead": 0,
+   "legs": 3,
+   "percentile_now": 93.5,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26268",
+   "name": "La Paz",
+   "river_km": 1085.9,
+   "km_from_anchor": 368.7,
+   "expected": "2026-10-31",
+   "earliest": "2026-10-30",
+   "latest": "2026-11-05",
+   "days_ahead": 2,
+   "legs": 4,
+   "percentile_now": 100.0,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26269",
+   "name": "Santa Elena",
+   "river_km": 1112.5,
+   "km_from_anchor": 395.3,
+   "expected": "2026-11-01",
+   "earliest": "2026-10-31",
+   "latest": "2026-11-07",
+   "days_ahead": 3,
+   "legs": 5,
+   "percentile_now": 94.3,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26270",
+   "name": "Hernandarias",
+   "river_km": 1149.9,
+   "km_from_anchor": 432.7,
+   "expected": "2026-11-02",
+   "earliest": "2026-11-01",
+   "latest": "2026-11-09",
+   "days_ahead": 4,
+   "legs": 6,
+   "percentile_now": 91.5,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26271",
+   "name": "Paraná",
+   "river_km": 1229.3,
+   "km_from_anchor": 512.1,
+   "expected": "2026-11-04",
+   "earliest": "2026-11-02",
+   "latest": "2026-11-11",
+   "days_ahead": 6,
+   "legs": 7,
+   "percentile_now": 93.9,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26273",
+   "name": "Diamante",
+   "river_km": 1287.9,
+   "km_from_anchor": 570.7,
+   "expected": "2026-11-06",
+   "earliest": "2026-11-03",
+   "latest": "2026-11-13",
+   "days_ahead": 8,
+   "legs": 8,
+   "percentile_now": 92.5,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26275",
+   "name": "San Lorenzo",
+   "river_km": 1369.1,
+   "km_from_anchor": 651.9,
+   "expected": "2026-11-08",
+   "earliest": "2026-11-04",
+   "latest": "2026-11-16",
+   "days_ahead": 10,
+   "legs": 9,
+   "percentile_now": 77.2,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26276",
+   "name": "Rosario",
+   "river_km": 1390.5,
+   "km_from_anchor": 673.3,
+   "expected": "2026-11-10",
+   "earliest": "2026-11-06",
+   "latest": "2026-11-18",
+   "days_ahead": 12,
+   "legs": 10,
+   "percentile_now": 85.8,
+   "state": "rising",
+   "timing": "ahead"
+  },
+  {
+   "series_id": "26277",
+   "name": "Villa Constitución",
+   "river_km": 1440.5,
+   "km_from_anchor": 723.3,
+   "expected": "2026-11-12",
+   "earliest": "2026-11-07",
+   "latest": "2026-11-21",
+   "days_ahead": 14,
+   "legs": 11,
+   "percentile_now": 69.1,
+   "state": "rising",
+   "timing": "ahead"
+  }
+ ],
+ "generated_at": "2026-10-29T17:14:23-03:00",
+ "skill": {
+  "schema": 1,
+  "note": "The tracker run over the record as it would have run on the day, scored against the first local maximum each gauge then reached. The baseline is the same projection with no travel time in it: the crest arriving everywhere on the day the anchor peaked.",
+  "measured_on": "2026-10-29",
+  "window": {
+   "from": 1998,
+   "to": 2026
+  },
+  "crest_flatness": {
+   "tolerance_m": 0.1,
+   "crests": 995,
+   "median_days": 6,
+   "mean_days": 7.9
+  },
+  "scored": 933,
+  "occasions": 200,
+  "inside_window": 219,
+  "inside_window_pct": 23,
+  "median_error_days": 9,
+  "mean_error_days": 13.9,
+  "within_3_days_pct": 24,
+  "within_7_days_pct": 46,
+  "baseline_median_error_days": 14,
+  "by_legs": [
+   {
+    "legs": 1,
+    "n": 197,
+    "median_error_days": 16
+   },
+   {
+    "legs": 2,
+    "n": 167,
+    "median_error_days": 12
+   },
+   {
+    "legs": 3,
+    "n": 138,
+    "median_error_days": 8
+   },
+   {
+    "legs": 4,
+    "n": 114,
+    "median_error_days": 5
+   },
+   {
+    "legs": 5,
+    "n": 91,
+    "median_error_days": 4
+   },
+   {
+    "legs": 6,
+    "n": 72,
+    "median_error_days": 4
+   },
+   {
+    "legs": 7,
+    "n": 60,
+    "median_error_days": 4
+   },
+   {
+    "legs": 8,
+    "n": 45,
+    "median_error_days": 6
+   },
+   {
+    "legs": 9,
+    "n": 26,
+    "median_error_days": 8
+   },
+   {
+    "legs": 10,
+    "n": 15,
+    "median_error_days": 9
+   },
+   {
+    "legs": 11,
+    "n": 6,
+    "median_error_days": 9
+   },
+   {
+    "legs": 12,
+    "n": 2,
+    "median_error_days": 12
+   }
+  ],
+  "by_legs_note": "Error is worst one leg from the anchor and best at four to seven. That is the scoring, not the river: next door to the anchor the projected date is a day or two out and the first local maximum after it is as likely to be a ripple as the crest. The short legs are scored pessimistically."
+ }
+}
