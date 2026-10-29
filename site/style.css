@@ -261,3 +261,23 @@ footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line);
 .rainbars rect { fill: var(--accent); }
 .rainbars rect.big { fill: var(--evac); }
 .stalewarn { color: var(--alert); font-weight: 600; }
+
+/* -- view 4: flooded area ------------------------------------------------ */
+
+/* Narrow enough to fit a phone without scrolling away the newest bar,
+   which is the one that matters most. */
+.floodchart { display: block; width: 100%; height: auto; min-width: 440px; }
+.floodchart .grid { stroke: var(--line); stroke-width: 1; }
+.floodchart .baseline { stroke: var(--ink-faint); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.floodchart .bar { fill: var(--accent); opacity: .75; }
+.floodchart .bar.high { fill: var(--evac); opacity: .9; }
+.floodchart .stage { fill: none; stroke: var(--alert); stroke-width: 2; }
+.floodchart .stagedot { fill: var(--alert); }
+.floodchart text { font: 11px ui-sans-serif, system-ui, sans-serif; fill: var(--ink-soft); }
+.floodchart text.axis { font-size: 10px; fill: var(--ink-faint); }
+.floodkeys { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: .78rem; color: var(--ink-soft); }
+.floodkeys i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; vertical-align: -2px; margin-right: 5px; }
+.floodkeys i.water { background: var(--accent); }
+.floodkeys i.flood { background: var(--evac); }
+.floodkeys i.stage { background: var(--alert); height: 3px; border-radius: 2px; }
+.floodkeys i.base { background: var(--ink-faint); height: 0; border-top: 2px dashed var(--ink-faint); }

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Superficie inundada — Crecida del Paraná</title>
+<meta name="description" content="Cuánta superficie cubre el Paraná entre Corrientes y Goya, medida por radar Sentinel-1.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <nav class="views" data-t-aria="viewsNav">
+    <a href="index.html" data-t="viewToday"></a>
+    <a href="wave.html" data-t="viewWave"></a>
+    <a href="drivers.html" data-t="viewDrivers"></a>
+    <a href="flood.html" aria-current="page" data-t="viewFlood"></a>
+  </nav>
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" hidden></div>
+
+  <div class="meta" id="meta" hidden>
+    <span><span data-t="stretchLabel"></span> <b id="stretchName"></b></span>
+    <span><span data-t="lastPassLabel"></span> <b id="lastPass"></b></span>
+  </div>
+
+  <div class="headline" id="headline" hidden>
+    <span class="big" id="extra">–</span>
+    <span class="cap" id="extraCap"></span>
+    <p class="cap" style="margin:6px 0 0" id="extraNote"></p>
+  </div>
+
+  <h2 class="section" data-t="chartHeading"></h2>
+  <div class="chartbox">
+    <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
+      <title id="chartTitle"></title>
+      <desc id="chartDesc"></desc>
+    </svg>
+  </div>
+  <div class="floodkeys" id="keys" hidden>
+    <span><i class="water"></i><span data-t="keyWater"></span></span>
+    <span><i class="flood"></i><span data-t="keyFlood"></span></span>
+    <span><i class="stage"></i><span data-t="keyStage"></span></span>
+    <span><i class="base"></i><span data-t="keyBase"></span></span>
+  </div>
+
+  <h2 class="section" style="margin-top:28px" data-t="limitsHeading"></h2>
+  <p class="cap" style="color:var(--ink-soft);font-size:.9rem" data-t="limitsBody"></p>
+  <p class="cap" style="color:var(--ink-soft);font-size:.9rem" id="methodLine"></p>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const T = {
+  es: {
+    htmlLang: "es", locale: "es-AR",
+    title: "Superficie inundada",
+    subtitle: "Cuánta superficie cubre el río, medida por radar",
+    langGroup: "Idioma", viewsNav: "Vistas",
+    viewToday: "El río hoy", viewWave: "La onda",
+    viewDrivers: "Aguas arriba", viewFlood: "Superficie",
+    noticeStrong: "Esto es un piso, no un total.",
+    noticeBody: "El radar no ve el agua bajo la vegetación, así que el monte y los humedales inundados cuentan como tierra firme. La superficie real es mayor que la de acá.",
+    officialLink: "Ver el alerta oficial del INA →",
+    stretchLabel: "Tramo:", lastPassLabel: "Última pasada completa:",
+    chartHeading: "Superficie de agua y altura del río, en las mismas fechas",
+    chartTitle: "Barras de superficie de agua por pasada del satélite, con la altura en Corrientes superpuesta.",
+    chartDesc: "La superficie casi no se mueve hasta que el río desborda; a partir de ahí crece rápido.",
+    keyWater: "agua detectada (km²)", keyFlood: "más del doble de la base",
+    keyStage: "altura en Corrientes (m)", keyBase: "base: bajante 2021",
+    extraCap: "km² más que en la bajante de 2021",
+    extraNote: (latest, day, base) =>
+      `${latest} km² de agua el ${day}, contra ${base} km² en la bajante de 2021 — la más baja en 77 años.`,
+    limitsHeading: "Qué mide y qué no",
+    limitsBody: "El radar Sentinel-1 ve a través de las nubes, que es lo que hace falta en el Litoral cuando llueve. El agua quieta y abierta se ve oscura porque refleja el pulso lejos del satélite. Pero el agua bajo el monte se ve clara y cuenta como tierra, así que en las islas y los bañados esta cifra queda corta. El satélite cubre todo el tramo cada 12 días: entre pasadas no hay dato, y un pico puede pasar sin verse.",
+    methodLine: (thr, buf, obs) =>
+      `Umbral fijo de ${thr} dB sobre un corredor de ${buf} km a cada lado del cauce. Verificado contra el agua permanente del JRC: en la bajante de 2021 el método da 536 km² donde el JRC mide 521. ${obs} pasadas completas en el período.`,
+    method: "Sentinel-1 GRD, polarización VV, filtro de moteado de 50 m. Sólo se usan las pasadas que cubren todo el corredor: una pasada parcial deja superficie sin observar, que al contarse como cero haría parecer que el río se achicó.",
+    credits: "Fuentes: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; alturas del INA.",
+    noData: "sin dato",
+  },
+  en: {
+    htmlLang: "en", locale: "en-GB",
+    title: "Flooded area",
+    subtitle: "How much ground the river covers, measured by radar",
+    langGroup: "Language", viewsNav: "Views",
+    viewToday: "The river today", viewWave: "The wave",
+    viewDrivers: "Upstream", viewFlood: "Flooded area",
+    noticeStrong: "This is a floor, not a total.",
+    noticeBody: "Radar cannot see water under vegetation, so flooded forest and wetland count as dry land. The real flooded area is larger than the figure here.",
+    officialLink: "See INA's official alert →",
+    stretchLabel: "Stretch:", lastPassLabel: "Last full pass:",
+    chartHeading: "Water area and river height, on the same dates",
+    chartTitle: "Bars of water area per satellite pass, with the stage at Corrientes overlaid.",
+    chartDesc: "Area barely moves until the river tops its banks, then rises sharply.",
+    keyWater: "water detected (km²)", keyFlood: "over twice the baseline",
+    keyStage: "stage at Corrientes (m)", keyBase: "baseline: 2021 bajante",
+    extraCap: "km² more than the 2021 low water",
+    extraNote: (latest, day, base) =>
+      `${latest} km² of water on ${day}, against ${base} km² during the 2021 bajante — the lowest Paraná in 77 years.`,
+    limitsHeading: "What it measures, and what it misses",
+    limitsBody: "Sentinel-1 radar sees through cloud, which is what the Litoral needs when it rains. Calm open water looks dark because it reflects the pulse away from the satellite. But water under trees looks bright and counts as land, so over the wooded islands and wetlands this figure falls short. The satellite covers the whole stretch every 12 days: between passes there is no measurement, and a peak can slip by unseen.",
+    methodLine: (thr, buf, obs) =>
+      `Fixed threshold of ${thr} dB over a corridor ${buf} km either side of the channel. Checked against JRC permanent water: over the 2021 bajante the method gives 536 km² where JRC measures 521. ${obs} full passes in the period.`,
+    method: "Sentinel-1 GRD, VV polarisation, 50 m speckle filter. Only passes covering the whole corridor are used: a partial pass leaves ground unobserved, which counted as zero water would read as the river shrinking.",
+    credits: "Sources: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; INA gauge levels.",
+    noData: "no data",
+  },
+};
+
+let lang = "es";
+let payload = null;
+const SVG = "http://www.w3.org/2000/svg";
+
+function fmt(v, d) {
+  if (v === null || v === undefined) return "–";
+  return new Intl.NumberFormat(T[lang].locale,
+    { minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
+}
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const v = t[el.dataset.t];
+    if (typeof v === "string") el.textContent = v;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  document.getElementById("chartTitle").textContent = t.chartTitle;
+  document.getElementById("chartDesc").textContent = t.chartDesc;
+  if (payload) render(payload);
+}
+
+function el(name, attrs, text) {
+  const n = document.createElementNS(SVG, name);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+function dayLabel(iso) {
+  return new Intl.DateTimeFormat(T[lang].locale, { day: "numeric", month: "short" })
+    .format(new Date(iso + "T12:00:00"));
+}
+
+function drawChart(stretch) {
+  const t = T[lang];
+  const svg = document.getElementById("chart");
+  while (svg.childNodes.length > 2) svg.removeChild(svg.lastChild);
+
+  const days = stretch.days || [];
+  const areas = stretch.km2 || [];
+  const stages = (stretch.levels && stretch.levels.from) || [];
+  if (!days.length) return;
+
+  const W = 760, H = 300, L = 54, R = 46, TOP = 14, B = 42;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - L - R, plotH = H - TOP - B;
+
+  const maxArea = Math.max(...areas, stretch.baseline_km2 || 0) * 1.1;
+  const validStages = stages.filter((v) => v !== null && v !== undefined);
+  const minStage = validStages.length ? Math.min(...validStages) * 0.9 : 0;
+  const maxStage = validStages.length ? Math.max(...validStages) * 1.05 : 1;
+
+  const x = (i) => L + (i + 0.5) * (plotW / days.length);
+  const yArea = (v) => TOP + plotH - (v / maxArea) * plotH;
+  const yStage = (v) => TOP + plotH - ((v - minStage) / Math.max(maxStage - minStage, 1e-6)) * plotH;
+
+  // left axis: area
+  for (let i = 0; i <= 4; i++) {
+    const v = (maxArea / 4) * i;
+    const yy = yArea(v);
+    svg.appendChild(el("line", { class: "grid", x1: L, x2: L + plotW, y1: yy, y2: yy }));
+    svg.appendChild(el("text", { class: "axis", x: L - 6, y: yy + 3, "text-anchor": "end" },
+      fmt(v, 0)));
+  }
+  // baseline
+  if (stretch.baseline_km2) {
+    const yy = yArea(stretch.baseline_km2);
+    svg.appendChild(el("line", { class: "baseline", x1: L, x2: L + plotW, y1: yy, y2: yy }));
+  }
+
+  // bars
+  const bw = Math.max((plotW / days.length) * 0.62, 2);
+  days.forEach((d, i) => {
+    const v = areas[i];
+    if (v === null || v === undefined) return;
+    const yy = yArea(v);
+    const bar = el("rect", {
+      class: v > (stretch.baseline_km2 || 0) * 2 ? "bar high" : "bar",
+      x: x(i) - bw / 2, y: yy, width: bw, height: Math.max(TOP + plotH - yy, 0),
+    });
+    bar.appendChild(el("title", {},
+      `${dayLabel(d)} · ${fmt(v, 0)} km²` +
+      (stages[i] != null ? ` · ${fmt(stages[i], 2)} m` : "")));
+    svg.appendChild(bar);
+  });
+
+  // stage line on its own axis
+  const pts = [];
+  days.forEach((d, i) => {
+    if (stages[i] === null || stages[i] === undefined) return;
+    pts.push(`${x(i).toFixed(1)},${yStage(stages[i]).toFixed(1)}`);
+  });
+  if (pts.length > 1) svg.appendChild(el("path", { class: "stage", d: "M" + pts.join(" L") }));
+  days.forEach((d, i) => {
+    if (stages[i] === null || stages[i] === undefined) return;
+    svg.appendChild(el("circle", { class: "stagedot", cx: x(i), cy: yStage(stages[i]), r: 2.5 }));
+  });
+
+  // right axis: stage
+  for (let i = 0; i <= 4; i++) {
+    const v = minStage + ((maxStage - minStage) / 4) * i;
+    const yy = yStage(v);
+    svg.appendChild(el("text", { class: "axis", x: L + plotW + 6, y: yy + 3 }, fmt(v, 1)));
+  }
+  // dates, thinned so they do not collide
+  const step = Math.ceil(days.length / 8);
+  days.forEach((d, i) => {
+    if (i % step) return;
+    svg.appendChild(el("text", {
+      class: "axis", x: x(i), y: H - B + 16, "text-anchor": "middle",
+    }, dayLabel(d)));
+  });
+}
+
+function render(data) {
+  const t = T[lang];
+  const stretch = (data.stretches || [])[0];
+  if (!stretch) return;
+
+  document.getElementById("stretchName").textContent =
+    `${stretch.from_name} – ${stretch.to_name}`;
+  document.getElementById("lastPass").textContent =
+    stretch.latest ? dayLabel(stretch.latest.day) : t.noData;
+  document.getElementById("meta").hidden = false;
+
+  if (stretch.extra_km2 !== null && stretch.extra_km2 !== undefined) {
+    document.getElementById("extra").textContent = fmt(stretch.extra_km2, 0);
+    document.getElementById("extraCap").textContent = t.extraCap;
+    document.getElementById("extraNote").textContent = t.extraNote(
+      fmt(stretch.latest.km2, 0), dayLabel(stretch.latest.day),
+      fmt(stretch.baseline_km2, 0));
+    document.getElementById("headline").hidden = false;
+  }
+
+  drawChart(stretch);
+  document.getElementById("keys").hidden = false;
+  document.getElementById("methodLine").textContent = t.methodLine(
+    (data.method || {}).threshold_db, ((data.method || {}).buffer_m || 0) / 1000,
+    (stretch.days || []).length);
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+
+setLang(pickLang());
+
+fetch("data/flooded.json", { cache: "no-cache" })
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then((data) => { payload = data; render(data); })
+  .catch((err) => {
+    const box = document.getElementById("error");
+    box.textContent = "No se pudieron cargar los datos / could not load data: " + err.message;
+    box.hidden = false;
+  });
+</script>
+</body>
+</html>
