@@ -37,7 +37,8 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from ina_a5 import doy
+import numpy as np
+from ina_a5 import DailyValue, doy
 
 log = logging.getLogger(__name__)
 
@@ -198,3 +199,57 @@ def trim(source: Path | str, series_ids: list[str], out: Path) -> int:
     if missing:
         log.warning("%d gauges have no climatology: %s", len(missing), ", ".join(missing))
     return len(kept)
+
+
+# -- building a curve where there is none ---------------------------------
+
+#: Pool each day of year with this many days either side, so a curve rests
+#: on 15 readings a year rather than one.
+POOL_WINDOW = 7
+#: Below this many distinct years, a day-of-year distribution is not honest.
+MIN_YEARS_PER_DOY = 8
+
+
+def build_curves(values: list[DailyValue], *, min_years: int = MIN_YEARS_PER_DOY) -> dict:
+    """Day-of-year percentile curves from a series' own record.
+
+    The same shape rios-argentina's climatology uses, so the two are
+    interchangeable. A day of year with too few years is left out rather
+    than filled in from a thin sample: a gauge with no curve reads as
+    unknown everywhere downstream, which is the honest answer.
+    """
+    pools: dict[int, list[tuple[int, float]]] = {}
+    for v in values:
+        n = doy(v.day)
+        for offset in range(-POOL_WINDOW, POOL_WINDOW + 1):
+            key = (n + offset - 1) % 365 + 1
+            pools.setdefault(key, []).append((v.day.year, v.value))
+
+    curves: dict[str, dict[str, float]] = {}
+    for n, pairs in pools.items():
+        if len({year for year, _ in pairs}) < min_years:
+            continue
+        sample = np.array([value for _, value in pairs], dtype=float)
+        curves[str(n)] = {
+            str(p): float(np.percentile(sample, p)) for p in LEVELS
+        }
+    return curves
+
+
+def entry_for(
+    series_id: str, values: list[DailyValue], *, station: str = "", family: str = ""
+) -> dict | None:
+    """A climatology entry for one series, or ``None`` if its record is thin."""
+    curves = build_curves(values)
+    if not curves:
+        log.warning("series %s has too short a record for a climatology", series_id)
+        return None
+    years = len({v.day.year for v in values})
+    return {
+        "station": station,
+        "river": "",
+        "variable_family": family,
+        "years": years,
+        "days_covered": len(curves),
+        "percentiles": curves,
+    }
