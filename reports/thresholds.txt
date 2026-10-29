@@ -1,0 +1,39 @@
+ina thresholds - 2026-10-28T23:00:41-03:00
+
+  2026-10-29: HTTP 404, 195 bytes
+  2026-10-28: 2712 KB -> reporte_diario_2026-10-28.pdf
+parsed 25 rows from the report's threshold tables
+
+14 gauges in scope have official levels:
+  Puerto Iguazu          alert       25  evac       28  m
+  Corrientes             alert      6.5  evac        7  m
+  Goya                   alert      5.2  evac      5.7  m
+  La Paz                 alert      5.8  evac     6.15  m
+  Parana                 alert      4.7  evac        5  m
+  Rosario                alert        5  evac     5.25  m
+  Victoria               alert      4.6  evac      5.9  m
+  San Fernando           alert        3  evac      3.5  m
+  Yacyreta efluente      alert    25000  evac    30000  m3/s
+  Confluencia            alert    25000  evac    30000  m3/s
+  Barranqueras           alert        6  evac      6.5  m
+  Reconquista            alert      5.1  evac      5.3  m
+  Santa Fe               alert      5.3  evac      5.7  m
+  Puerto Formosa         alert      7.8  evac      8.3  m
+
+31 gauges in scope are NOT in the report, left empty:
+  Libertad, El Dorado, Libertador, Santa Ana
+  Posadas, Ituzaingo, Ita Ibate, Itati
+  Paso de la Patria, Empedrado, Bella Vista, Esquina
+  Santa Elena, Hernandarias, Diamante, San Lorenzo
+  Villa Constitucion, San Nicolas, Ramallo, San Pedro
+  Baradero, Zarate, Campana, Escobar
+  Canal Nuevo, Ibicuy, Guazucito, Tigre
+  Olivos, Puerto Pilcomayo, Bermejo
+
+11 report rows match no gauge in scope (kept for checking):
+  Puerto Pilcomayo, San Javier, Santo Tomé
+  Paso de los Libres, Concordia, Concepción del Uruguay
+  Boca Gualeguaychú, Guaíra Porto, Represa Itaipú
+  Andresito, Yacyretá afluente
+
+thresholds -> data/ina_thresholds.csv  (check it against reporte_diario_2026-10-28.pdf)
