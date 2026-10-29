@@ -32,13 +32,24 @@ answer it until this is done, even though the account exists.
 JSON*. A file downloads. This is a long-lived credential: anyone holding it can
 act as that account.
 
-**4. Add it as a repository secret.** In GitHub, *Settings → Secrets and variables
-→ Actions → New repository secret*:
+**4. Add the secrets.** Two of them:
 
 | Secret | Value |
 |---|---|
 | `EE_SERVICE_ACCOUNT_KEY` | the entire contents of the JSON file |
 | `EE_PROJECT` | `prueba-463913` |
+
+Either through GitHub's UI (*Settings → Secrets and variables → Actions → New
+repository secret*), or from a terminal, which avoids the key ever touching a
+clipboard — point the second command at wherever the JSON downloaded:
+
+```bash
+gh secret set EE_PROJECT --body "prueba-463913" --repo ammarmahfoud90/parana-crecida
+```
+
+```bash
+gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida < "$HOME/Downloads/prueba-463913-xxxxxxxx.json"
+```
 
 **5. Check it.** Run the workflow by hand
 (`gh workflow run daily.yml`, or the *Run workflow* button) and look at the
