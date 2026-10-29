@@ -139,6 +139,10 @@ UPSTREAM = [
     _g(26258, "Ita Ibate", tier=3, flags=("regulated",), display="Itá Ibaté"),
     _g(26259, "Itati", tier=3, flags=("regulated",), display="Itatí"),
     _g(26260, "Paso de la Patria", tier=3, flags=("regulated",)),
+    _g(
+        26684, "Yacyreta afluente", tier=3, flags=("regulated", "flow"),
+        note="inflow to Yacyreta", display="Yacyretá afluente",
+    ),
     _g(26685, "Yacyreta efluente", tier=3, flags=("regulated", "flow"), display="Yacyretá efluente"),
     # Snapped onto Puerto Iguazu's reach, about 660 km upstream of the
     # junction it is named after, so it carries no usable river position.
@@ -160,6 +164,12 @@ TRIBUTARIES = [
     _g(26652, "Puerto Pilcomayo", TRIBUTARY, 3, ("flow",), "Paraguay, discharge"),
     _g(26442, "Puerto Formosa", TRIBUTARY, 3, ("bad_snap",), "Paraguay"),
     _g(26300, "Bermejo", TRIBUTARY, 3),
+    # The Iguazu's discharge into the Parana just above Puerto Iguazu. INA
+    # publishes alert and evacuation levels for it in m3/s.
+    _g(
+        26605, "Andresito", TRIBUTARY, 3, ("flow",),
+        note="Iguazu inflow, discharge", display="Andresito",
+    ),
 ]
 
 GAUGES: list[Gauge] = [*UPSTREAM, *MAIN_STEM, *DELTA, *TRIBUTARIES]

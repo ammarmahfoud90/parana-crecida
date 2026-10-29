@@ -36,6 +36,7 @@ series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_p
 26291,Tigre,2,,,,,,not_in_report,,
 26294,San Fernando,2,San Fernando,Lujan,m,3,3.5,official,reporte_diario_2026-10-28.pdf,2026-10-28
 26296,Olivos,2,,,,,,not_in_report,,
+26684,Yacyreta afluente,3,Yacyretá afluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
 26685,Yacyreta efluente,3,Yacyretá efluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
 26690,Confluencia,3,Confluencia,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
 26262,Barranqueras,3,Barranqueras,Paraná,m,6,6.5,official,reporte_diario_2026-10-28.pdf,2026-10-28
@@ -44,6 +45,7 @@ series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_p
 26652,Puerto Pilcomayo,3,,,,,,not_in_report,,
 26442,Puerto Formosa,3,Puerto Formosa,Paraguay,m,7.8,8.3,official,reporte_diario_2026-10-28.pdf,2026-10-28
 26300,Bermejo,3,,,,,,not_in_report,,
+26605,Andresito,3,Andresito,Iguazu,m3/s,5000,6500,official,reporte_diario_2026-10-28.pdf,2026-10-28
 ,,,Puerto Pilcomayo,Paraguay,m,5.35,6,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
 ,,,San Javier,Uruguay,m,8,10,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
 ,,,Santo Tomé,Uruguay,m,11.5,12.5,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
@@ -53,5 +55,3 @@ series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_p
 ,,,Boca Gualeguaychú,Uruguay,m,2.9,3.1,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
 ,,,Guaíra Porto,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
 ,,,Represa Itaipú,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Andresito,Iguazu,m3/s,5000,6500,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Yacyretá afluente,Paraná,m3/s,25000,30000,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
