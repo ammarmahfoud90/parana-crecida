@@ -88,7 +88,11 @@ def water_image(stretches: list[fl.Stretch], start: date, end: date):
         corridors.append(corridor)
         mosaic = fl._collection(corridor, start, end).mosaic().clip(corridor)
         masks.append(
-            fl.water_mask(mosaic, threshold_db=stretch.threshold_db)
+            fl.water_mask(
+                mosaic,
+                threshold_db=stretch.threshold_db,
+                slope_mask=stretch.slope_mask,
+            )
             .unmask(0)
             .clip(corridor)
         )
@@ -114,7 +118,8 @@ def stretch_areas(
     for stretch in stretches:
         corridor = fl.corridor_geometry(stretch)
         value = fl.water_area_km2(
-            corridor, start, end, threshold_db=stretch.threshold_db
+            corridor, start, end,
+            threshold_db=stretch.threshold_db, slope_mask=stretch.slope_mask,
         )
         if value is not None:
             out[stretch.key] = value
@@ -149,6 +154,7 @@ def render(
     # Leaflet wants [[south, west], [north, east]].
     bounds = [[min(lats), min(lons)], [max(lats), max(lons)]]
 
+    calibrated = {s.key for s in stretches if s.calibrated}
     out_dir.mkdir(parents=True, exist_ok=True)
     frames: list[MapFrame] = []
     for index in range(cycles - 1, -1, -1):
@@ -187,13 +193,19 @@ def render(
                 "end": f.end.isoformat(),
                 "image": f"media/map/{f.path.name}",
                 "km2": {k: round(v, 1) for k, v in f.km2.items()},
-                "total_km2": round(sum(f.km2.values()), 1) if f.km2 else None,
+                # Only calibrated stretches count toward the total: the two
+                # gorge reaches publish a picture, not a number.
+                "total_km2": (
+                    round(sum(v for k, v in f.km2.items() if k in calibrated), 1)
+                    if f.km2 else None
+                ),
             }
             for f in frames
         ],
         "stretches": [
             {
                 "key": s.key,
+                "calibrated": s.calibrated,
                 "from_name": s.from_name,
                 "to_name": s.to_name,
                 "river_km": s.river_km,
