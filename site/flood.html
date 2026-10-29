@@ -51,7 +51,11 @@
 
   <h2 class="section" data-t="loopHeading"></h2>
   <figure class="loop">
-    <img src="media/flood.gif" alt="" id="loop" data-t-alt="loopAlt" loading="lazy">
+    <div class="loopwrap">
+      <img src="media/flood.gif" alt="" id="loop" data-t-alt="loopAlt" loading="lazy">
+      <canvas id="loopFrame" hidden aria-hidden="true"></canvas>
+      <button type="button" id="loopToggle" class="playbtn loopbtn playing"></button>
+    </div>
     <figcaption data-t="loopCaption"></figcaption>
   </figure>
 
@@ -113,6 +117,7 @@ const T = {
     method: "Sentinel-1 GRD, polarización VV, filtro de moteado de 50 m. Sólo se usan las pasadas que cubren todo el corredor: una pasada parcial deja superficie sin observar, que al contarse como cero haría parecer que el río se achicó.",
     credits: "Fuentes: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; alturas del INA.",
     noData: "sin dato",
+    pauseLoop: "Pausar la animación", playLoop: "Reproducir la animación",
   },
   en: {
     htmlLang: "en", locale: "en-GB",
@@ -144,6 +149,7 @@ const T = {
     method: "Sentinel-1 GRD, VV polarisation, 50 m speckle filter. Only passes covering the whole corridor are used: a partial pass leaves ground unobserved, which counted as zero water would read as the river shrinking.",
     credits: "Sources: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; INA gauge levels.",
     noData: "no data",
+    pauseLoop: "Pause the animation", playLoop: "Play the animation",
   },
 };
 
@@ -202,7 +208,12 @@ function dayLabel(iso) {
 function drawChart(stretch) {
   const t = T[lang];
   const svg = document.getElementById("chart");
-  while (svg.childNodes.length > 2) svg.removeChild(svg.lastChild);
+  // Keep everything up to and including <desc>, which aria-labelledby
+  // points at, and drop the drawing below it. Counting nodes instead counts
+  // the whitespace between the tags, which deleted the <desc> on the first
+  // redraw and left the chart labelled by an element that no longer existed.
+  const keep = document.getElementById("chartDesc");
+  while (svg.lastChild && svg.lastChild !== keep) svg.removeChild(svg.lastChild);
 
   const days = stretch.days || [];
   const areas = stretch.km2 || [];
@@ -315,12 +326,51 @@ function render(data) {
   const box = document.querySelector(".chartbox");
   if (box) box.scrollLeft = box.scrollWidth;
   document.getElementById("keys").hidden = false;
+  loopToggle.setAttribute("aria-label", loopRunning ? t.pauseLoop : t.playLoop);
   document.getElementById("methodLine").textContent = t.methodLine(
     stretch.threshold_db ?? (data.method || {}).threshold_db,
     ((data.method || {}).buffer_m || 0) / 1000,
     (stretch.days || []).length,
     fmt(stretch.baseline_km2, 0), fmt(stretch.permanent_water_km2, 0));
 }
+
+// The loop is a GIF: it cannot be paused, it runs for well over five
+// seconds and it ignores every motion preference the reader has set. So it
+// gets a control. Pausing draws the frame currently showing onto a canvas
+// and swaps it in, which needs no second asset and no library.
+const loopImg = document.getElementById("loop");
+const loopFrame = document.getElementById("loopFrame");
+const loopToggle = document.getElementById("loopToggle");
+let loopRunning = true;
+
+function freezeLoop() {
+  if (!loopImg.naturalWidth) return;
+  loopFrame.width = loopImg.naturalWidth;
+  loopFrame.height = loopImg.naturalHeight;
+  loopFrame.getContext("2d").drawImage(loopImg, 0, 0);
+  loopFrame.hidden = false;
+  loopImg.hidden = true;
+  loopRunning = false;
+  loopToggle.classList.remove("playing");
+  loopToggle.setAttribute("aria-label", T[lang].playLoop);
+}
+
+function runLoop() {
+  loopFrame.hidden = true;
+  loopImg.hidden = false;
+  loopRunning = true;
+  loopToggle.classList.add("playing");
+  loopToggle.setAttribute("aria-label", T[lang].pauseLoop);
+}
+
+loopToggle.addEventListener("click", () => (loopRunning ? freezeLoop() : runLoop()));
+
+function settleLoop() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) freezeLoop();
+  else runLoop();
+}
+if (loopImg.complete) settleLoop();
+else loopImg.addEventListener("load", settleLoop);
 
 for (const b of document.querySelectorAll(".langs button")) {
   b.addEventListener("click", () => setLang(b.dataset.lang));

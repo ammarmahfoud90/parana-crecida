@@ -5,7 +5,7 @@
   --panel: #ffffff;
   --ink: #1a1a18;
   --ink-soft: #5d5c57;
-  --ink-faint: #8b8984;
+  --ink-faint: #6f6d67;
   --line: #e3e0d9;
   --below: #2f7d52;
   --alert: #b4761b;
@@ -33,7 +33,7 @@
     --panel: #1d2024;
     --ink: #eceae5;
     --ink-soft: #a8a6a0;
-    --ink-faint: #7d7b76;
+    --ink-faint: #94918b;
     --line: #2d3137;
     --below: #5bbd86;
     --alert: #e0a243;
@@ -330,17 +330,17 @@ figure.loop figcaption {
 .player .readout b { display: block; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .playbtn {
-  flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--line); background: var(--track); cursor: pointer;
   position: relative;
 }
 .playbtn::before {
-  content: ""; position: absolute; left: 14px; top: 10px;
+  content: ""; position: absolute; left: 16px; top: 13px;
   border-left: 12px solid var(--ink); border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
 }
 .playbtn.playing::before {
-  left: 12px; top: 11px; width: 4px; height: 16px;
+  left: 14px; top: 14px; width: 4px; height: 16px;
   border: 0; background: var(--ink);
   box-shadow: 8px 0 0 var(--ink);
 }
@@ -418,4 +418,58 @@ table.arrivals td:first-child { font-weight: 600; }
   background: var(--panel); border: 1px solid var(--line);
   border-left: 3px solid var(--alert); border-radius: var(--radius);
   color: var(--ink-soft); font-size: .86rem; line-height: 1.6;
+}
+
+
+/* -- accessibility ------------------------------------------------------- */
+
+/* Someone who has asked their system for less motion gets less motion. The
+   map's player is already opt-in - it does not start itself - so what is
+   left is the transitions, and the looping animation on the flooded-area
+   page, which starts paused under this preference. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 44 px hit areas without changing what anything looks like.
+
+   The pill rows are dense on purpose; growing them to 44 px would push the
+   map below the fold on a phone, which is the one thing a reader came for.
+   An invisible overlay gives the finger a target the eye does not need.
+   Vertical only: these controls sit shoulder to shoulder, so widening them
+   would steal taps from the neighbour. */
+nav.views a, .langs button, .layerswitch button { position: relative; }
+nav.views a::after, .langs button::after, .layerswitch button::after {
+  content: ""; position: absolute; left: 0; right: 0;
+  top: 50%; transform: translateY(-50%); height: 44px;
+}
+.langs button { min-width: 44px; }
+
+/* The slider is the map's main control and was a 16 px drag target. */
+.player input[type="range"] { height: 44px; }
+
+/* Leaflet's own zoom buttons are 30 px. Only enlarge them where a finger is
+   doing the pointing; on a mouse the smaller control is fine and is what
+   every other Leaflet map looks like. */
+@media (pointer: coarse) {
+  .leaflet-touch .leaflet-bar a, .leaflet-control-zoom a {
+    width: 44px; height: 44px; line-height: 44px;
+  }
+}
+
+/* The loop, and the control that stops it. */
+.loopwrap { position: relative; display: inline-block; max-width: 100%; }
+figure.loop canvas {
+  display: block; margin: 0 auto;
+  max-height: 68vh; width: auto; max-width: 100%; height: auto;
+  border: 1px solid var(--line); border-radius: var(--radius); background: #1a1a18;
+}
+.loopbtn {
+  position: absolute; left: 10px; bottom: 10px;
+  background: var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / .3);
 }

@@ -225,3 +225,41 @@ def test_the_method_page_builds_its_tables_from_published_data():
     assert "threshold_db" in text
     # The calibrated figures themselves must not be written into the page.
     assert "536.3" not in text and "520.8" not in text
+
+
+# -- accessibility ---------------------------------------------------------
+
+
+def test_the_stylesheet_respects_a_request_for_less_motion():
+    """A reader who has asked their system for less motion gets less."""
+    css = (SITE / "style.css").read_text(encoding="utf-8")
+    assert "prefers-reduced-motion" in css
+
+
+def test_the_looping_animation_can_be_stopped():
+    """A GIF runs for well over five seconds and cannot be paused.
+
+    WCAG 2.2.2 wants a control for that, and a motion preference wants it to
+    start stopped. Both are the page's job, because the image format offers
+    neither.
+    """
+    text = (SITE / "flood.html").read_text(encoding="utf-8")
+    assert 'id="loopToggle"' in text
+    assert "prefers-reduced-motion" in text
+    for lang_key in ("pauseLoop", "playLoop"):
+        assert text.count(lang_key) >= 3, lang_key
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_no_page_clears_an_svg_by_counting_nodes(page):
+    """The bug that deleted two charts' descriptions.
+
+    `childNodes` counts the whitespace between tags, so a chart whose nodes
+    are [text, title, text, desc, text] loses its <desc> the moment it is
+    redrawn - and on one page that <desc> was the target of the chart's own
+    aria-labelledby.
+    """
+    text = page.read_text(encoding="utf-8")
+    assert "childNodes.length >" not in text, (
+        f"{page.name} trims an element by node count, which counts whitespace"
+    )
