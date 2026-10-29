@@ -1,4 +1,4 @@
-export - 2026-10-29T14:18:15-03:00
+export - 2026-10-29T16:01:32-03:00
 
   [ok  ] rows_present: 17165 observation rows
   [ok  ] no_null_fields: 0 rows with a null field
@@ -13,7 +13,8 @@ export - 2026-10-29T14:18:15-03:00
   [ok  ] latest_within_record: every latest reading sits within its gauge's own record
   [ok  ] thresholds_loaded: 16 gauges have official alert or evacuation levels
 
-4 river stretches -> site/data/flooded.json
+22 anchors on the river line -> site/data/river_stage.json
+8 river stretches -> site/data/flooded.json
 4 driver gauges -> site/data/drivers.json
 24 chain gauges -> site/data/wave.json
 37 gauges -> site/data/river_today.json
