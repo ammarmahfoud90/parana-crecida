@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T16:38:11-03:00",
+ "generated_at": "2026-10-29T16:39:18-03:00",
  "source": "COPERNICUS/S1_GRD",
  "method": {
   "threshold_db": "per stretch; see each stretch's threshold_db",
@@ -58,6 +58,8 @@
     188.6,
     189.9
    ],
+   "threshold_db": -17.0,
+   "calibrated": false,
    "latest": {
     "day": "2026-10-27",
     "km2": 189.9
@@ -146,6 +148,8 @@
     351.1,
     341.4
    ],
+   "threshold_db": -17.0,
+   "calibrated": false,
    "latest": {
     "day": "2026-10-27",
     "km2": 341.4
@@ -232,6 +236,8 @@
     1917.7,
     2401.1
    ],
+   "threshold_db": -14.5,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 2401.1
@@ -316,6 +322,8 @@
     687.9,
     1354.5
    ],
+   "threshold_db": -15.5,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 1354.5
@@ -402,6 +410,8 @@
     517.2,
     1644.7
    ],
+   "threshold_db": -16.0,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 1644.7
@@ -490,6 +500,8 @@
     800.8,
     1208.6
    ],
+   "threshold_db": -16.5,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 1208.6
@@ -578,6 +590,8 @@
     697.2,
     805.1
    ],
+   "threshold_db": -16.0,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 805.1
@@ -666,6 +680,8 @@
     1097.9,
     1128.2
    ],
+   "threshold_db": -16.5,
+   "calibrated": true,
    "latest": {
     "day": "2026-10-27",
     "km2": 1128.2
