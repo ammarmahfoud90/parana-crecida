@@ -1,0 +1,87 @@
+{
+ "schema": 1,
+ "note": "The tracker run over the record as it would have run on the day, scored against the first local maximum each gauge then reached. The baseline is the same projection with no travel time in it: the crest arriving everywhere on the day the anchor peaked.",
+ "measured_on": "2026-10-29",
+ "window": {
+  "from": 1998,
+  "to": 2026
+ },
+ "crest_flatness": {
+  "tolerance_m": 0.1,
+  "crests": 995,
+  "median_days": 6,
+  "mean_days": 7.9
+ },
+ "scored": 933,
+ "occasions": 200,
+ "inside_window": 219,
+ "inside_window_pct": 23,
+ "median_error_days": 9,
+ "mean_error_days": 13.9,
+ "within_3_days_pct": 24,
+ "within_7_days_pct": 46,
+ "baseline_median_error_days": 14,
+ "by_legs": [
+  {
+   "legs": 1,
+   "n": 197,
+   "median_error_days": 16
+  },
+  {
+   "legs": 2,
+   "n": 167,
+   "median_error_days": 12
+  },
+  {
+   "legs": 3,
+   "n": 138,
+   "median_error_days": 8
+  },
+  {
+   "legs": 4,
+   "n": 114,
+   "median_error_days": 5
+  },
+  {
+   "legs": 5,
+   "n": 91,
+   "median_error_days": 4
+  },
+  {
+   "legs": 6,
+   "n": 72,
+   "median_error_days": 4
+  },
+  {
+   "legs": 7,
+   "n": 60,
+   "median_error_days": 4
+  },
+  {
+   "legs": 8,
+   "n": 45,
+   "median_error_days": 6
+  },
+  {
+   "legs": 9,
+   "n": 26,
+   "median_error_days": 8
+  },
+  {
+   "legs": 10,
+   "n": 15,
+   "median_error_days": 9
+  },
+  {
+   "legs": 11,
+   "n": 6,
+   "median_error_days": 9
+  },
+  {
+   "legs": 12,
+   "n": 2,
+   "median_error_days": 12
+  }
+ ],
+ "by_legs_note": "Error is worst one leg from the anchor and best at four to seven. That is the scoring, not the river: next door to the anchor the projected date is a day or two out and the first local maximum after it is as likely to be a ripple as the crest. The short legs are scored pessimistically."
+}
