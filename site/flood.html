@@ -47,7 +47,13 @@
     <p class="cap" style="margin:6px 0 0" id="extraNote"></p>
   </div>
 
-  <h2 class="section" data-t="chartHeading"></h2>
+  <h2 class="section" data-t="loopHeading"></h2>
+  <figure class="loop">
+    <img src="media/flood.gif" alt="" id="loop" data-t-alt="loopAlt" loading="lazy">
+    <figcaption data-t="loopCaption"></figcaption>
+  </figure>
+
+  <h2 class="section" style="margin-top:28px" data-t="chartHeading"></h2>
   <div class="chartbox">
     <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
       <title id="chartTitle"></title>
@@ -86,6 +92,9 @@ const T = {
     noticeBody: "El radar no ve el agua bajo la vegetación, así que el monte y los humedales inundados cuentan como tierra firme. La superficie real es mayor que la de acá.",
     officialLink: "Ver el alerta oficial del INA →",
     stretchLabel: "Tramo:", lastPassLabel: "Última pasada completa:",
+    loopHeading: "La crecida, pasada por pasada",
+    loopAlt: "Animación del río Paraná entre Corrientes y Goya. El cauce permanente en azul y el agua de la crecida en naranja, en veinte pasadas del satélite entre mayo y octubre de 2026.",
+    loopCaption: "Veinte pasadas de Sentinel-1, del 3 de mayo al 25 de octubre de 2026. Cada cuadro es una observación real: el satélite pasa cada 12 días, así que entre cuadro y cuadro no hay dato.",
     chartHeading: "Superficie de agua y altura del río, en las mismas fechas",
     chartTitle: "Barras de superficie de agua por pasada del satélite, con la altura en Corrientes superpuesta.",
     chartDesc: "La superficie casi no se mueve hasta que el río desborda; a partir de ahí crece rápido.",
@@ -113,6 +122,9 @@ const T = {
     noticeBody: "Radar cannot see water under vegetation, so flooded forest and wetland count as dry land. The real flooded area is larger than the figure here.",
     officialLink: "See INA's official alert →",
     stretchLabel: "Stretch:", lastPassLabel: "Last full pass:",
+    loopHeading: "The flood, pass by pass",
+    loopAlt: "Animation of the Parana between Corrientes and Goya. The permanent channel in blue and flood water in orange, over twenty satellite passes from May to October 2026.",
+    loopCaption: "Twenty Sentinel-1 passes, 3 May to 25 October 2026. Each frame is a real observation: the satellite comes round every 12 days, so between frames there is no measurement.",
     chartHeading: "Water area and river height, on the same dates",
     chartTitle: "Bars of water area per satellite pass, with the stage at Corrientes overlaid.",
     chartDesc: "Area barely moves until the river tops its banks, then rises sharply.",
@@ -159,6 +171,9 @@ function setLang(next) {
   }
   for (const el of document.querySelectorAll("[data-t-aria]")) {
     el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const el of document.querySelectorAll("[data-t-alt]")) {
+    el.setAttribute("alt", t[el.dataset.tAlt] || "");
   }
   for (const b of document.querySelectorAll(".langs button")) {
     b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
