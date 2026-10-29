@@ -196,11 +196,24 @@ def test_version(runner):
 # -- freshness -------------------------------------------------------------
 
 
-def write_site(tmp_path, *, age_days=1, rain_stale=0, with_rain=True, with_layers=True):
+def write_site(
+    tmp_path, *, age_days=1, rain_stale=0, with_rain=True, with_layers=True,
+    with_stage=True, stage_age_days=1,
+):
     import json
+    from datetime import date, timedelta
 
     data = tmp_path / "site"
     data.mkdir(exist_ok=True)
+    if with_stage:
+        # The daily river colour is the map's default layer: absent or behind,
+        # the map opens on nothing while every other check passes.
+        newest = date.today() - timedelta(days=stage_age_days)
+        (data / "river_stage.json").write_text(json.dumps({
+            "days": [(newest - timedelta(days=1)).isoformat(), newest.isoformat()],
+            "anchors": [{"series_id": "26261", "river_km": 659.8}],
+            "segments": [{"km": 660.0}],
+        }), encoding="utf-8")
     if with_layers:
         # The map fetches these by relative path from the published site, so
         # one left behind in the repository's data/ directory is simply never
@@ -244,6 +257,21 @@ def test_freshness_tolerates_a_site_with_no_rainfall(runner, tmp_path):
     site = write_site(tmp_path, with_rain=False)
     result = runner.invoke(main, ["freshness", "--site-data", str(site)])
     assert result.exit_code == 0
+
+
+def test_freshness_fails_when_the_daily_river_is_not_published(runner, tmp_path):
+    """It is the map's default layer, so its absence is a blank map."""
+    site = write_site(tmp_path, with_stage=False)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "default layer" in result.output
+
+
+def test_freshness_fails_when_the_daily_river_falls_behind(runner, tmp_path):
+    site = write_site(tmp_path, stage_age_days=9)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "daily river colour is 9 days old" in result.output
 
 
 def test_freshness_fails_when_nothing_is_published(runner, tmp_path):

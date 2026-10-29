@@ -46,6 +46,7 @@ from .export import (
     ExportBlocked,
     export_drivers,
     export_flooded,
+    export_river_stage,
     export_river_today,
     export_wave,
 )
@@ -927,6 +928,27 @@ def freshness(
     else:
         rep.say("map layers: gauges and departamentos published")
 
+    # The daily river colour is the map's default layer, so if it is absent
+    # or behind the map opens on nothing while every other check passes.
+    stage = site_data / "river_stage.json"
+    if not stage.exists():
+        problems.append(f"the map's default layer is not published at {stage}")
+    else:
+        payload = _json.loads(stage.read_text(encoding="utf-8")) or {}
+        days = payload.get("days") or []
+        if not days:
+            problems.append("the daily river colour has no days to show")
+        else:
+            newest = date.fromisoformat(days[-1])
+            stale = (datetime.now(DEFAULT_TZ).date() - newest).days
+            rep.say(f"river line: {days[-1]} ({stale} days old, "
+                    f"{len(payload.get('anchors') or [])} anchors)")
+            if stale > max_age_days:
+                problems.append(
+                    f"the daily river colour is {stale} days old, over the "
+                    f"{max_age_days} allowed"
+                )
+
     water = site_data / "flooded.json"
     if water.exists():
         flood = _json.loads(water.read_text(encoding="utf-8")) or {}
@@ -1182,11 +1204,13 @@ def export(
             wave = export_wave(store, result, out_dir=out, today=today)
             drivers = export_drivers(store, result, out_dir=out, today=today)
             water = export_flooded(store, result, out_dir=out, today=today)
+            river = export_river_stage(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    rep.say(f"{river.gauges} anchors on the river line -> {river.path}")
     rep.say(f"{water.gauges} river stretches -> {water.path}")
     rep.say(f"{drivers.gauges} driver gauges -> {drivers.path}")
     rep.say(f"{wave.gauges} chain gauges -> {wave.path}")

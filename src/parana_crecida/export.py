@@ -36,6 +36,7 @@ RIVER_TODAY = "river_today.json"
 WAVE = "wave.json"
 DRIVERS = "drivers.json"
 FLOODED = "flooded.json"
+RIVER_STAGE = "river_stage.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -259,6 +260,56 @@ def export_drivers(
     return ExportResult(
         path=path,
         gauges=len(payload["gauges"]),  # type: ignore[arg-type]
+        with_official_thresholds=0,
+        last_data_day=store.last_data_day(),
+    )
+
+
+def export_river_stage(
+    store: Store,
+    result: ValidationResult,
+    *,
+    climatology_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    now: datetime | None = None,
+    today: date | None = None,
+) -> ExportResult:
+    """Validate-then-write the daily river colour, behind the same gate.
+
+    This is the one layer on the map that moves every day. The radar
+    overlays are twelve-day composites that need Earth Engine, so they are
+    rendered when a credential is present; this is built from the store on
+    every run, which is why it is the map's default.
+    """
+    from .normalize import Climatology
+    from . import riverstage as rs
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    payload = rs.build(store, clim, today=today)
+    payload["generated_at"] = (now or datetime.now(DEFAULT_TZ)).isoformat(
+        timespec="seconds"
+    )
+    if not payload["anchors"]:
+        raise ExportBlocked(
+            "no gauge on the river has a usable series, so the daily river "
+            "colour would be blank"
+        )
+    path = out_dir / RIVER_STAGE
+    write_json(path, payload)
+    log.info(
+        "exported %d anchors over %d days to %s",
+        len(payload["anchors"]), len(payload["days"]), path,
+    )
+    return ExportResult(
+        path=path,
+        gauges=len(payload["anchors"]),
         with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )
