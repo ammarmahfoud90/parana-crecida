@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crecida del Paraná</title>
+<meta name="description" content="El río Paraná hoy, de Puerto Iguazú a San Fernando. No es un sistema de alerta.">
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --panel: #ffffff;
+    --ink: #1a1a18;
+    --ink-soft: #5d5c57;
+    --ink-faint: #8b8984;
+    --line: #e3e0d9;
+    --below: #2f7d52;
+    --alert: #b4761b;
+    --evac: #ab2f26;
+    --unknown: #9a9892;
+    --track: #eeebe4;
+    --accent: #1f5673;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171a;
+      --panel: #1d2024;
+      --ink: #eceae5;
+      --ink-soft: #a8a6a0;
+      --ink-faint: #7d7b76;
+      --line: #2d3137;
+      --below: #5bbd86;
+      --alert: #e0a243;
+      --evac: #ef6a5e;
+      --unknown: #6f6d68;
+      --track: #262a2f;
+      --accent: #7fb6d4;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; justify-content: space-between; }
+  h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--ink-soft); margin: 4px 0 0; }
+
+  .langs { display: flex; gap: 2px; background: var(--track); border-radius: 999px; padding: 3px; }
+  .langs button {
+    border: 0; background: transparent; color: var(--ink-soft);
+    font: inherit; font-size: .85rem; font-weight: 600;
+    padding: 5px 13px; border-radius: 999px; cursor: pointer;
+  }
+  .langs button[aria-pressed="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .12); }
+  .langs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .notice {
+    margin: 20px 0;
+    padding: 13px 15px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--alert);
+    border-radius: var(--radius);
+    background: var(--panel);
+    font-size: .92rem;
+    color: var(--ink-soft);
+  }
+  .notice strong { color: var(--ink); }
+  .notice a { color: var(--accent); }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 18px 0 8px; font-size: .88rem; color: var(--ink-soft); }
+  .meta b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .stale { color: var(--evac); font-weight: 600; }
+
+  .tally { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 22px; }
+  .tally div {
+    flex: 1 1 140px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 11px 13px;
+  }
+  .tally .n { font-size: 1.5rem; font-weight: 650; font-variant-numeric: tabular-nums; display: block; }
+  .tally .k { font-size: .8rem; color: var(--ink-soft); }
+  .tally .evac .n { color: var(--evac); }
+  .tally .alert .n { color: var(--alert); }
+
+  ul.gauges { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  li.gauge {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 14px;
+    display: grid; gap: 4px 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .name { font-weight: 620; margin: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+  .tag {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--ink-faint); border: 1px solid var(--line);
+    padding: 1px 6px; border-radius: 4px; white-space: nowrap;
+  }
+  .reading { text-align: right; white-space: nowrap; }
+  .level { font-size: 1.35rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .unit { font-size: .8rem; color: var(--ink-faint); margin-left: 2px; }
+  .change { font-size: .85rem; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  .change.up { color: var(--evac); }
+  .change.down { color: var(--below); }
+
+  .bar { grid-column: 1 / -1; margin-top: 7px; }
+  .track {
+    position: relative; height: 9px; background: var(--track);
+    border-radius: 5px; overflow: hidden;
+  }
+  .fill { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--below); }
+  .gauge[data-status="alert"] .fill { background: var(--alert); }
+  .gauge[data-status="evacuation"] .fill { background: var(--evac); }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; }
+  .tick.a { background: var(--alert); }
+  .tick.e { background: var(--evac); }
+  .scale { display: flex; justify-content: space-between; font-size: .72rem; color: var(--ink-faint); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .status { font-size: .78rem; font-weight: 600; }
+  .gauge[data-status="below"] .status { color: var(--below); }
+  .gauge[data-status="alert"] .status { color: var(--alert); }
+  .gauge[data-status="evacuation"] .status { color: var(--evac); }
+  .gauge[data-status="unknown"] .status { color: var(--unknown); }
+  .nodata { color: var(--ink-faint); font-style: italic; }
+
+  footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-soft); }
+  footer a { color: var(--accent); }
+  .err { padding: 18px; border: 1px solid var(--evac); border-radius: var(--radius); color: var(--evac); }
+  [hidden] { display: none !important; }
+  @media (max-width: 480px) {
+    li.gauge { grid-template-columns: minmax(0, 1fr) auto; padding: 11px 12px; }
+    .level { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a id="official" href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" hidden></div>
+
+  <div class="meta" id="meta" hidden>
+    <span><span data-t="dataTo"></span> <b id="lastDay"></b> <span id="fresh"></span></span>
+    <span><span data-t="thresholdsFrom"></span> <b id="thrDate"></b></span>
+    <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
+  </div>
+
+  <div class="tally" id="tally" hidden>
+    <div class="evac"><span class="n" id="nEvac">–</span><span class="k" data-t="tallyEvac"></span></div>
+    <div class="alert"><span class="n" id="nAlert">–</span><span class="k" data-t="tallyAlert"></span></div>
+    <div><span class="n" id="nRising">–</span><span class="k" data-t="tallyRising"></span></div>
+    <div><span class="n" id="nOfficial">–</span><span class="k" data-t="tallyOfficial"></span></div>
+  </div>
+
+  <h2 data-t="listHeading" style="font-size:1rem;color:var(--ink-soft);font-weight:600;margin:0 0 10px"></h2>
+  <ul class="gauges" id="list"></ul>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+// Every string the page shows. Nothing is translated in the pipeline: the
+// exported JSON carries proper nouns and stable keys only, so adding a
+// language is a change here and nowhere else.
+const T = {
+  es: {
+    htmlLang: "es",
+    locale: "es-AR",
+    title: "Crecida del Paraná",
+    subtitle: "El río hoy, de Puerto Iguazú a San Fernando",
+    langGroup: "Idioma",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Los niveles de alerta y evacuación, los avisos y los pronósticos oficiales los publica el Instituto Nacional del Agua.",
+    officialLink: "Ver el alerta oficial del INA →",
+    dataTo: "Datos hasta el",
+    thresholdsFrom: "Niveles oficiales del",
+    generatedAt: "Generado",
+    tallyEvac: "superan evacuación",
+    tallyAlert: "superan alerta",
+    tallyRising: "en aumento",
+    tallyOfficial: "con niveles oficiales",
+    listHeading: "Estaciones, aguas arriba hacia aguas abajo",
+    statusBelow: "Bajo el nivel de alerta",
+    statusAlert: "Supera el nivel de alerta",
+    statusEvacuation: "Supera el nivel de evacuación",
+    statusUnknown: "Sin niveles oficiales publicados",
+    noData: "sin dato",
+    alertShort: "Alerta",
+    evacShort: "Evac.",
+    inDays: (n) => (n === 1 ? "en 1 día" : "en " + n + " días"),
+    flagRegulated: "regulado por represa",
+    flagTide: "afectado por marea",
+    branchPalmas: "Paraná de las Palmas",
+    branchGuazu: "Paraná Guazú",
+    branchIbicuy: "Ibicuy",
+    branchVictoria: "Riacho Victoria",
+    branchEstuary: "estuario",
+    stale: (n) => "(" + n + " días de atraso)",
+    method: "Niveles del día de la API a5 del INA. Los niveles de alerta y evacuación se extraen del reporte diario del INA; donde el INA no publica un nivel, la estación aparece sin niveles oficiales y nunca con un valor estimado. Los datos pasan un conjunto de pruebas antes de publicarse: si una prueba falla, no se actualiza nada y queda a la vista la fecha del último dato bueno.",
+    credits: "Fuente: Instituto Nacional del Agua (INA), Argentina. Código abierto.",
+  },
+  en: {
+    htmlLang: "en",
+    locale: "en-GB",
+    title: "Paraná flood tracker",
+    subtitle: "The river today, from Puerto Iguazú to San Fernando",
+    langGroup: "Language",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "Alert and evacuation levels, warnings and official forecasts are published by Argentina's Instituto Nacional del Agua.",
+    officialLink: "See INA's official alert →",
+    dataTo: "Data to",
+    thresholdsFrom: "Official levels from",
+    generatedAt: "Generated",
+    tallyEvac: "above evacuation",
+    tallyAlert: "above alert",
+    tallyRising: "rising",
+    tallyOfficial: "with official levels",
+    listHeading: "Gauges, upstream to downstream",
+    statusBelow: "Below the alert level",
+    statusAlert: "Above the alert level",
+    statusEvacuation: "Above the evacuation level",
+    statusUnknown: "No official levels published",
+    noData: "no data",
+    alertShort: "Alert",
+    evacShort: "Evac.",
+    inDays: (n) => (n === 1 ? "in 1 day" : "in " + n + " days"),
+    flagRegulated: "dam-regulated",
+    flagTide: "tide-affected",
+    branchPalmas: "Paraná de las Palmas",
+    branchGuazu: "Paraná Guazú",
+    branchIbicuy: "Ibicuy",
+    branchVictoria: "Riacho Victoria",
+    branchEstuary: "estuary",
+    stale: (n) => "(" + n + " days behind)",
+    method: "Daily levels from INA's a5 API. Alert and evacuation levels are parsed from INA's daily report; where INA publishes no level, the gauge is shown as having none and never with an estimated value. The data passes a set of tests before it is published: if a test fails nothing is updated, and the date of the last good reading stays visible.",
+    credits: "Source: Instituto Nacional del Agua (INA), Argentina. Open source.",
+  },
+};
+
+const BRANCH_KEY = {
+  palmas: "branchPalmas",
+  guazu: "branchGuazu",
+  ibicuy: "branchIbicuy",
+  victoria: "branchVictoria",
+  estuary: "branchEstuary",
+};
+
+let lang = "es";
+let payload = null;
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  document.title = t.title;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const value = t[el.dataset.t];
+    if (typeof value === "string") el.textContent = value;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  if (payload) render(payload);
+}
+
+function num(value, unit) {
+  if (value === null || value === undefined) return null;
+  const digits = unit === "m3/s" ? 0 : 2;
+  return new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
+function signed(value, unit) {
+  const text = num(Math.abs(value), unit);
+  const sign = value > 0 ? "+" : value < 0 ? "−" : "±";
+  return sign + text;
+}
+
+function longDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso + "T12:00:00");
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "long", year: "numeric",
+  }).format(d);
+}
+
+function shortDateTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  }).format(d);
+}
+
+function tag(text) {
+  const span = document.createElement("span");
+  span.className = "tag";
+  span.textContent = text;
+  return span;
+}
+
+function gaugeItem(g) {
+  const t = T[lang];
+  const li = document.createElement("li");
+  li.className = "gauge";
+  li.dataset.status = g.status;
+
+  const left = document.createElement("div");
+  const name = document.createElement("p");
+  name.className = "name";
+  name.textContent = g.name;
+  left.appendChild(name);
+
+  const tags = document.createElement("div");
+  tags.className = "tags";
+  const branchKey = BRANCH_KEY[g.branch];
+  if (branchKey) tags.appendChild(tag(t[branchKey]));
+  if (g.flags.includes("regulated")) tags.appendChild(tag(t.flagRegulated));
+  if (g.flags.includes("tide_affected")) tags.appendChild(tag(t.flagTide));
+  if (tags.childElementCount) left.appendChild(tags);
+
+  const status = document.createElement("div");
+  status.className = "status";
+  status.textContent =
+    g.status === "evacuation" ? t.statusEvacuation
+    : g.status === "alert" ? t.statusAlert
+    : g.status === "below" ? t.statusBelow
+    : t.statusUnknown;
+  left.appendChild(status);
+  li.appendChild(left);
+
+  const right = document.createElement("div");
+  right.className = "reading";
+  if (g.value === null) {
+    const none = document.createElement("div");
+    none.className = "nodata";
+    none.textContent = t.noData;
+    right.appendChild(none);
+  } else {
+    const level = document.createElement("div");
+    level.className = "level";
+    level.textContent = num(g.value, g.unit);
+    const unit = document.createElement("span");
+    unit.className = "unit";
+    unit.textContent = g.unit === "m3/s" ? "m³/s" : "m";
+    level.appendChild(unit);
+    right.appendChild(level);
+
+    if (g.change !== null) {
+      const change = document.createElement("div");
+      change.className = "change " + (g.change > 0 ? "up" : g.change < 0 ? "down" : "");
+      const days = g.change_days && g.change_days !== 1 ? " " + t.inDays(g.change_days) : "";
+      change.textContent = signed(g.change, g.unit) + days;
+      right.appendChild(change);
+    }
+  }
+  li.appendChild(right);
+
+  // The bar is drawn only when there is something official to draw it
+  // against. An invented scale would imply a threshold that does not exist.
+  if (g.value !== null && (g.alert !== null || g.evacuation !== null)) {
+    const lines = [g.alert, g.evacuation].filter((v) => v !== null);
+    const top = Math.max(g.value, ...lines) * 1.12;
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const track = document.createElement("div");
+    track.className = "track";
+    const fill = document.createElement("div");
+    fill.className = "fill";
+    fill.style.width = Math.max(0, Math.min(100, (g.value / top) * 100)) + "%";
+    track.appendChild(fill);
+    for (const [value, cls] of [[g.alert, "a"], [g.evacuation, "e"]]) {
+      if (value === null) continue;
+      const tick = document.createElement("div");
+      tick.className = "tick " + cls;
+      tick.style.left = (value / top) * 100 + "%";
+      track.appendChild(tick);
+    }
+    bar.appendChild(track);
+
+    const scale = document.createElement("div");
+    scale.className = "scale";
+    const a = document.createElement("span");
+    a.textContent = g.alert === null ? "" : t.alertShort + " " + num(g.alert, g.unit);
+    const e = document.createElement("span");
+    e.textContent = g.evacuation === null ? "" : t.evacShort + " " + num(g.evacuation, g.unit);
+    scale.append(a, e);
+    bar.appendChild(scale);
+    li.appendChild(bar);
+  }
+
+  return li;
+}
+
+function render(data) {
+  const t = T[lang];
+  const gauges = data.gauges || [];
+
+  document.getElementById("lastDay").textContent = longDate(data.last_data_day);
+  const fresh = document.getElementById("fresh");
+  const age = data.data_age_days;
+  if (age !== null && age !== undefined && age > 1) {
+    fresh.textContent = t.stale(age);
+    fresh.className = age > 7 ? "stale" : "";
+  } else {
+    fresh.textContent = "";
+    fresh.className = "";
+  }
+  document.getElementById("thrDate").textContent = longDate(
+    (data.thresholds || {}).source_date
+  );
+  document.getElementById("genAt").textContent = shortDateTime(data.generated_at);
+  document.getElementById("meta").hidden = false;
+
+  document.getElementById("nEvac").textContent = gauges.filter((g) => g.status === "evacuation").length;
+  document.getElementById("nAlert").textContent = gauges.filter((g) => g.status === "alert").length;
+  document.getElementById("nRising").textContent = gauges.filter((g) => g.change !== null && g.change > 0).length;
+  document.getElementById("nOfficial").textContent = gauges.filter((g) => g.alert !== null || g.evacuation !== null).length;
+  document.getElementById("tally").hidden = false;
+
+  const list = document.getElementById("list");
+  list.replaceChildren(...gauges.map(gaugeItem));
+}
+
+function fail(message) {
+  const box = document.getElementById("error");
+  box.textContent = message;
+  box.hidden = false;
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+
+setLang(pickLang());
+
+fetch("data/river_today.json", { cache: "no-cache" })
+  .then((r) => {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  })
+  .then((data) => {
+    payload = data;
+    render(data);
+  })
+  .catch((err) => fail("No se pudieron cargar los datos / could not load data: " + err.message));
+</script>
+</body>
+</html>
