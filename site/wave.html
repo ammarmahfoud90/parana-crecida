@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La onda — Crecida del Paraná</title>
+<meta name="description" content="La onda de crecida bajando el Paraná: estaciones ordenadas aguas abajo contra el tiempo, con los picos marcados.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <nav class="views" data-t-aria="viewsNav">
+    <a href="index.html" data-t="viewToday"></a>
+    <a href="wave.html" aria-current="page" data-t="viewWave"></a>
+  </nav>
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" hidden></div>
+
+  <div class="meta" id="meta" hidden>
+    <span><span data-t="windowLabel"></span> <b id="windowText"></b></span>
+    <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
+  </div>
+
+  <div class="headline" id="headline" hidden>
+    <span class="big" id="celerity">–</span>
+    <span class="cap" id="celerityCap"></span>
+    <p class="cap" style="margin:6px 0 0" id="celerityNote"></p>
+  </div>
+
+  <h2 class="section" data-t="chartHeading"></h2>
+  <div class="chartbox">
+    <svg id="chart" role="img" aria-labelledby="chartTitle chartDesc">
+      <title id="chartTitle"></title>
+      <desc id="chartDesc"></desc>
+    </svg>
+  </div>
+  <div class="legend" id="legend" hidden>
+    <span data-t="legendLow"></span>
+    <span class="swatches">
+      <span class="sw" style="background:var(--p-lowest)"></span>
+      <span class="sw" style="background:var(--p-low)"></span>
+      <span class="sw" style="background:var(--p-normal)"></span>
+      <span class="sw" style="background:var(--p-high)"></span>
+      <span class="sw" style="background:var(--p-higher)"></span>
+      <span class="sw" style="background:var(--p-highest)"></span>
+    </span>
+    <span data-t="legendHigh"></span>
+    <span class="key"><span class="dot"></span> <span data-t="legendCrest"></span></span>
+  </div>
+
+  <h2 class="section" style="margin-top:28px" data-t="legsHeading"></h2>
+  <table class="legs">
+    <thead>
+      <tr>
+        <th data-t="colLeg"></th>
+        <th data-t="colKm"></th>
+        <th data-t="colDays"></th>
+        <th data-t="colSpread"></th>
+        <th data-t="colWaves"></th>
+        <th data-t="colSpeed"></th>
+      </tr>
+    </thead>
+    <tbody id="legs"></tbody>
+  </table>
+  <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="legsNote"></p>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const T = {
+  es: {
+    htmlLang: "es", locale: "es-AR",
+    title: "La onda de crecida",
+    subtitle: "Cómo baja el pico por el Paraná, de Puerto Iguazú al Delta",
+    langGroup: "Idioma", viewsNav: "Vistas",
+    viewToday: "El río hoy", viewWave: "La onda",
+    noticeStrong: "Esto describe lo que ya pasó.",
+    noticeBody: "Los tiempos de viaje salen del registro histórico de cada tramo. No son un pronóstico, y esto no es un sistema de alerta.",
+    officialLink: "Ver el alerta oficial del INA →",
+    windowLabel: "Período mostrado:", generatedAt: "Generado",
+    chartHeading: "Estaciones ordenadas aguas abajo, contra el tiempo",
+    chartTitle: "Mapa de calor del río Paraná: una fila por estación, ordenadas de aguas arriba hacia aguas abajo, coloreadas según cuán alto está el río para la época del año.",
+    chartDesc: "Una onda de crecida se ve como una franja que baja en diagonal de izquierda a derecha.",
+    legendLow: "Bajo para la época",
+    legendHigh: "Muy alto",
+    legendCrest: "Pico detectado",
+    legsHeading: "Cuánto tarda el pico en cada tramo",
+    colLeg: "Tramo", colKm: "km", colDays: "Días", colSpread: "Rango",
+    colWaves: "Crecidas", colSpeed: "km/día",
+    legsNote: "Mediana sobre todas las crecidas del registro. El rango es el cuartil 25 a 75. Los tramos cortos no muestran velocidad: con datos diarios, un tramo de 20 km no se puede medir mejor que al día.",
+    celerityCap: "km por día",
+    celerityNote: (km, days, legs) => `Velocidad media del pico sobre ${fmt(km, 0)} km y ${legs} tramos: el registro histórico da ${fmt(days, 0)} días de Corrientes a Villa Constitución.`,
+    method: "Los picos se detectan sobre el nivel diario de cada estación, suavizado con una media centrada para no correr la fecha del pico. Cada pico se compara con lo normal de esa estación para ese día del año, usando entre 46 y 143 años de registro. Los tiempos de viaje se miden emparejando picos entre estaciones vecinas y, por separado, por correlación cruzada; se publican los dos.",
+    credits: "Fuente: Instituto Nacional del Agua (INA), Argentina. Topografía fluvial: HydroRIVERS v10.",
+    noData: "sin dato",
+    days: (n) => (n === 1 ? "1 día" : fmt(n, 0) + " días"),
+  },
+  en: {
+    htmlLang: "en", locale: "en-GB",
+    title: "The flood wave",
+    subtitle: "How the crest moves down the Paraná, from Puerto Iguazú to the Delta",
+    langGroup: "Language", viewsNav: "Views",
+    viewToday: "The river today", viewWave: "The wave",
+    noticeStrong: "This describes what has already happened.",
+    noticeBody: "Travel times come from each stretch's historical record. They are not a forecast, and this is not an alert system.",
+    officialLink: "See INA's official alert →",
+    windowLabel: "Period shown:", generatedAt: "Generated",
+    chartHeading: "Gauges ordered downstream, against time",
+    chartTitle: "Heat map of the Paraná: one row per gauge, ordered upstream to downstream, coloured by how high the river is for the time of year.",
+    chartDesc: "A flood wave appears as a band running diagonally down and to the right.",
+    legendLow: "Low for the season",
+    legendHigh: "Very high",
+    legendCrest: "Detected crest",
+    legsHeading: "How long the crest takes on each stretch",
+    colLeg: "Stretch", colKm: "km", colDays: "Days", colSpread: "Range",
+    colWaves: "Floods", colSpeed: "km/day",
+    legsNote: "Median across every flood in the record. The range is the 25th to 75th percentile. Short stretches show no speed: with daily readings, a 20 km stretch cannot be measured finer than a day.",
+    celerityCap: "km per day",
+    celerityNote: (km, days, legs) => `Average crest speed over ${fmt(km, 0)} km and ${legs} stretches: the historical record gives ${fmt(days, 0)} days from Corrientes to Villa Constitución.`,
+    method: "Crests are found on each gauge's daily level, smoothed with a centred mean so the peak does not shift. Each crest is placed against what that gauge normally does on that day of the year, using 46 to 143 years of record. Travel times are measured by pairing crests between neighbouring gauges and, separately, by cross-correlation; both are published.",
+    credits: "Source: Instituto Nacional del Agua (INA), Argentina. River topology: HydroRIVERS v10.",
+    noData: "no data",
+    days: (n) => (n === 1 ? "1 day" : fmt(n, 0) + " days"),
+  },
+};
+
+let lang = "es";
+let payload = null;
+
+function fmt(value, digits) {
+  if (value === null || value === undefined) return "–";
+  return new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: digits, maximumFractionDigits: digits,
+  }).format(value);
+}
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const value = t[el.dataset.t];
+    if (typeof value === "string") el.textContent = value;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  document.getElementById("chartTitle").textContent = t.chartTitle;
+  document.getElementById("chartDesc").textContent = t.chartDesc;
+  if (payload) render(payload);
+}
+
+// Six bands rather than a continuous ramp: a reader can name which band a
+// cell is in, which a smooth gradient never allows.
+function bandFor(pct) {
+  if (pct === null || pct === undefined) return "var(--p-none)";
+  if (pct < 10) return "var(--p-lowest)";
+  if (pct < 25) return "var(--p-low)";
+  if (pct < 75) return "var(--p-normal)";
+  if (pct < 90) return "var(--p-high)";
+  if (pct < 95) return "var(--p-higher)";
+  return "var(--p-highest)";
+}
+
+function dayLabel(iso) {
+  return new Intl.DateTimeFormat(T[lang].locale, { day: "numeric", month: "short" })
+    .format(new Date(iso + "T12:00:00"));
+}
+
+const SVG = "http://www.w3.org/2000/svg";
+function el(name, attrs, text) {
+  const node = document.createElementNS(SVG, name);
+  for (const [k, v] of Object.entries(attrs || {})) node.setAttribute(k, v);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function drawChart(data) {
+  const svg = document.getElementById("chart");
+  const t = T[lang];
+  while (svg.childNodes.length > 2) svg.removeChild(svg.lastChild);
+
+  const gauges = data.gauges;
+  const days = data.window.days + 1;
+  const GUT = 150, TOP = 22, ROW = 17, GAP = 2, RIGHT = 10, BOTTOM = 26;
+  const plotW = 760;
+  const cell = plotW / days;
+  const height = TOP + gauges.length * (ROW + GAP) + BOTTOM;
+  const width = GUT + plotW + RIGHT;
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+  const start = new Date(data.window.start + "T12:00:00");
+
+  // Month gridlines, so the diagonal can be read against real dates.
+  const monthFmt = new Intl.DateTimeFormat(T[lang].locale, { month: "short" });
+  for (let d = 0; d < days; d++) {
+    const date = new Date(start.getTime() + d * 86400000);
+    if (date.getDate() !== 1) continue;
+    const x = GUT + d * cell;
+    svg.appendChild(el("line", {
+      x1: x, x2: x, y1: TOP - 6, y2: height - BOTTOM + 4, class: "grid",
+    }));
+    svg.appendChild(el("text", {
+      x: x + 3, y: TOP - 9, "text-anchor": "start",
+    }, monthFmt.format(date)));
+  }
+
+  gauges.forEach((g, row) => {
+    const y = TOP + row * (ROW + GAP);
+    svg.appendChild(el("text", {
+      x: GUT - 44, y: y + ROW - 4, "text-anchor": "end", class: "gaugelabel",
+    }, g.name));
+    svg.appendChild(el("text", {
+      x: GUT - 6, y: y + ROW - 4, "text-anchor": "end", class: "km",
+    }, fmt(g.river_km, 0) + " km"));
+
+    // One rect per reading. Gaps simply have no rect, so missing data reads
+    // as missing rather than as a value.
+    for (let i = 0; i < g.offsets.length; i++) {
+      const x = GUT + g.offsets[i] * cell;
+      const rect = el("rect", {
+        x: x, y: y, width: Math.max(cell, 1), height: ROW,
+        fill: bandFor(g.percentiles[i]),
+      });
+      rect.appendChild(el("title", {},
+        `${g.name} · ${dayLabel(isoAt(start, g.offsets[i]))} · ` +
+        `${fmt(g.values[i], 2)} m · p${fmt(g.percentiles[i], 0)}`));
+      svg.appendChild(rect);
+    }
+
+    for (const crest of g.crests) {
+      const offset = Math.round(
+        (new Date(crest.day + "T12:00:00") - start) / 86400000);
+      const marker = el("circle", {
+        cx: GUT + offset * cell + cell / 2, cy: y + ROW / 2, r: 4,
+        class: crest.is_high ? "crest high" : "crest",
+      });
+      marker.appendChild(el("title", {},
+        `${g.name} · ${t.legendCrest} · ${dayLabel(crest.day)} · ` +
+        `${fmt(crest.value, 2)} m · p${fmt(crest.percentile, 0)}`));
+      svg.appendChild(marker);
+    }
+  });
+
+  svg.appendChild(el("text", {
+    x: GUT, y: height - 8, "text-anchor": "start",
+  }, dayLabel(data.window.start)));
+  svg.appendChild(el("text", {
+    x: GUT + plotW, y: height - 8, "text-anchor": "end",
+  }, dayLabel(data.window.end)));
+}
+
+function isoAt(start, offset) {
+  return new Date(start.getTime() + offset * 86400000).toISOString().slice(0, 10);
+}
+
+function renderLegs(data) {
+  const t = T[lang];
+  const body = document.getElementById("legs");
+  body.replaceChildren();
+  for (const leg of data.legs) {
+    const tr = document.createElement("tr");
+    const cells = [
+      `${leg.from_name} → ${leg.to_name}`,
+      fmt(leg.km, 0),
+      leg.median_days === null ? "–" : t.days(leg.median_days),
+      leg.p25_days === null ? "–" : `${fmt(leg.p25_days, 0)}–${fmt(leg.p75_days, 0)}`,
+      String(leg.n),
+      leg.celerity === null ? "–" : fmt(leg.celerity, 0),
+    ];
+    cells.forEach((value, i) => {
+      const td = document.createElement("td");
+      td.textContent = value;
+      if (i === 5 && leg.celerity === null) td.className = "muted";
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  }
+}
+
+function render(data) {
+  const t = T[lang];
+  document.getElementById("windowText").textContent =
+    `${dayLabel(data.window.start)} – ${dayLabel(data.window.end)}`;
+  document.getElementById("genAt").textContent =
+    new Intl.DateTimeFormat(t.locale, {
+      day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+    }).format(new Date(data.generated_at));
+  document.getElementById("meta").hidden = false;
+
+  if (data.celerity) {
+    document.getElementById("celerity").textContent = fmt(data.celerity.km_per_day, 0);
+    document.getElementById("celerityCap").textContent = t.celerityCap;
+    document.getElementById("celerityNote").textContent = t.celerityNote(
+      data.celerity.total_km, data.celerity.total_days, data.celerity.legs_used);
+    document.getElementById("headline").hidden = false;
+  }
+
+  drawChart(data);
+  document.getElementById("legend").hidden = false;
+  renderLegs(data);
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+
+setLang(pickLang());
+
+fetch("data/wave.json", { cache: "no-cache" })
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then((data) => { payload = data; render(data); })
+  .catch((err) => {
+    const box = document.getElementById("error");
+    box.textContent = "No se pudieron cargar los datos / could not load data: " + err.message;
+    box.hidden = false;
+  });
+</script>
+</body>
+</html>
