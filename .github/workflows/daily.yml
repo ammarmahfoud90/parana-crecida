@@ -85,9 +85,10 @@ jobs:
             echo "No EE_SERVICE_ACCOUNT_KEY secret; leaving the committed series alone."
             exit 0
           fi
-          python -m pip install "earthengine-api>=1.4"
+          python -m pip install "earthengine-api>=1.4" "pillow>=10"
           crecida rainfall --report reports/rainfall.txt
           crecida flooded --report reports/flooded.txt
+          crecida animation --report reports/animation.txt
 
       # fetch -> load -> data tests -> export. A failed test exits non-zero
       # here, so the commit and deploy steps below are skipped and the
@@ -99,7 +100,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json reports
+          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json site/media reports
           if git diff --staged --quiet; then
             echo "nothing changed"
           else

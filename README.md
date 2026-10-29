@@ -68,6 +68,7 @@ crecida climatology       # day-of-year reference curves for every gauge
 crecida oni               # NOAA's Oceanic Nino Index
 crecida rainfall          # basin rainfall from Earth Engine (needs a credential)
 crecida flooded           # flooded area from Sentinel-1 (needs a credential)
+crecida animation         # render the flood as a loop (needs a credential)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -380,6 +381,24 @@ The correlation between area and stage across all passes is only r = 0.57, and
 that is the finding rather than a problem: below about 5 m the river stays in its
 channel and the floodplain does not respond at all. Area and stage are not two
 measurements of the same thing.
+
+### The loop
+
+`crecida animation` renders one frame per satellite pass into
+`site/media/flood.gif` -- twenty real observations of the same 212 km of river,
+played in order. Nothing is modelled or interpolated.
+
+Two choices make it readable. The backdrop is **static**, the median backscatter
+over the whole period rather than each pass's own image: speckle and soil moisture
+change between passes, and a live backdrop flickers so badly the water is hard to
+follow. And water is **split in two** -- the permanent channel from JRC in blue,
+drawn every frame because it is a constant, and this pass's detected water beyond
+it in orange. Without that split a flood just looks like a slightly fatter blue
+line.
+
+Every frame carries its date, because the satellite comes round every twelve days
+and an unlabelled loop reads as a smooth progression when it is nothing of the
+kind.
 
 ### What it misses
 
