@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ina-a5"
+version = "0.1.0"
+description = "Client for the INA a5 hydrological API (alerta.ina.gob.ar/a5)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Ammar Mahfoud" }]
+dependencies = ["requests>=2.31"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "responses>=0.25"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Series cache: large and regenerable. Kept out of git, restored in CI.
+cache/
+
+# Local scratch
+*.local.json
