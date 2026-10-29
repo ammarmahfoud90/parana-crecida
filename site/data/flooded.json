@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T17:50:34-03:00",
+ "generated_at": "2026-10-29T18:19:33-03:00",
  "source": "COPERNICUS/S1_GRD",
  "method": {
   "threshold_db": "per stretch; see each stretch's threshold_db",
@@ -588,6 +588,27 @@
      2.68,
      3.01
     ]
+   }
+  },
+  {
+   "key": "villa_constitucion_ibicuy",
+   "from_name": "Villa Constitucion",
+   "to_name": "Ibicuy",
+   "river_km": 191.5,
+   "corridor_km2": 6896,
+   "baseline_km2": null,
+   "permanent_water_km2": null,
+   "days": [],
+   "km2": [],
+   "threshold_db": -15.5,
+   "calibrated": false,
+   "withheld": "uncalibrated",
+   "latest": null,
+   "extra_km2": null,
+   "peak": null,
+   "levels": {
+    "from": [],
+    "to": []
    }
   }
  ]
