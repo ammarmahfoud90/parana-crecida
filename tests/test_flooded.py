@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from datetime import date
+from pathlib import Path
 
 import pytest
 
@@ -44,35 +45,68 @@ def table(**overrides):
 CORRIDORS = fl.load_corridors()
 
 
+BY_KEY = {c.key: c for c in CORRIDORS}
+
+
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
-def test_the_corridor_runs_corrientes_to_goya():
-    stretch = CORRIDORS[0]
-    assert stretch.key == "corrientes_goya"
+def test_the_corridors_run_the_frontier_to_villa_constitucion():
+    """Eight stretches, end to end, each starting where the last one ended."""
+    assert len(CORRIDORS) == 8
+    assert CORRIDORS[0].from_name == "Puerto Iguazu"
+    assert CORRIDORS[-1].to_name == "Villa Constitucion"
+    for upstream, downstream in zip(CORRIDORS, CORRIDORS[1:]):
+        assert upstream.to_id == downstream.from_id, (
+            f"{upstream.key} ends at {upstream.to_id} but "
+            f"{downstream.key} starts at {downstream.from_id}"
+        )
+
+
+@pytest.mark.skipif("corrientes_goya" not in BY_KEY, reason="no committed corridors")
+def test_the_corrientes_goya_stretch_is_unchanged():
+    """The first stretch built, and the one every threshold was checked against."""
+    stretch = BY_KEY["corrientes_goya"]
     assert (stretch.from_id, stretch.to_id) == ("26261", "26265")
+    assert stretch.threshold_db == -16.0
+    assert stretch.calibrated
 
 
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
-def test_the_centreline_matches_the_chain():
-    """It is walked from the same topology, so the two must agree."""
+def test_the_centrelines_match_the_chain():
+    """They are walked from the same topology, so the two must agree.
+
+    Not exactly, though. A stretch's stored length comes from walking its
+    centreline vertices; the chain's comes from summing reach lengths
+    between the two gauges. The walk runs 1 to 7% longer, consistently, on
+    every stretch. The tolerance is set to catch a stretch wired to the
+    wrong gauge - which would be wrong by a hundred km or more - not to
+    pretend the two geometries are the same measurement.
+
+    :mod:`parana_crecida.riverstage` resolves the difference by scaling each
+    walk onto the chain's spacing, so the map's river-km come from the chain.
+    """
     from parana_crecida.chain import load_chain
 
     nodes = {n.series_id: n for n in load_chain()}
-    stretch = CORRIDORS[0]
-    expected = nodes[stretch.to_id].river_km - nodes[stretch.from_id].river_km
-    assert stretch.river_km == pytest.approx(expected, abs=5)
+    for stretch in CORRIDORS:
+        expected = nodes[stretch.to_id].river_km - nodes[stretch.from_id].river_km
+        assert stretch.river_km == pytest.approx(expected, rel=0.08), stretch.key
+        assert stretch.river_km >= expected, (
+            f"{stretch.key}: the vertex walk should not be shorter than the chain"
+        )
 
 
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
-def test_the_centreline_is_an_ordered_run_of_coordinates():
-    pts = CORRIDORS[0].centreline
-    assert len(pts) > 50
-    assert all(len(p) == 2 for p in pts)
-    lons = [p[0] for p in pts]
-    lats = [p[1] for p in pts]
-    # Somewhere in the Argentine Litoral, heading south.
-    assert -60 < min(lons) and max(lons) < -58
-    assert -30 < min(lats) and max(lats) < -27
-    assert lats[0] > lats[-1], "the centreline should run downstream"
+def test_every_centreline_is_an_ordered_run_of_coordinates():
+    for stretch in CORRIDORS:
+        pts = stretch.centreline
+        assert len(pts) > 50, stretch.key
+        assert all(len(p) == 2 for p in pts), stretch.key
+        lons = [p[0] for p in pts]
+        lats = [p[1] for p in pts]
+        # Between the Brazil frontier and Villa Constitucion, heading south.
+        assert -61 < min(lons) and max(lons) < -54, stretch.key
+        assert -34 < min(lats) and max(lats) < -25, stretch.key
+        assert lats[0] > lats[-1], f"{stretch.key}: should run downstream"
 
 
 def test_load_corridors_of_a_missing_file_is_empty(tmp_path):
@@ -145,16 +179,53 @@ COMMITTED = fl.load_table()
 def test_the_threshold_still_reproduces_jrc_permanent_water():
     """The calibration, asserted rather than trusted.
 
-    The fixed -16 dB threshold was chosen because over the 2021 bajante it
+    Each stretch's threshold was chosen because over the 2021 bajante it
     returns the same area JRC independently maps as permanent water. If a
     change to the method breaks that agreement, this fails.
+
+    Only calibrated stretches are checked, because this agreement is exactly
+    what "calibrated" means. The two gorge reaches above Posadas never
+    reached it -- see the companion test below, which asserts that they are
+    still excluded rather than quietly let through.
     """
     for stretch in COMMITTED["stretches"]:
+        if not stretch.get("calibrated", True):
+            continue
         baseline = stretch["baseline_km2"]
         permanent = stretch["permanent_water_km2"]
         assert baseline == pytest.approx(permanent, rel=0.10), (
             f"{stretch['key']}: bajante {baseline:.0f} km2 against JRC "
             f"permanent {permanent:.0f} km2 - the threshold has drifted"
+        )
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
+def test_an_uncalibrated_stretch_publishes_no_number():
+    """The gorge reaches show a picture and claim no area.
+
+    Between Puerto Iguazu and Posadas the river runs in a basalt gorge. No
+    threshold reproduced JRC there: the search landed on -20/-21 dB with a
+    6.5 dB spread between neighbouring reaches, which is a threshold
+    compensating for radar shadow on the valley walls rather than measuring
+    water. Those stretches are marked uncalibrated, and this asserts the
+    consequence: they are kept out of any published total.
+    """
+    frames = json.loads(
+        Path("site/data/map_frames.json").read_text(encoding="utf-8")
+    )
+    uncalibrated = {
+        s["key"] for s in frames["stretches"] if not s["calibrated"]
+    }
+    assert uncalibrated == {"puerto_iguazu_libertador", "libertador_posadas"}
+
+    for frame in frames["frames"]:
+        if frame["total_km2"] is None:
+            continue
+        counted = sum(
+            v for k, v in frame["km2"].items() if k not in uncalibrated
+        )
+        assert frame["total_km2"] == pytest.approx(counted, abs=0.5), (
+            f"{frame['end']}: the total includes an uncalibrated stretch"
         )
 
 
