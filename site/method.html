@@ -125,6 +125,14 @@
     </section>
 
     <section>
+      <h2 data-t="deltaHeading"></h2>
+      <p data-t="deltaBody"></p>
+      <p data-t="deltaTide"></p>
+      <p data-t="deltaTopology"></p>
+      <p class="warn" data-t="deltaArea"></p>
+    </section>
+
+    <section>
       <h2 data-t="lineHeading"></h2>
       <p data-t="lineBody"></p>
       <p data-t="lineDam"></p>
@@ -217,6 +225,11 @@ const T = {
     radarComposite: "El mapa anima compuestos de 12 días; los gráficos usan pasadas sueltas. La franja que ve el satélite es más angosta que este tramo de río, así que una pasada sola casi nunca cubre todo. Un compuesto de un ciclo completo sí, siempre. Cada vista dice cuál de las dos cosas está mostrando: un compuesto es una ventana, no un instante.",
     radarFloor: "Y el límite de fondo: el radar no ve el agua bajo la vegetación. Un monte inundado devuelve el pulso y cuenta como tierra firme. Toda superficie publicada acá es un piso, no un total — en las islas y los bañados, bastante por debajo de lo real.",
 
+    deltaHeading: "El Delta, y por qué casi todo se detiene ahí",
+    deltaBody: "Abajo de Villa Constitución el Paraná deja de ser un río y pasa a ser un delta: se abre en brazos sobre una franja de islas de decenas de kilómetros de ancho, y el Río de la Plata empieza a mandar. Se intentó extender todo hasta ahí. Casi nada sobrevivió, y lo que no sobrevivió se midió en vez de suponerse.",
+    deltaTide: "Dónde deja de ser el Paraná: comparando cada estación del Delta contra Villa Constitución, el río todavía explica el 96–98% de lo que pasa en San Nicolás y Ramallo, el 83–89% en San Pedro y Baradero, y el 73% en Ibicuy. En Zárate, Campana y Escobar cae al 8–27%, y en Tigre, San Fernando y Olivos al 1–2%. En esas tres últimas la correlación día a día es negativa (−0,15 a −0,28): cuando el río sube, esas estaciones tienden a moverse al revés, porque las mueve el viento y la marea, no el Paraná.",
+    deltaTopology: "Por qué la línea del río no baja más: la red hidrográfica que ordena todo este sitio es un árbol, cada tramo tiene un solo tramo aguas abajo. Un delta hace lo contrario, un brazo se parte en dos. El brazo occidental que pasa por San Nicolás, Ramallo y San Pedro directamente no existe en esa red: a la altura de San Nicolás la línea principal corre 46 km al este. Por eso esas estaciones quedaron pegadas a arroyos locales de 2.000 km² de cuenca cuando el Paraná ahí lleva 2.535.000, y por eso siguen marcadas como mal ubicadas. El color del río se corta en Villa Constitución, que es la última estación que puede pintarlo.",
+    deltaArea: "Y la superficie del Delta no se publica. Calibra bien en bajante —en 2021 da 277 km² contra 302 del JRC, un 8,2%— y se desarma en crecida: en seis meses de una crecida histórica la serie salta entre 430 y 1.326 km² sin tendencia, y su correlación con la altura en Ibicuy es −0,39. El agua baja cuando el río sube. Los seis tramos calibrados de arriba dan entre +0,43 y +0,72 en la misma prueba. Una correlación negativa no es una medición floja: es la medición de otra cosa —estado de marea y viento sobre agua abierta, promediados en una ventana de 12 días. El Delta muestra la imagen del radar y no publica ninguna cifra.",
     lineHeading: "La línea diaria del río",
     lineBody: "El color del río en el mapa es el percentil del día en cada punto, interpolado entre las 22 estaciones del tramo. La interpolación va por distancia sobre el río, no en línea recta sobre el mapa: dos puntos a 20 km en un meandro están mucho más cerca por el agua que dos puntos a 20 km cruzando la curva.",
     lineDam: "La línea se corta en Yacyretá. Arriba de la presa hay un embalse y abajo un río regulado; son cosas hidráulicamente distintas, y un degradado suave cruzando el paredón sería claramente falso mientras se vería perfectamente prolijo.",
@@ -233,7 +246,7 @@ const T = {
     notList: [
       "No pronostica. No hay un modelo hidrológico detrás: las llegadas proyectadas son tiempos de viaje medidos en crecidas anteriores, publicados junto con su error.",
       "No dice cuánto va a subir, sólo cuándo llegaría el pico.",
-      "No cubre el Delta. Abajo de Villa Constitución el río se abre en brazos, la marea manda, y la calibración del radar no se puede dar por válida ahí.",
+      "No mide el Delta. Muestra la imagen del radar abajo de Villa Constitución, pero no publica superficie ni color del río ahí: la marea y el viento mandan, y se midió que es así.",
       "No publica superficie en los dos tramos del cañón arriba de Posadas.",
       "No separa la velocidad de la onda por tamaño de crecida, aunque se sabe que depende de eso.",
       "No reemplaza al alerta oficial del INA, que es lo que hay que mirar para decidir algo.",
@@ -302,6 +315,11 @@ const T = {
     radarComposite: "The map animates 12-day composites; the charts use single passes. The satellite's swath is narrower than this run of river, so a single pass almost never covers all of it. A composite over a full repeat cycle always does. Each view says which of the two it is showing: a composite is a window, not an instant.",
     radarFloor: "And the limit underneath all of it: radar cannot see water under vegetation. Flooded forest sends the pulse back and counts as dry land. Every area published here is a floor, not a total — over the wooded islands and wetlands, well below the truth.",
 
+    deltaHeading: "The Delta, and why almost everything stops there",
+    deltaBody: "Below Villa Constitución the Paraná stops being a river and becomes a delta: it opens into branches across a belt of islands tens of kilometres wide, and the Río de la Plata starts to take over. Everything here was extended south to see what would survive. Almost nothing did, and what did not was measured rather than assumed.",
+    deltaTide: "Where it stops being the Paraná: comparing each Delta gauge against Villa Constitución, the river still explains 96–98% of what happens at San Nicolás and Ramallo, 83–89% at San Pedro and Baradero, and 73% at Ibicuy. At Zárate, Campana and Escobar that falls to 8–27%, and at Tigre, San Fernando and Olivos to 1–2%. At those last three the day-to-day correlation is negative (−0.15 to −0.28): when the river rises, those gauges tend to move the other way, because wind and tide move them, not the Paraná.",
+    deltaTopology: "Why the river line goes no further: the river network everything here is ordered by is a tree — each reach has exactly one reach below it. A delta does the opposite; one branch splits in two. The western branch past San Nicolás, Ramallo and San Pedro simply is not in that network: at San Nicolás's latitude the main line runs 46 km to the east. That is why those gauges were snapped to local creeks draining 2,000 km² where the Paraná carries 2,535,000, and why they are still marked as badly placed. The river's colour stops at Villa Constitución, the last gauge that can paint it.",
+    deltaArea: "And the Delta's flooded area is not published. It calibrates well on low water — in 2021 it gives 277 km² against JRC's 302, an 8.2% residual — and falls apart on a flood: over six months of a record flood the series swings between 430 and 1,326 km² with no trend, and its correlation with the stage at Ibicuy is −0.39. The water falls as the river rises. The six calibrated stretches upstream run +0.43 to +0.72 on the same test. A negative correlation is not a weak measurement, it is a measurement of something else — tide state and wind on open water, averaged into a 12-day window. The Delta shows the radar picture and publishes no figure.",
     lineHeading: "The daily river line",
     lineBody: "The river's colour on the map is the day's percentile at each point, interpolated between the 22 gauges along the run. The interpolation runs along river distance, not straight across the map: two points 20 km apart on a meander are far closer by water than two points 20 km apart across the bend.",
     lineDam: "The line breaks at Yacyretá. Above the dam is a reservoir and below it a regulated river; they are hydraulically separate, and a smooth gradient across the wall would be plainly false while looking perfectly tidy.",
@@ -318,7 +336,7 @@ const T = {
     notList: [
       "It does not forecast. There is no hydrological model behind it: the projected arrivals are travel times measured on past floods, published alongside their error.",
       "It does not say how high the river will get, only when the crest would arrive.",
-      "It does not cover the Delta. Below Villa Constitución the river opens into branches, the tide dominates, and the radar calibration cannot be assumed to hold there.",
+      "It does not measure the Delta. It shows the radar picture below Villa Constitución but publishes no area and no river colour there: tide and wind dominate, and that was measured rather than assumed.",
       "It publishes no area for the two gorge stretches above Posadas.",
       "It does not separate wave speed by flood size, although speed is known to depend on it.",
       "It does not replace INA's official alert, which is the one to act on.",

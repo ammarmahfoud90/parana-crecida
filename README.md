@@ -630,6 +630,75 @@ the chain, with nothing below it), and the record was not truncated at the day
 being asked about, so a question about a past date saw the whole record after
 it and anchored on a flood that had not happened yet. Both have tests.
 
+## The Delta, and why almost everything stops there
+
+Below Villa Constitucion the Parana stops being a river and becomes a delta:
+branches across a belt of islands tens of kilometres wide, with the Rio de la
+Plata taking over. Everything here was extended south to see what survived.
+Almost nothing did, and each refusal is a measurement rather than a worry.
+
+### Where it stops being the Parana
+
+Correlating every Delta gauge against Villa Constitucion over 2000-2026:
+
+| gauge | r2 with Villa Constitucion | day-to-day r |
+|---|---|---|
+| San Nicolas, Ramallo | 0.96 - 0.98 | 0.69 - 0.74 |
+| San Pedro, Baradero | 0.83 - 0.89 | 0.37 - 0.39 |
+| Ibicuy | 0.73 | 0.23 |
+| Zarate, Campana, Escobar | 0.08 - 0.27 | about 0 |
+| Tigre, San Fernando, Olivos | 0.01 - 0.02 | **-0.15 to -0.28** |
+
+The estuary gauges move *against* the river day to day. Wind and tide drive
+them, not the Parana, and no amount of routing will make them say otherwise.
+
+### Why the river line goes no further
+
+HydroRIVERS is a tree: every reach has exactly one reach below it. A delta
+does the opposite - one branch splits into two - so a distributary network
+cannot be expressed in it. The western branch past San Nicolas, Ramallo and
+San Pedro is simply absent: at San Nicolas's latitude the main line runs
+**46 km to the east**.
+
+That is the whole explanation for `bad_snap`, and it is worth stating
+precisely. San Nicolas's nearest reach drains **2,030 km2**; the Parana there
+carries **2,535,000 km2**. Nearest-reach snapping chose a creek over a
+continental river, because the river was 46 km away. Re-snapping constrained
+to the main stem does not fix it either - it only moves the gauge onto a
+channel it is not on.
+
+So the coloured river line stops at Villa Constitucion, the last gauge that can
+anchor a percentile, and `riverstage` enforces that rather than leaving it to
+the data: it stops at the first stretch whose downstream gauge cannot colour
+the river.
+
+### Why the Delta publishes no area
+
+The Delta corridor - Villa Constitucion to Ibicuy, down the eastern channel,
+the only Delta branch the topology carries - **calibrates**. At -15.5 dB the
+2021 bajante gives 277 km2 against JRC's 302, an 8.2% residual, inside the 10%
+bar every other stretch had to clear, and 1.0 dB from its upstream neighbour
+rather than an outlier.
+
+Then it falls apart on the flood it was built to measure:
+
+| | |
+|---|---|
+| series over six months of record flood | 430 - 1,326 km2, **no trend** |
+| correlation with stage at Ibicuy | **-0.39** |
+| the six calibrated stretches, same test | +0.43 to +0.72 |
+
+The water area falls as the river rises. A negative correlation is not a weak
+measurement, it is a measurement of something else: tide state and wind on open
+water, averaged into a 12-day composite. So the Delta is marked
+`calibrated: false` alongside the two gorge reaches - it renders a picture and
+claims no number.
+
+**A calibration that passes is necessary and not sufficient.** The gorge failed
+the bajante check and was caught. The Delta passed it and would have shipped a
+number that falls as the river rises. The test that caught it - does the
+measured area actually track the gauge - now runs over every stretch.
+
 ## Status
 
 Built:
@@ -654,8 +723,8 @@ Built:
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- The stretches below Villa Constitucion, into the Delta. Tidal, differently
-  vegetated, and I would not assume the calibration holds there.
+- An area for the Delta, which would need a method that separates tide and
+  wind from flood, not a better threshold.
 - An area for the two gorge stretches above Posadas, which would need a method
   that handles radar shadow in a valley rather than a tuned threshold.
 - A projection of how *high* the crest will be, which needs a routing model
