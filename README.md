@@ -62,6 +62,7 @@ been required for the public endpoints.
 
 ```bash
 crecida gauges            # the gauges in scope and how far each is trusted
+crecida chain             # the downstream chain and river-km (--rederive to rebuild)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -181,6 +182,64 @@ The change is measured against the *previous reading*, not "yesterday": gauges h
 gaps, and calling a two-day gap a one-day rise would overstate how fast the river
 moved. Where there is a gap, the page says how many days it spans.
 
+## View 2: the wave
+
+`site/wave.html` lays the gauges out by river-km against time, coloured by how
+high the river is for the season, with detected crests marked. A flood wave reads
+as a band running diagonally down and to the right; its slope is the crest speed.
+
+Three pieces sit behind it.
+
+**The chain** (`data/parana_chain.json`). Travel time is meaningless without
+distance, and distance along a river is not distance on a map. A walk down the
+HydroRIVERS topology from Puerto Iguazú gives 19 gauges over 1,712 km. It checks
+out against the real river — Corrientes to Rosario at 731 km against a published
+730, Corrientes to Paraná at 569 against 570 — which is accurate enough for crest
+speed and not accurate enough to quote to the kilometre.
+
+The chain is derived once and committed. One that silently reordered itself
+between runs would quietly change every travel time on the site, so `--rederive`
+is explicit and its output is something you diff. Only gauges whose snap we trust
+may take a position: a bad snap can land on the walk and look entirely reasonable,
+and Confluencia — snapped to Puerto Iguazú's reach, 660 km above the junction it
+is named after — would otherwise have entered the chain at km 0. The validator
+caught it on the first run.
+
+**Crest detection** (`events.py`). Smoothing is centred. A trailing filter shifts
+peaks later by about half its window, and since the same shift lands on every
+gauge it would look harmless while quietly biasing every travel time it feeds.
+Gaps are not silently bridged: a short one is interpolated, a long one splits the
+record, so no crest is invented inside a month of missing data. Run over the
+record at Corrientes it returns 1983, 1992, 1905, 1998 and 1966 as the largest
+crests, which are the floods that reach is known for.
+
+**Travel time** (`lag.py`). Measured, not modelled, by two estimators reported
+side by side: crest matching, which is interpretable and yields a distribution,
+and cross-correlation, which is steadier but has no story attached. On the Paraná
+they agree on all twelve routing legs.
+
+| | |
+|---|---|
+| Corrientes → Paraná | 13 days (569 km) |
+| Corrientes → Villa Constitución | 21 days (781 km) |
+| Average crest speed | 37 km/day |
+
+Both estimators are held inside a plausible celerity band. Without it, matching
+pairs a crest with the next flood two months later, and correlation locks onto the
+annual cycle — every gauge on this river is high in summer, so a 365-day lag
+correlates beautifully and means nothing.
+
+Short legs publish no km/day. San Lorenzo to Rosario is 21 km, which a crest
+covers in hours, but daily readings can only record 0, 1 or 2 days; the resulting
+speed describes the sampling interval rather than the river. Crest speed is fitted
+over the whole chain instead, where the roundings cancel rather than compound.
+
+Crests and travel times come from the whole record while the plot is windowed to
+recent months. That split matters: a wave still rising has not crested, so there
+may be no crest in the window at all, and the travel times must still be there.
+
+**None of it is a forecast.** These are the travel times the river has shown.
+
 ## Status
 
 Built:
@@ -188,20 +247,17 @@ Built:
 - `ina-a5`: client, catalogue paging, observation download, cache, quality guards.
 - `parana_crecida`: gauge roster, INA threshold parsing, the DuckDB store, the data
   tests, the export gate, view 1, and the daily GitHub Actions run.
+- The river chain, normalisation against day-of-year climatology, crest detection,
+  travel time between gauges, and view 2.
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- Views 2 to 5: the wave, upstream drivers, flooded area, method and limits.
-- `data/parana_chain.json`, the reviewed downstream chain with river-km, derived
-  from the HydroRIVERS topology and hand-corrected for the bad snaps.
-- `normalize`: stage anomaly against the day-of-year percentile curves. Raw metres
-  are not comparable across gauges, since every gauge has its own zero.
-- `events`: rise, crest and recession detection per gauge.
-- `lag`: travel time by cross-correlation and by crest matching, with a celerity
-  fit stratified by wave amplitude.
-- `track`: the live wave and its projected arrivals.
-- The wave trajectory plot — river-km against time, where a flood wave is a
-  diagonal streak whose slope is the celerity.
+- Views 3 to 5: upstream drivers, flooded area, method and limits.
+- `track`: projecting where a wave now in progress will arrive downstream. The
+  travel times exist; turning them into arrival dates with honest uncertainty is
+  the next step.
+- Stratifying crest speed by wave size. It rises with stage, and one median for a
+  whole stretch hides that.
 
 Events are defined relative to each gauge's own seasonal normal (the day-of-year
 p90/p95 curves from rios-argentina's `climatology_final.json`) as well as against
