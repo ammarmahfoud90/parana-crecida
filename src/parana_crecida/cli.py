@@ -45,6 +45,7 @@ from .export import (
     DEFAULT_SITE_DATA,
     ExportBlocked,
     export_drivers,
+    export_flooded,
     export_river_today,
     export_wave,
 )
@@ -916,6 +917,18 @@ def freshness(
         else:
             rep.say("rainfall:   none published")
 
+    water = site_data / "flooded.json"
+    if water.exists():
+        flood = _json.loads(water.read_text(encoding="utf-8")) or {}
+        if flood.get("stretches"):
+            stale = flood.get("stale_days")
+            rep.say(f"flooded:    {flood.get('fetched_on')} ({stale} days old)")
+            if stale is None or stale > max_rain_age_days:
+                problems.append(
+                    f"flooded area is {stale} days old, over the "
+                    f"{max_rain_age_days} allowed"
+                )
+
     rep.say()
     if problems:
         for problem in problems:
@@ -923,6 +936,51 @@ def freshness(
         rep.write(report)
         raise click.ClickException("; ".join(problems))
     rep.say("everything published is current")
+    rep.write(report)
+
+
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
+@click.option("--window-days", default=180, show_default=True)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=Path("data/flooded.json"),
+    show_default=True,
+)
+@report_option
+def flooded(project: str | None, window_days: int, out: Path, report: Path | None) -> None:
+    """Measure flooded area from Sentinel-1 and freeze it.
+
+    Open water from radar backscatter along the river corridor, against a
+    baseline taken from the 2021 bajante. Needs an Earth Engine credential.
+    """
+    from .flooded import WATER_THRESHOLD_DB, build, write_table
+
+    rep = Report("flooded area")
+    try:
+        payload = build(project, window_days=window_days)
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"Earth Engine fetch failed: {exc}") from exc
+
+    write_table(out, payload)
+    rep.say(f"source {payload['source']}  threshold {WATER_THRESHOLD_DB} dB")
+    rep.say(f"window {payload['window']['start']} to {payload['window']['end']}")
+    for stretch in payload["stretches"]:
+        values = stretch["km2"]
+        rep.say()
+        rep.say(f"  {stretch['from_name']} -> {stretch['to_name']}"
+                f"  ({stretch['river_km']:.0f} km of river)")
+        rep.say(f"    corridor            {stretch['corridor_km2']:>7,} km2")
+        rep.say(f"    JRC permanent water {stretch['permanent_water_km2']:>7,.0f} km2")
+        rep.say(f"    2021 bajante        {stretch['baseline_km2']:>7,.0f} km2"
+                "   <- the calibration check")
+        if values:
+            rep.say(f"    {len(values)} full passes, latest {values[-1]:,.0f} km2 "
+                    f"on {stretch['days'][-1]}, peak {max(values):,.0f} km2")
+    rep.say()
+    rep.say(f"flooded -> {out}")
     rep.write(report)
 
 
@@ -1045,11 +1103,13 @@ def export(
             exported = export_river_today(store, loaded, result, out_dir=out, today=today)
             wave = export_wave(store, result, out_dir=out, today=today)
             drivers = export_drivers(store, result, out_dir=out, today=today)
+            water = export_flooded(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    rep.say(f"{water.gauges} river stretches -> {water.path}")
     rep.say(f"{drivers.gauges} driver gauges -> {drivers.path}")
     rep.say(f"{wave.gauges} chain gauges -> {wave.path}")
     rep.say(f"{exported.gauges} gauges -> {exported.path}")

@@ -35,6 +35,7 @@ DEFAULT_SITE_DATA = Path("site/data")
 RIVER_TODAY = "river_today.json"
 WAVE = "wave.json"
 DRIVERS = "drivers.json"
+FLOODED = "flooded.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -261,3 +262,79 @@ def export_drivers(
         with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )
+
+
+def export_flooded(
+    store: Store,
+    result: ValidationResult,
+    *,
+    flooded_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    now: datetime | None = None,
+    today: date | None = None,
+) -> ExportResult:
+    """Validate-then-write the flooded-area view, behind the same gate.
+
+    Like rainfall, the measurement itself is frozen: it needs Earth Engine.
+    The gauge levels alongside it come from the store, so the page can put
+    area and stage on the same dates - which is the comparison that makes
+    either number mean anything.
+    """
+    from .flooded import DEFAULT_TABLE as FLOOD_TABLE
+    from .flooded import load_table, stale_days, summarise
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    raw = load_table(flooded_path or FLOOD_TABLE)
+    stretches = summarise(raw) if raw else []
+
+    # Attach the stage at each gauge on each pass date. Radar says how wide,
+    # the gauge says how high, and neither is much use without the other.
+    for stretch in stretches:
+        levels: dict[str, list[float | None]] = {}
+        for role in ("from", "to"):
+            series_id = None
+            for s in raw.get("stretches", []):
+                if s["key"] == stretch["key"]:
+                    series_id = s.get(role) or _corridor_gauge(stretch, role)
+            if series_id is None:
+                continue
+            by_day = {v.day.isoformat(): round(v.value, 2) for v in store.series(series_id)}
+            levels[role] = [by_day.get(d) for d in stretch.get("days", [])]
+        stretch["levels"] = levels
+
+    payload = {
+        "schema": 1,
+        "generated_at": (now or datetime.now(DEFAULT_TZ)).isoformat(timespec="seconds"),
+        "source": raw.get("source"),
+        "method": raw.get("method"),
+        "note": raw.get("note"),
+        "fetched_on": raw.get("fetched_on"),
+        "stale_days": stale_days(raw, today) if raw else None,
+        "window": raw.get("window"),
+        "stretches": stretches,
+    }
+    path = out_dir / FLOODED
+    write_json(path, payload)
+    log.info("exported %d stretches to %s", len(stretches), path)
+    return ExportResult(
+        path=path,
+        gauges=len(stretches),
+        with_official_thresholds=0,
+        last_data_day=store.last_data_day(),
+    )
+
+
+def _corridor_gauge(stretch: dict, role: str) -> str | None:
+    """The series id behind a stretch end, read from the frozen corridors."""
+    from .flooded import load_corridors
+
+    for corridor in load_corridors():
+        if corridor.key == stretch.get("key"):
+            return corridor.from_id if role == "from" else corridor.to_id
+    return None

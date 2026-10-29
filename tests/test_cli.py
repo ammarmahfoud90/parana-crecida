@@ -179,6 +179,7 @@ def test_only_implemented_commands_are_registered():
         "validate",
         "export",
         "daily",
+        "flooded",
         "freshness",
         "guards",
     }
