@@ -36,9 +36,16 @@ from ina_a5.observations import DEFAULT_TZ
 from rich.console import Console
 from rich.table import Table
 
+from . import chain as ch
 from . import gauges as roster
 from . import thresholds as th
-from .export import DEFAULT_SITE_DATA, ExportBlocked, export_river_today
+from .chain import DEFAULT_CHAIN
+from .export import (
+    DEFAULT_SITE_DATA,
+    ExportBlocked,
+    export_river_today,
+    export_wave,
+)
 from .store import DEFAULT_DB, Store
 from .validate import validate as run_validate
 
@@ -527,6 +534,100 @@ def thresholds(
     rep.write(report)
 
 
+# -- chain -----------------------------------------------------------------
+
+
+@main.command()
+@click.option(
+    "--rederive",
+    is_flag=True,
+    help="Walk the river network again and rewrite the chain.",
+)
+@click.option(
+    "--network",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="rios-argentina's network.json. Required with --rederive.",
+)
+@click.option(
+    "--snapped",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="rios-argentina's stations_snapped.json. Required with --rederive.",
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=DEFAULT_CHAIN, show_default=True
+)
+@report_option
+def chain(
+    rederive: bool,
+    network: Path | None,
+    snapped: Path | None,
+    out: Path,
+    report: Path | None,
+) -> None:
+    """Show the downstream chain, or re-derive it from the river network.
+
+    Without --rederive this just prints the committed chain. The chain is
+    frozen on purpose: one that silently reordered itself between runs
+    would quietly change every travel time on the site, so re-deriving is
+    explicit and its output is something you diff.
+    """
+    rep = Report("chain")
+
+    if rederive:
+        if network is None or snapped is None:
+            raise click.ClickException("--rederive needs both --network and --snapped")
+        nodes, off_chain = ch.derive(network, snapped)
+        ch.write_chain(out, nodes, off_chain)
+        rep.say(f"derived {len(nodes)} gauges, wrote {out}")
+    else:
+        nodes = ch.load_chain(out)
+        off_chain = []
+        if not nodes:
+            raise click.ClickException(
+                f"no chain at {out}; run with --rederive --network ... --snapped ..."
+            )
+        rep.say(f"{len(nodes)} gauges from {out}")
+
+    problems = ch.validate_chain(nodes)
+    rep.say()
+    table = Table(title="Parana chain", header_style="bold")
+    for column in ("km", "leg", "series", "gauge", "catchment km2"):
+        table.add_column(column, justify="right" if column != "gauge" else "left")
+    previous = None
+    for node in nodes:
+        leg = "" if previous is None else f"+{node.river_km - previous:.0f}"
+        previous = node.river_km
+        table.add_row(
+            f"{node.river_km:.0f}", leg, node.series_id, node.name, f"{node.up_skm:,.0f}"
+        )
+    console.print(table)
+    for node in nodes:
+        rep.lines.append(f"  {node.river_km:>7.1f} km  {node.series_id}  {node.name}")
+
+    routing = ch.routing_legs(nodes)
+    rep.say()
+    rep.say(f"{len(routing)} routing legs (tier 1, correctly snapped):")
+    for leg_ in routing:
+        rep.say(f"  {leg_.label:<38} {leg_.km:>6.1f} km")
+
+    if off_chain:
+        rep.say()
+        rep.say(f"{len(off_chain)} gauges in scope are not on the chain:")
+        names = [roster.BY_ID[s].name for s in off_chain if s in roster.BY_ID]
+        for chunk in range(0, len(names), 4):
+            rep.say("  " + ", ".join(names[chunk:chunk + 4]))
+        rep.say("  (unrouted or snapped to a tributary reach; no river-km is invented)")
+
+    rep.say()
+    if problems:
+        for problem in problems:
+            rep.say(f"  PROBLEM: {problem}")
+        rep.write(report)
+        raise click.ClickException(f"{len(problems)} problem(s) with the chain")
+    rep.say("chain is sound: river-km increase downstream and catchment never shrinks")
+    rep.write(report)
+
+
 # -- store -----------------------------------------------------------------
 
 db_option = click.option(
@@ -644,11 +745,13 @@ def export(
         rep.say()
         try:
             exported = export_river_today(store, loaded, result, out_dir=out, today=today)
+            wave = export_wave(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    rep.say(f"{wave.gauges} chain gauges -> {wave.path}")
     rep.say(f"{exported.gauges} gauges -> {exported.path}")
     rep.say(f"{exported.with_official_thresholds} carry official alert/evacuation lines")
     rep.say(f"newest reading: {exported.last_data_day}")

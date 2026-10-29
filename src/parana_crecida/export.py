@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 
 DEFAULT_SITE_DATA = Path("site/data")
 RIVER_TODAY = "river_today.json"
+WAVE = "wave.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -147,5 +148,62 @@ def export_river_today(
         path=path,
         gauges=len(payload["gauges"]),  # type: ignore[arg-type]
         with_official_thresholds=len(thresholds),
+        last_data_day=store.last_data_day(),
+    )
+
+
+def export_wave(
+    store: Store,
+    result: ValidationResult,
+    *,
+    chain_path: Path | None = None,
+    climatology_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    window_days: int | None = None,
+    now: datetime | None = None,
+    today: date | None = None,
+) -> ExportResult:
+    """Validate-then-write the wave view, behind the same gate.
+
+    Returns a result whose ``gauges`` counts the gauges on the chain, which
+    is fewer than the river-today view: a gauge with no trustworthy river
+    position cannot be placed on a distance axis.
+    """
+    # Imported here: the wave analysis pulls in scipy, and the river-today
+    # export should not pay for that.
+    from . import chain as ch
+    from .normalize import Climatology
+    from .wave import WINDOW_DAYS, analyse, build_payload
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    nodes = ch.load_chain(chain_path or ch.DEFAULT_CHAIN)
+    if not nodes:
+        raise ExportBlocked(
+            "no river chain, so nothing can be placed by distance; "
+            "run `crecida chain --rederive`"
+        )
+
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    analysis = analyse(
+        store,
+        clim,
+        nodes,
+        window_days=window_days or WINDOW_DAYS,
+        today=today,
+    )
+    payload = build_payload(analysis, now=now)
+    path = out_dir / WAVE
+    write_json(path, payload)
+    log.info("exported %d chain gauges to %s", len(analysis.gauges), path)
+    return ExportResult(
+        path=path,
+        gauges=len(analysis.gauges),
+        with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )

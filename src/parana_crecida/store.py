@@ -26,7 +26,7 @@ from types import TracebackType
 
 import duckdb
 import pyarrow as pa
-from ina_a5 import SeriesCache
+from ina_a5 import DailyValue, SeriesCache
 from ina_a5.observations import DEFAULT_TZ
 
 from . import gauges as roster
@@ -313,6 +313,24 @@ class Store(AbstractContextManager["Store"]):
                 evacuation=None if r[12] is None else float(r[12]),
             )
             for r in rows
+        ]
+
+    def series(self, series_id: str, *, since: date | None = None) -> list[DailyValue]:
+        """One gauge's readings, ascending.
+
+        The exporter reads only from the store, so the wave analysis sees
+        exactly the rows the data tests passed - not whatever happens to be
+        in the raw cache.
+        """
+        sql = "SELECT day, value FROM observation WHERE series_id = ?"
+        params: list[object] = [str(series_id)]
+        if since is not None:
+            sql += " AND day >= ?"
+            params.append(since)
+        sql += " ORDER BY day"
+        return [
+            DailyValue(day=row[0], value=float(row[1]))
+            for row in self.con.execute(sql, params).fetchall()
         ]
 
     def series_range(self, series_id: str) -> tuple[date, date, float, float] | None:
