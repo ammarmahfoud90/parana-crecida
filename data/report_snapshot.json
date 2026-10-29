@@ -1,0 +1,257 @@
+{
+ "schema": 1,
+ "source_pdf": "reporte_diario_2026-10-28.pdf",
+ "source_date": "2026-10-28",
+ "rows": [
+  {
+   "station": "Puerto Iguazú",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 29.3,
+   "trend": "rising",
+   "alert": 25.0,
+   "evacuation": 28.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Corrientes",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 7.39,
+   "trend": "rising",
+   "alert": 6.5,
+   "evacuation": 7.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Barranqueras",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 7.24,
+   "trend": "rising",
+   "alert": 6.0,
+   "evacuation": 6.5,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Goya",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 5.68,
+   "trend": "rising",
+   "alert": 5.2,
+   "evacuation": 5.7,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Reconquista",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 5.48,
+   "trend": "rising",
+   "alert": 5.1,
+   "evacuation": 5.3,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "La Paz",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 5.72,
+   "trend": "rising",
+   "alert": 5.8,
+   "evacuation": 6.15,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Paraná",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 4.21,
+   "trend": "rising",
+   "alert": 4.7,
+   "evacuation": 5.0,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Santa Fe",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 4.23,
+   "trend": "rising",
+   "alert": 5.3,
+   "evacuation": 5.7,
+   "outlook": "aguas medias/medias altas"
+  },
+  {
+   "station": "Victoria",
+   "river": "Paraná/Delta",
+   "unit": "m",
+   "value": 3.94,
+   "trend": "rising",
+   "alert": 4.6,
+   "evacuation": 5.9,
+   "outlook": "aguas medias/medias altas"
+  },
+  {
+   "station": "Rosario",
+   "river": "Paraná",
+   "unit": "m",
+   "value": 3.8,
+   "trend": "rising",
+   "alert": 5.0,
+   "evacuation": 5.25,
+   "outlook": "aguas medias/medias altas"
+  },
+  {
+   "station": "San Fernando",
+   "river": "Lujan",
+   "unit": "m",
+   "value": 1.27,
+   "trend": "rising",
+   "alert": 3.0,
+   "evacuation": 3.5,
+   "outlook": "aguas medias"
+  },
+  {
+   "station": "Puerto Pilcomayo",
+   "river": "Paraguay",
+   "unit": "m",
+   "value": 3.67,
+   "trend": "falling",
+   "alert": 5.35,
+   "evacuation": 6.0,
+   "outlook": "aguas medias"
+  },
+  {
+   "station": "Puerto Formosa",
+   "river": "Paraguay",
+   "unit": "m",
+   "value": 5.53,
+   "trend": "rising",
+   "alert": 7.8,
+   "evacuation": 8.3,
+   "outlook": "aguas medias"
+  },
+  {
+   "station": "San Javier",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 5.5,
+   "trend": "falling",
+   "alert": 8.0,
+   "evacuation": 10.0,
+   "outlook": "agua medias altas"
+  },
+  {
+   "station": "Santo Tomé",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 11.35,
+   "trend": "rising",
+   "alert": 11.5,
+   "evacuation": 12.5,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Paso de los Libres",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 7.5,
+   "trend": "rising",
+   "alert": 7.5,
+   "evacuation": 8.5,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Concordia",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 9.02,
+   "trend": "falling",
+   "alert": 11.0,
+   "evacuation": 12.5,
+   "outlook": "aguas medias altas"
+  },
+  {
+   "station": "Concepción del Uruguay",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 4.46,
+   "trend": "falling",
+   "alert": 5.3,
+   "evacuation": 6.3,
+   "outlook": "aguas medias altas"
+  },
+  {
+   "station": "Boca Gualeguaychú",
+   "river": "Uruguay",
+   "unit": "m",
+   "value": 2.5,
+   "trend": "falling",
+   "alert": 2.9,
+   "evacuation": 3.1,
+   "outlook": "aguas medias altas"
+  },
+  {
+   "station": "Guaíra Porto",
+   "river": "Paraná",
+   "unit": "m3/s",
+   "value": 17700.0,
+   "trend": "falling",
+   "alert": 20000.0,
+   "evacuation": 25000.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Represa Itaipú",
+   "river": "Paraná",
+   "unit": "m3/s",
+   "value": 16300.0,
+   "trend": "falling",
+   "alert": 20000.0,
+   "evacuation": 25000.0,
+   "outlook": "aguas medias altas/altas"
+  },
+  {
+   "station": "Andresito",
+   "river": "Iguazu",
+   "unit": "m3/s",
+   "value": 12293.0,
+   "trend": "falling",
+   "alert": 5000.0,
+   "evacuation": 6500.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Confluencia",
+   "river": "Paraná",
+   "unit": "m3/s",
+   "value": 28593.0,
+   "trend": "falling",
+   "alert": 25000.0,
+   "evacuation": 30000.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Yacyretá afluente",
+   "river": "Paraná",
+   "unit": "m3/s",
+   "value": 34500.0,
+   "trend": "rising",
+   "alert": 25000.0,
+   "evacuation": 30000.0,
+   "outlook": "aguas altas"
+  },
+  {
+   "station": "Yacyretá efluente",
+   "river": "Paraná",
+   "unit": "m3/s",
+   "value": 33900.0,
+   "trend": "rising",
+   "alert": 25000.0,
+   "evacuation": 30000.0,
+   "outlook": "aguas altas"
+  }
+ ]
+}
