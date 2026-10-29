@@ -18,12 +18,12 @@ Data comes from INA's a5 API (`alerta.ina.gob.ar/a5`).
 | `src/parana_crecida` | The tracker. |
 
 `ina-a5` exists because the ingestion code in
-[rios-argentina](https://github.com/ammarmahfoud/rios-argentina) had been
+[rios-argentina](https://github.com/ammarmahfoud90/rios-argentina) had been
 copy-pasted into six scripts, each with slightly different bugs. It is a separate
 distribution so that rios-argentina can depend on it rather than keep its copies:
 
 ```bash
-pip install "ina-a5 @ git+https://github.com/ammarmahfoud/parana-crecida#subdirectory=packages/ina-a5"
+pip install "ina-a5 @ git+https://github.com/ammarmahfoud90/parana-crecida#subdirectory=packages/ina-a5"
 ```
 
 The three things it fixes, which are the whole reason to extract it:

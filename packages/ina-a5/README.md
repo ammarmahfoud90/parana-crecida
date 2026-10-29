@@ -3,13 +3,13 @@
 A Python client for the INA a5 hydrological API (`alerta.ina.gob.ar/a5`), the
 public feed for Argentine river gauges.
 
-Extracted from the [rios-argentina](https://github.com/ammarmahfoud/rios-argentina)
+Extracted from the [rios-argentina](https://github.com/ammarmahfoud90/rios-argentina)
 scripts, where the same HTTP, catalogue and cache code had been copy-pasted into
 six files with slightly different bugs in each. Nothing here knows about any
 particular river or project.
 
 ```bash
-pip install "ina-a5 @ git+https://github.com/ammarmahfoud/parana-crecida#subdirectory=packages/ina-a5"
+pip install "ina-a5 @ git+https://github.com/ammarmahfoud90/parana-crecida#subdirectory=packages/ina-a5"
 ```
 
 ```python
