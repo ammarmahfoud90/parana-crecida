@@ -39,6 +39,25 @@ def test_walk_km_of_a_single_point_is_zero():
 
 
 @needs_corridors
+def test_the_coloured_line_stops_where_the_gauges_do():
+    """No colour below the last gauge that can anchor it.
+
+    The Delta corridor is 191 km of river that the radar layer covers and
+    the daily layer cannot: its downstream gauge at Ibicuy is tide-affected
+    and may not anchor a percentile. Drawing it anyway would stretch the
+    last upstream value over the whole delta, which would look like
+    measurement and be nothing of the kind.
+    """
+    line = rs.centreline_with_km()
+    assert line[-1].river_km == pytest.approx(1440.5, abs=1), (
+        "the line should stop at Villa Constitucion"
+    )
+    assert any(c.key == "villa_constitucion_ibicuy" for c in CORRIDORS), (
+        "this test is meaningless without a Delta corridor to leave out"
+    )
+
+
+@needs_corridors
 def test_the_line_runs_the_whole_river_without_doubling_back():
     line = rs.centreline_with_km()
     assert len(line) > 500
@@ -60,8 +79,14 @@ def test_every_gauge_lands_exactly_on_its_own_anchor():
 
     line = rs.centreline_with_km()
     nodes = {n.series_id: n for n in ch.load_chain()}
+    end = line[-1].river_km
     for stretch in CORRIDORS:
         if stretch.to_id not in nodes:
+            continue
+        # Stretches below the end of the drawn line are not on it. The Delta
+        # corridor exists for the radar overlay; no gauge below Villa
+        # Constitucion can anchor a percentile, so no line is drawn there.
+        if nodes[stretch.to_id].river_km > end + 0.5:
             continue
         end_lon, end_lat = stretch.centreline[-1]
         nearest = min(

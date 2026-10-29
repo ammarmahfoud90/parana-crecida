@@ -50,6 +50,13 @@ DAMS = (
     {"name": "Yacyreta", "lon": -56.7230, "lat": -27.4830},
 )
 
+#: A gauge may not anchor the river's colour if its level is not a river
+#: signal. ``flow`` is a different quantity; ``bad_snap`` and ``unrouted``
+#: have no trustworthy position to anchor to; and ``tide_affected`` Delta
+#: gauges rise with the Rio de la Plata, so painting the Parana with their
+#: percentile would show a tide as a flood wave.
+EXCLUDE = {"flow", "bad_snap", "unrouted", "tide_affected"}
+
 KM_PER_DEG_LON = ch.KM_PER_DEG_LON
 KM_PER_DEG_LAT = ch.KM_PER_DEG_LAT
 
@@ -98,6 +105,19 @@ def centreline_with_km() -> list[Vertex]:
     )
 
     for stretch in stretches:
+        # Draw no coloured river below the last gauge that can colour it.
+        # The Delta stretch exists for the radar overlay, but its downstream
+        # gauge at Ibicuy is tide-affected and may not anchor a percentile;
+        # drawing it anyway would extrapolate the last upstream value over
+        # 191 km of delta, which would look like measurement and be nothing
+        # of the kind.
+        downstream = roster.BY_ID.get(stretch.to_id)
+        if downstream is None or downstream.flags & EXCLUDE:
+            log.info(
+                "the coloured line stops above %s: no gauge below it can "
+                "anchor a percentile", stretch.to_name,
+            )
+            break
         points = stretch.centreline
         run = walk_km(points)
         base = nodes[stretch.from_id].river_km if stretch.from_id in nodes else 0.0
@@ -188,14 +208,6 @@ def build(
     if layer.exists():
         for feature in json.loads(layer.read_text(encoding="utf-8"))["features"]:
             coords[feature["properties"]["series_id"]] = feature["geometry"]["coordinates"]
-
-    #: A gauge may not anchor the river's colour if its level is not a river
-    #: signal. ``flow`` is a different quantity; ``bad_snap`` and
-    #: ``unrouted`` have no trustworthy position to anchor to; and
-    #: ``tide_affected`` Delta gauges rise with the Rio de la Plata, so
-    #: painting the Parana with their percentile would show a tide as a
-    #: flood wave.
-    EXCLUDE = {"flow", "bad_snap", "unrouted", "tide_affected"}
 
     collected: list[tuple[object, dict]] = []
     for series_id, node in sorted(nodes.items(), key=lambda kv: kv[1].river_km):
