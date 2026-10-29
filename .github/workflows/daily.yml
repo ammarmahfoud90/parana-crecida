@@ -105,5 +105,7 @@ jobs:
       # that leaves nobody knowing. This runs after the deploy, so the site
       # is already current with whatever it has and a stall turns the run
       # red instead of freezing the page quietly.
+      # No --report: this runs after the commit step, so a file written
+      # here would never be collected. The run log is the record.
       - name: Is what we published actually current?
-        run: crecida freshness --report reports/freshness.txt
+        run: crecida freshness
