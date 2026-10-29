@@ -1,5 +1,5 @@
 series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_pdf,source_date
-26251,Puerto Iguazu,3,Puerto Iguazú,Paraná,m,25,28,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26251,Puerto Iguazu,3,Puerto Iguazú,Paraná,m,25,28,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26252,Libertad,3,,,,,,not_in_report,,
 26253,El Dorado,3,,,,,,not_in_report,,
 26254,Libertador,3,,,,,,not_in_report,,
@@ -9,20 +9,20 @@ series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_p
 26258,Ita Ibate,3,,,,,,not_in_report,,
 26259,Itati,3,,,,,,not_in_report,,
 26260,Paso de la Patria,3,,,,,,not_in_report,,
-26261,Corrientes,1,Corrientes,Paraná,m,6.5,7,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26261,Corrientes,1,Corrientes,Paraná,m,6.5,7,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26263,Empedrado,1,,,,,,not_in_report,,
 26264,Bella Vista,1,,,,,,not_in_report,,
-26265,Goya,1,Goya,Paraná,m,5.2,5.7,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26265,Goya,1,Goya,Paraná,m,5.2,5.7,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26267,Esquina,1,,,,,,not_in_report,,
-26268,La Paz,1,La Paz,Paraná,m,5.8,6.15,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26268,La Paz,1,La Paz,Paraná,m,5.8,6.15,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26269,Santa Elena,1,,,,,,not_in_report,,
 26270,Hernandarias,1,,,,,,not_in_report,,
-26271,Parana,1,Paraná,Paraná,m,4.7,5,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26271,Parana,1,Paraná,Paraná,m,4.7,5,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26273,Diamante,1,,,,,,not_in_report,,
 26275,San Lorenzo,1,,,,,,not_in_report,,
-26276,Rosario,1,Rosario,Paraná,m,5,5.25,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26276,Rosario,1,Rosario,Paraná,m,5,5.25,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26277,Villa Constitucion,1,,,,,,not_in_report,,
-26274,Victoria,2,Victoria,Paraná/Delta,m,4.6,5.9,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26274,Victoria,2,Victoria,Paraná/Delta,m,4.6,5.9,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26278,San Nicolas,2,,,,,,not_in_report,,
 26279,Ramallo,2,,,,,,not_in_report,,
 26280,San Pedro,2,,,,,,not_in_report,,
@@ -34,24 +34,24 @@ series_id,gauge,tier,ina_station,ina_river,unit,alert,evacuation,status,source_p
 26287,Ibicuy,2,,,,,,not_in_report,,
 26290,Guazucito,2,,,,,,not_in_report,,
 26291,Tigre,2,,,,,,not_in_report,,
-26294,San Fernando,2,San Fernando,Lujan,m,3,3.5,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26294,San Fernando,2,San Fernando,Lujan,m,3,3.5,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26296,Olivos,2,,,,,,not_in_report,,
-26684,Yacyreta afluente,3,Yacyretá afluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
-26685,Yacyreta efluente,3,Yacyretá efluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
-26690,Confluencia,3,Confluencia,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-28.pdf,2026-10-28
-26262,Barranqueras,3,Barranqueras,Paraná,m,6,6.5,official,reporte_diario_2026-10-28.pdf,2026-10-28
-26266,Reconquista,3,Reconquista,Paraná,m,5.1,5.3,official,reporte_diario_2026-10-28.pdf,2026-10-28
-26272,Santa Fe,3,Santa Fe,Paraná,m,5.3,5.7,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26684,Yacyreta afluente,3,Yacyretá afluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-29.pdf,2026-10-29
+26685,Yacyreta efluente,3,Yacyretá efluente,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-29.pdf,2026-10-29
+26690,Confluencia,3,Confluencia,Paraná,m3/s,25000,30000,official,reporte_diario_2026-10-29.pdf,2026-10-29
+26262,Barranqueras,3,Barranqueras,Paraná,m,6,6.5,official,reporte_diario_2026-10-29.pdf,2026-10-29
+26266,Reconquista,3,Reconquista,Paraná,m,5.1,5.3,official,reporte_diario_2026-10-29.pdf,2026-10-29
+26272,Santa Fe,3,Santa Fe,Paraná,m,5.3,5.7,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26652,Puerto Pilcomayo,3,,,,,,not_in_report,,
-26442,Puerto Formosa,3,Puerto Formosa,Paraguay,m,7.8,8.3,official,reporte_diario_2026-10-28.pdf,2026-10-28
+26442,Puerto Formosa,3,Puerto Formosa,Paraguay,m,7.8,8.3,official,reporte_diario_2026-10-29.pdf,2026-10-29
 26300,Bermejo,3,,,,,,not_in_report,,
-26605,Andresito,3,Andresito,Iguazu,m3/s,5000,6500,official,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Puerto Pilcomayo,Paraguay,m,5.35,6,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,San Javier,Uruguay,m,8,10,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Santo Tomé,Uruguay,m,11.5,12.5,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Paso de los Libres,Uruguay,m,7.5,8.5,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Concordia,Uruguay,m,11,12.5,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Concepción del Uruguay,Uruguay,m,5.3,6.3,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Boca Gualeguaychú,Uruguay,m,2.9,3.1,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Guaíra Porto,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
-,,,Represa Itaipú,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-28.pdf,2026-10-28
+26605,Andresito,3,Andresito,Iguazu,m3/s,5000,6500,official,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Puerto Pilcomayo,Paraguay,m,5.35,6,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,San Javier,Uruguay,m,8,10,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Santo Tomé,Uruguay,m,11.5,12.5,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Paso de los Libres,Uruguay,m,7.5,8.5,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Concordia,Uruguay,m,11,12.5,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Concepción del Uruguay,Uruguay,m,5.3,6.3,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Boca Gualeguaychú,Uruguay,m,2.9,3.1,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Guaíra Porto,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
+,,,Represa Itaipú,Paraná,m3/s,20000,25000,unmatched_report_row,reporte_diario_2026-10-29.pdf,2026-10-29
