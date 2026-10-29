@@ -96,6 +96,7 @@ jobs:
             echo "No new satellite pass; keeping the committed loop."
           else
             crecida animation --report reports/animation.txt
+            crecida mapframes --report reports/mapframes.txt
           fi
 
       # fetch -> load -> data tests -> export. A failed test exits non-zero
@@ -108,7 +109,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json site/media reports
+          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json site/media site/data reports
           if git diff --staged --quiet; then
             echo "nothing changed"
           else

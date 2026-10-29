@@ -69,6 +69,7 @@ crecida oni               # NOAA's Oceanic Nino Index
 crecida rainfall          # basin rainfall from Earth Engine (needs a credential)
 crecida flooded           # flooded area from Sentinel-1 (needs a credential)
 crecida animation         # render the flood as a loop (needs a credential)
+crecida mapframes         # georeferenced overlays for the map (needs a credential)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -407,6 +408,60 @@ back from trunks and canopy and reads as dry land, so over the wooded islands an
 wetlands this figure is too low. It is a floor, not a total, and the page leads
 with that.
 
+## View 5: the map
+
+`site/map.html` puts the measurement on a real map: OpenStreetMap underneath, the
+water as transparent overlays, the thirteen tier-1 gauges as markers carrying
+their current level, and departamento boundaries so you can see which ones are
+affected. Play the slider and the flood moves down the river over the towns it
+actually passes.
+
+### Four stretches, four thresholds
+
+The run from Corrientes to Villa Constitucion is cut into four corridors at gauge
+pairs. **The threshold does not transfer between them**, so each is calibrated
+separately against JRC permanent water over the 2021 bajante:
+
+| stretch | km | threshold | bajante vs JRC | residual |
+|---|---|---|---|---|
+| Corrientes - Goya | 212 | -16.0 dB | 536 / 521 | 3.0% |
+| Goya - La Paz | 218 | -16.5 dB | 496 / 536 | 7.5% |
+| La Paz - Parana | 154 | -16.0 dB | 562 / 556 | 1.2% |
+| Parana - Villa Constitucion | 221 | -16.5 dB | 738 / 715 | 3.3% |
+
+Whole decibels were not enough - two stretches sat 13-19% off at -16 dB. At half
+decibels all four come within 8%, and reassuringly they land at only -16.0 or
+-16.5 rather than scattering, which would have meant the method was fitting noise.
+
+### Composites for the map, single passes for the charts
+
+Sentinel-1's swath is narrower than this run of river and the corridors sit across
+swath edges. Goya to La Paz gets full coverage **five** times in six months while
+Esquina to La Paz gets it twenty; splitting the corridor does not fix it, because
+one half still straddles the edge. A 12-day composite covers every stretch at
+99.6%, every window.
+
+So the map animates composites and the charts use single passes, and each says
+which it is. A composite is a window, not an instant, and labelling it that way
+costs nothing.
+
+### Two filters, both earning their place
+
+A pass is dropped if it covers less than 95% of the corridor: unobserved ground
+reduces to zero water and reads as the river shrinking. And a pass is dropped if
+it finds less than 70% of the permanent river, which happens when wind roughens
+the surface enough to lift its backscatter above the threshold. That second one
+was found by a test, not by inspection: one pass reported 218 km2 where the
+permanent channel alone is 556.
+
+### Layers and licences
+
+- Basemap: OpenStreetMap, (c) its contributors
+- Departamentos: [geoBoundaries](https://www.geoboundaries.org/) ADM2, CC BY 4.0.
+  Argentina's own IGN service was timing out, and GADM - the obvious alternative -
+  forbids redistribution, which committing it to a public repository would be.
+- Gauges: INA, positioned from rios-argentina's snapped station file
+
 ## Status
 
 Built:
@@ -418,13 +473,15 @@ Built:
   travel time between gauges, and view 2.
 - Dam and inflow drivers, ENSO ingestion, reference-curve building, basin rainfall
   from Earth Engine, and view 3.
-- Flooded area from Sentinel-1 for the Corrientes-Goya stretch, and view 4.
+- Flooded area from Sentinel-1 for four stretches, Corrientes to Villa
+  Constitucion, each separately calibrated; views 4 and 5, and the loop.
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- View 5: method and limits.
-- The remaining stretches, from Misiones to the Delta. Each needs its own
-  corridor and its own calibration check before it can be trusted.
+- A method-and-limits page gathering the caveats that are currently spread
+  across the views.
+- The stretches below Villa Constitucion, into the Delta. Tidal, differently
+  vegetated, and I would not assume the calibration holds there.
 - Refreshing rainfall in CI, which needs a service-account key in GitHub secrets.
 - `track`: projecting where a wave now in progress will arrive downstream. The
   travel times exist; turning them into arrival dates with honest uncertainty is
