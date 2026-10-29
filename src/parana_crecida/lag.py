@@ -26,9 +26,11 @@ the river has shown, which is not a forecast of the next one.
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
 from datetime import date
+from pathlib import Path
 
 import numpy as np
 
@@ -306,4 +308,83 @@ def fit_celerity(legs: list[LegLag]) -> CelerityFit | None:
         total_days=total_days,
         legs_used=len(usable),
         legs_skipped=len(legs) - len(usable),
+    )
+
+
+# -- freezing --------------------------------------------------------------
+#
+# Travel times are a climatology: they come from every flood in a century of
+# record and they do not change overnight. Recomputing them on each run would
+# be both wasteful and wrong, because the scheduled run's cache holds about a
+# year -- enough for the recent crests the plot shows, nowhere near enough for
+# a lag distribution. So they are derived once from the full record and
+# committed, exactly as the chain is.
+
+DEFAULT_TABLE = Path("data/travel_times.json")
+TABLE_SCHEMA = 1
+
+
+def to_row(leg: LegLag) -> dict[str, object]:
+    """One leg as a plain record, for freezing or for the site payload."""
+    return {
+        "from": leg.leg.upstream.series_id,
+        "from_name": leg.leg.upstream.name,
+        "to": leg.leg.downstream.series_id,
+        "to_name": leg.leg.downstream.name,
+        "km": round(leg.km, 1),
+        "median_days": leg.median_days,
+        "p25_days": leg.p25_days,
+        "p75_days": leg.p75_days,
+        "correlation_days": leg.correlation_days,
+        "n": leg.n,
+        "confident": leg.confident,
+        "agree": leg.estimators_agree,
+        "resolution_limited": leg.resolution_limited,
+        "celerity": None
+        if leg.resolution_limited or not leg.celerity
+        else round(leg.celerity, 1),
+    }
+
+
+def write_table(path: Path, legs: list[LegLag], *, record_span: str = "") -> None:
+    """Freeze the measured travel times."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": TABLE_SCHEMA,
+        "note": (
+            "Measured over the full gauge record, not the recent window. "
+            "Median days for a crest to travel each stretch; not a forecast."
+        ),
+        "record_span": record_span,
+        "legs": [to_row(leg) for leg in legs],
+    }
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+
+
+def load_table(path: Path | str = DEFAULT_TABLE) -> list[dict[str, object]]:
+    """The frozen travel times, or an empty list if not derived yet."""
+    path = Path(path)
+    if not path.exists():
+        log.warning("no travel times at %s; the wave view will show none", path)
+        return []
+    return json.loads(path.read_text(encoding="utf-8")).get("legs", [])
+
+
+def fit_celerity_rows(rows: list[dict[str, object]]) -> CelerityFit | None:
+    """Whole-chain celerity from frozen rows."""
+    usable = [r for r in rows if r.get("median_days")]
+    if not usable:
+        return None
+    total_km = sum(float(r["km"]) for r in usable)
+    total_days = sum(float(r["median_days"]) for r in usable)  # type: ignore[arg-type]
+    if total_days <= 0:
+        return None
+    return CelerityFit(
+        km_per_day=total_km / total_days,
+        total_km=total_km,
+        total_days=total_days,
+        legs_used=len(usable),
+        legs_skipped=len(rows) - len(usable),
     )

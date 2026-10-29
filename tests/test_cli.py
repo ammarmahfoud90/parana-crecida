@@ -169,6 +169,7 @@ def test_only_implemented_commands_are_registered():
         "gauges",
         "catalogue",
         "chain",
+        "lags",
         "thresholds",
         "fetch",
         "load",

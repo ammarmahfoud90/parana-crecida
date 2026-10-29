@@ -263,3 +263,77 @@ def test_days_per_100km_is_the_inverse():
     crests, km = build_matched(10, 9, 400.0)
     fit = fit_celerity([leg_lag(leg(km), crests)])
     assert fit.days_per_100km == pytest.approx(100.0 / fit.km_per_day)
+
+
+# -- freezing --------------------------------------------------------------
+
+
+def test_table_round_trip(tmp_path):
+    from parana_crecida.lag import load_table, write_table
+
+    crests, km = build_matched(8, 9, 300.0)
+    path = tmp_path / "travel.json"
+    write_table(path, [leg_lag(leg(km), crests)], record_span="1884-2026")
+    rows = load_table(path)
+    assert len(rows) == 1
+    assert rows[0]["median_days"] == pytest.approx(8)
+    assert rows[0]["from_name"] == "Corrientes"
+
+
+def test_load_table_of_a_missing_file_is_empty_not_an_error(tmp_path):
+    from parana_crecida.lag import load_table
+
+    assert load_table(tmp_path / "nope.json") == []
+
+
+def test_celerity_from_frozen_rows_matches_the_live_fit():
+    from parana_crecida.lag import fit_celerity_rows, to_row
+
+    legs = []
+    for km, lag_days in ((100.0, 2), (200.0, 5), (480.0, 14)):
+        crests, _ = build_matched(lag_days, 9, km)
+        legs.append(leg_lag(leg(km), crests))
+    live = fit_celerity(legs)
+    frozen = fit_celerity_rows([to_row(L) for L in legs])
+    assert frozen.km_per_day == pytest.approx(live.km_per_day)
+    assert frozen.legs_used == live.legs_used
+
+
+def test_frozen_rows_skip_a_leg_with_no_estimate():
+    from parana_crecida.lag import fit_celerity_rows, to_row
+
+    crests, km = build_matched(5, 9, 200.0)
+    rows = [to_row(leg_lag(leg(km), crests)), to_row(leg_lag(leg(300.0), {}))]
+    fit = fit_celerity_rows(rows)
+    assert fit.legs_used == 1 and fit.legs_skipped == 1
+
+
+# -- the committed table ---------------------------------------------------
+
+from parana_crecida.lag import load_table as _load_table  # noqa: E402
+
+COMMITTED = _load_table()
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed travel times")
+def test_the_committed_table_covers_every_routing_leg():
+    from parana_crecida.chain import load_chain, routing_legs
+
+    expected = {(L.upstream.series_id, L.downstream.series_id) for L in routing_legs(load_chain())}
+    got = {(r["from"], r["to"]) for r in COMMITTED}
+    assert got == expected
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed travel times")
+def test_the_committed_table_rests_on_real_waves():
+    """A table built from a short cache would have almost no matches."""
+    assert all(r["n"] >= 5 for r in COMMITTED)
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed travel times")
+def test_the_committed_crest_speed_is_physically_plausible():
+    from parana_crecida.lag import fit_celerity_rows
+
+    fit = fit_celerity_rows(COMMITTED)
+    assert 20 < fit.km_per_day < 120
+    assert fit.total_km == pytest.approx(781, abs=20)

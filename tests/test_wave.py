@@ -96,7 +96,7 @@ def test_travel_times_use_the_whole_record_not_the_window(store, clim):
     """
     result = analyse(store, clim, NODES, window_days=180, today=TODAY)
     assert all(g.crests == [] for g in result.gauges)  # nothing in the window
-    assert result.legs and result.legs[0].median_days == pytest.approx(8, abs=1)
+    assert result.legs and result.legs[0]["median_days"] == pytest.approx(8, abs=1)
 
 
 def test_a_gauge_with_no_data_is_left_out_rather_than_faked(store, clim):
@@ -190,3 +190,42 @@ def test_no_chain_blocks_the_wave_export(store, tmp_path):
         export_wave(
             store, passing(), chain_path=tmp_path / "missing.json", out_dir=tmp_path
         )
+
+
+# -- frozen travel times ---------------------------------------------------
+
+
+def test_frozen_travel_times_are_used_as_given(store, clim):
+    """The scheduled run has a year of cache; it must not re-measure."""
+    frozen = [{"from": UPSTREAM, "to": DOWNSTREAM, "from_name": "Corrientes",
+               "to_name": "Empedrado", "km": 300.0, "median_days": 11.0,
+               "p25_days": 9.0, "p75_days": 13.0, "correlation_days": 11.0,
+               "n": 42, "confident": True, "agree": True,
+               "resolution_limited": False, "celerity": 27.3}]
+    result = analyse(store, clim, NODES, today=TODAY, travel_times=frozen)
+    assert result.legs == frozen
+    assert result.celerity.km_per_day == pytest.approx(300 / 11)
+
+
+def test_a_short_cache_with_frozen_times_still_reports_them(tmp_path, clim):
+    """The regression this fixes: a year of data measured zero waves."""
+    cache = SeriesCache(tmp_path / "cache")
+    cache.write(UPSTREAM, wave_series(300))
+    cache.write(DOWNSTREAM, wave_series(300))
+    frozen = [{"from": UPSTREAM, "to": DOWNSTREAM, "from_name": "Corrientes",
+               "to_name": "Empedrado", "km": 300.0, "median_days": 11.0,
+               "p25_days": 9.0, "p75_days": 13.0, "correlation_days": None,
+               "n": 42, "confident": True, "agree": None,
+               "resolution_limited": False, "celerity": 27.3}]
+    with Store(":memory:") as s:
+        s.load_gauges()
+        s.load_observations(cache, [UPSTREAM, DOWNSTREAM])
+        result = analyse(s, clim, NODES, today=TODAY, travel_times=frozen)
+    assert result.legs[0]["n"] == 42
+    assert result.celerity is not None
+
+
+def test_no_frozen_table_means_no_travel_times_rather_than_wrong_ones(store, clim):
+    result = analyse(store, clim, NODES, today=TODAY, travel_times=[])
+    assert result.legs == []
+    assert result.celerity is None

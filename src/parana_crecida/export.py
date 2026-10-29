@@ -158,6 +158,7 @@ def export_wave(
     *,
     chain_path: Path | None = None,
     climatology_path: Path | None = None,
+    travel_times_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
     window_days: int | None = None,
     now: datetime | None = None,
@@ -172,6 +173,7 @@ def export_wave(
     # Imported here: the wave analysis pulls in scipy, and the river-today
     # export should not pay for that.
     from . import chain as ch
+    from .lag import DEFAULT_TABLE, load_table
     from .normalize import Climatology
     from .wave import WINDOW_DAYS, analyse, build_payload
 
@@ -190,12 +192,16 @@ def export_wave(
         )
 
     clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    # The frozen table, not a fresh measurement: the scheduled run's cache
+    # holds about a year, which is plenty for the crests the plot shows and
+    # nowhere near enough for a lag distribution.
     analysis = analyse(
         store,
         clim,
         nodes,
         window_days=window_days or WINDOW_DAYS,
         today=today,
+        travel_times=load_table(travel_times_path or DEFAULT_TABLE),
     )
     payload = build_payload(analysis, now=now)
     path = out_dir / WAVE

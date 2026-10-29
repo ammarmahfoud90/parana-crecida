@@ -40,6 +40,7 @@ from . import chain as ch
 from . import gauges as roster
 from . import thresholds as th
 from .chain import DEFAULT_CHAIN
+from .lag import DEFAULT_TABLE
 from .export import (
     DEFAULT_SITE_DATA,
     ExportBlocked,
@@ -625,6 +626,93 @@ def chain(
         rep.write(report)
         raise click.ClickException(f"{len(problems)} problem(s) with the chain")
     rep.say("chain is sound: river-km increase downstream and catchment never shrinks")
+    rep.write(report)
+
+
+@main.command()
+@cache_option
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=DEFAULT_TABLE, show_default=True
+)
+@click.option(
+    "--climatology",
+    type=click.Path(path_type=Path),
+    default=Path("data/climatology_parana.json"),
+    show_default=True,
+)
+@report_option
+def lags(
+    cache_dirs: Sequence[Path],
+    out: Path,
+    climatology: Path,
+    report: Path | None,
+) -> None:
+    """Measure travel time between gauges and freeze the table.
+
+    Run this against the FULL record, not the scheduled run's cache. Travel
+    times are a climatology drawn from every flood on file; a year of cache
+    contains almost no crests and would report none at all. Like the chain,
+    the result is committed and the scheduled run reads it.
+    """
+    from .events import anomaly_series, detect
+    from .lag import leg_lag, write_table
+    from .normalize import Climatology
+
+    cache = _cache(cache_dirs)
+    clim = Climatology.load(climatology)
+    nodes = ch.load_chain()
+    if not nodes:
+        raise click.ClickException("no chain; run `crecida chain --rederive` first")
+
+    rep = Report("travel times")
+    crests: dict[str, list] = {}
+    anomalies: dict[str, list] = {}
+    spans: list[str] = []
+
+    for node in nodes:
+        values = cache.read(node.series_id)
+        if not values:
+            rep.say(f"  {node.name}: nothing cached")
+            continue
+        crests[node.series_id] = detect(node.series_id, values, clim)
+        anomalies[node.series_id] = anomaly_series(node.series_id, values, clim)
+        spans.append(f"{values[0].day.year}-{values[-1].day.year}")
+        high = sum(1 for c in crests[node.series_id] if c.is_high)
+        rep.say(f"  {node.name:<22} {len(values):>7} days  {high:>4} flood crests")
+
+    legs = [leg_lag(leg, crests, anomalies) for leg in ch.routing_legs(nodes)]
+    thin = [L for L in legs if L.n < 5]
+    if len(thin) == len(legs):
+        raise click.ClickException(
+            "every leg has fewer than 5 matched waves; this looks like a short "
+            "cache rather than a real result. Point --cache-dir at the full record."
+        )
+
+    record_span = f"{min(spans)} to {max(spans)}" if spans else ""
+    write_table(out, legs, record_span=record_span)
+
+    rep.say()
+    rep.say(f"{'leg':<40} {'km':>6} {'n':>4} {'days':>5} {'km/day':>7}  agree")
+    for L in legs:
+        days = f"{L.median_days:.0f}" if L.median_days is not None else "-"
+        cel = f"{L.celerity:.0f}" if not L.resolution_limited and L.celerity else "-"
+        agree = "" if L.estimators_agree is None else ("yes" if L.estimators_agree else "NO")
+        rep.say(f"  {L.leg.label:<38} {L.km:>6.0f} {L.n:>4} {days:>5} {cel:>7}  {agree}")
+
+    from .lag import fit_celerity
+
+    fit = fit_celerity(legs)
+    rep.say()
+    if fit:
+        rep.say(
+            f"whole chain: {fit.total_km:.0f} km in {fit.total_days:.0f} days "
+            f"-> {fit.km_per_day:.0f} km/day ({fit.legs_used} legs, "
+            f"{fit.legs_skipped} skipped)"
+        )
+    if thin:
+        rep.say(f"{len(thin)} leg(s) rest on fewer than 5 waves: "
+                + ", ".join(L.leg.label for L in thin))
+    rep.say(f"travel times -> {out}  (record {record_span})")
     rep.write(report)
 
 

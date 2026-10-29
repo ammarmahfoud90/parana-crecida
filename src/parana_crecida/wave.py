@@ -25,7 +25,13 @@ from ina_a5.observations import DEFAULT_TZ
 from . import chain as ch
 from . import gauges as roster
 from .events import Crest, anomaly_series, detect
-from .lag import CelerityFit, LegLag, fit_celerity, leg_lag
+from .lag import (
+    CelerityFit,
+    fit_celerity_rows,
+    leg_lag,
+    load_table,
+    to_row,
+)
 from .normalize import Climatology
 from .store import Store
 
@@ -60,7 +66,9 @@ class WaveAnalysis:
     window_start: date
     window_end: date
     gauges: list[GaugeWave]
-    legs: list[LegLag]
+    #: Plain rows, so a frozen table and a freshly measured one are the same
+    #: shape downstream.
+    legs: list[dict[str, object]]
     celerity: CelerityFit | None
 
 
@@ -71,8 +79,14 @@ def analyse(
     *,
     window_days: int = WINDOW_DAYS,
     today: date | None = None,
+    travel_times: list[dict[str, object]] | None = None,
 ) -> WaveAnalysis:
-    """Detect crests, fit travel times, and frame the plotting window."""
+    """Detect crests, attach travel times, and frame the plotting window.
+
+    ``travel_times`` are the frozen ones. Pass ``None`` only where the full
+    record is actually available - on the scheduled run it is not, and
+    measuring lags from a year of cache would quietly report none at all.
+    """
     today = today or datetime.now(DEFAULT_TZ).date()
     window_start = today - timedelta(days=window_days)
 
@@ -123,13 +137,16 @@ def analyse(
             )
         )
 
-    legs = [leg_lag(leg, crests, anomalies) for leg in ch.routing_legs(nodes)]
+    if travel_times is None:
+        rows = [to_row(leg_lag(leg, crests, anomalies)) for leg in ch.routing_legs(nodes)]
+    else:
+        rows = list(travel_times)
     return WaveAnalysis(
         window_start=window_start,
         window_end=today,
         gauges=gauges,
-        legs=legs,
-        celerity=fit_celerity(legs),
+        legs=rows,
+        celerity=fit_celerity_rows(rows),
     )
 
 
@@ -141,27 +158,6 @@ def _crest_payload(crest: Crest) -> dict[str, object]:
         "anomaly": None if crest.anomaly is None else round(crest.anomaly, 2),
         "is_high": crest.is_high,
         "rise_days": crest.rise_days,
-    }
-
-
-def _leg_payload(leg: LegLag) -> dict[str, object]:
-    return {
-        "from": leg.leg.upstream.series_id,
-        "from_name": leg.leg.upstream.name,
-        "to": leg.leg.downstream.series_id,
-        "to_name": leg.leg.downstream.name,
-        "km": round(leg.km, 1),
-        "median_days": leg.median_days,
-        "p25_days": leg.p25_days,
-        "p75_days": leg.p75_days,
-        "correlation_days": leg.correlation_days,
-        "n": leg.n,
-        "confident": leg.confident,
-        "agree": leg.estimators_agree,
-        # Short legs carry a usable arrival date but no meaningful km/day.
-        "resolution_limited": leg.resolution_limited,
-        "celerity": None if leg.resolution_limited or not leg.celerity
-        else round(leg.celerity, 1),
     }
 
 
@@ -204,5 +200,5 @@ def build_payload(
             }
             for g in analysis.gauges
         ],
-        "legs": [_leg_payload(leg) for leg in analysis.legs],
+        "legs": analysis.legs,
     }
