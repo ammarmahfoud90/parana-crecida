@@ -1,0 +1,5 @@
+animation - 2026-10-29T13:31:30-03:00
+
+20 frames, 2026-05-03 to 2026-10-25
+peak 1,651 km2
+1.30 MB -> site/media/flood.gif
