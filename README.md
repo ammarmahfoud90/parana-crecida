@@ -527,6 +527,37 @@ permanent channel alone is 556.
 - Gauges: INA, positioned from rios-argentina's snapped station file
 - River line: HydroRIVERS centrelines, scaled onto the frozen chain's river-km
 
+## The method page
+
+`site/method.html` gathers, in one place, the assumptions and limits that were
+spread across the five views: why percentiles instead of metres, what the frozen
+chain is and how approximate its kilometres are, what a one-day lag resolution
+does and does not permit you to say, how the radar threshold is calibrated and
+where it fails, which gauges may not colour the river and why, and what the site
+flatly does not do.
+
+**Its two tables are built from the published measurement, not typed into the
+page.** The calibration table reads `data/flooded.json` and the travel-time table
+reads `data/wave.json`, so a threshold that changes changes here too. A test
+asserts that the calibrated figures do not appear in the page source, because a
+method page stating numbers from its own copy is exactly the claim that goes
+quietly stale.
+
+The flooded-area export now carries `threshold_db` and `calibrated` through to
+the page for that reason.
+
+### Tests for the pages
+
+Until now nothing checked the published pages at all, which is where every
+user-facing claim lives. `tests/test_site.py` adds structural checks across all
+six: the nav links to every view and every target exists, each page marks itself
+current, Spanish and English carry the same keys, every `data-t` slot has a
+translation in both, every page carries the "not an alert system" notice and
+links INA's alert, and every file a page fetches is actually published.
+
+That last one is the check that would have caught the map going live without its
+gauge and departamento layers.
+
 ## Status
 
 Built:
@@ -545,11 +576,10 @@ Built:
   written by `crecida export` on every scheduled run and checked by
   `crecida freshness`.
 - Rainfall refreshing itself in CI from an Earth Engine service account.
+- The method-and-limits page, and the first tests over the published pages.
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- A method-and-limits page gathering the caveats that are currently spread
-  across the views.
 - The stretches below Villa Constitucion, into the Delta. Tidal, differently
   vegetated, and I would not assume the calibration holds there.
 - An area for the two gorge stretches above Posadas, which would need a method
