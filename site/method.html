@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#content" data-t="skipLink"></a>
 <div class="wrap">
 
   <header>
@@ -29,6 +30,8 @@
     <a href="map.html" data-t="viewMap"></a>
     <a href="method.html" aria-current="page" data-t="viewMethod"></a>
   </nav>
+
+  <main id="content" tabindex="-1">
 
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
@@ -157,6 +160,8 @@
 
   </div>
 
+  </main>
+
   <footer>
     <p data-t="credits"></p>
     <p><a href="https://github.com/ammarmahfoud90/parana-crecida" target="_blank" rel="noopener" data-t="repoLink"></a></p>
@@ -171,7 +176,7 @@ const T = {
     title: "Método y límites",
     subtitle: "Cómo se mide cada cosa acá, y qué no se puede concluir de ella",
     langGroup: "Idioma", viewsNav: "Vistas",
-    viewToday: "El río hoy", viewWave: "La onda",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda",
     viewDrivers: "Aguas arriba", viewFlood: "Superficie",
     viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto no es un sistema de alerta.",
@@ -261,7 +266,7 @@ const T = {
     title: "Method and limits",
     subtitle: "How each thing here is measured, and what cannot be concluded from it",
     langGroup: "Language", viewsNav: "Views",
-    viewToday: "The river today", viewWave: "The wave",
+    skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave",
     viewDrivers: "Upstream", viewFlood: "Flooded area",
     viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This is not an alert system.",

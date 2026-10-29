@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#content" data-t="skipLink"></a>
 <div class="wrap">
 
   <header>
@@ -30,13 +31,15 @@
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
+  <main id="content" tabindex="-1">
+
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
     <span data-t="noticeBody"></span>
     <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
   </p>
 
-  <div id="error" class="err" hidden></div>
+  <div id="error" class="err" role="alert" hidden></div>
 
   <div class="meta" id="meta" hidden>
     <span><span data-t="windowLabel"></span> <b id="windowText"></b></span>
@@ -62,6 +65,8 @@
   <div class="printed" id="printed"></div>
   <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="printedNote"></p>
 
+  </main>
+
   <footer>
     <p data-t="method"></p>
     <p data-t="credits"></p>
@@ -77,7 +82,7 @@ const T = {
     title: "Aguas arriba",
     subtitle: "Lo que empuja al Paraná: las represas, el aporte del Iguazú y El Niño",
     langGroup: "Idioma", viewsNav: "Vistas",
-    viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
     viewFlood: "Superficie",
     viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto no es un sistema de alerta.",
@@ -119,7 +124,7 @@ const T = {
     title: "Upstream",
     subtitle: "What is pushing the Paraná: the dams, the Iguazú inflow and El Niño",
     langGroup: "Language", viewsNav: "Views",
-    viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
+    skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
     viewFlood: "Flooded area",
     viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This is not an alert system.",

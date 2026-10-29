@@ -263,3 +263,41 @@ def test_no_page_clears_an_svg_by_counting_nodes(page):
     assert "childNodes.length >" not in text, (
         f"{page.name} trims an element by node count, which counts whitespace"
     )
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_every_page_offers_a_way_past_the_nav(page):
+    """WCAG 2.4.1, and it is Level A.
+
+    Six view links and two language buttons sit before the content on every
+    page. Without a skip link that is eight stops before a keyboard user
+    reaches what they came for, and nothing to skip to.
+    """
+    text = page.read_text(encoding="utf-8")
+    body = text.index("<body>")
+    skip = text.index('class="skip"')
+    assert skip - body < 40, f"{page.name}: the skip link is not the first thing"
+    assert '<main id="content" tabindex="-1">' in text, page.name
+    assert text.index("<main") > text.index("</nav>"), page.name
+    assert text.index("</main>") < text.index("<footer"), page.name
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_a_failed_load_is_announced(page):
+    """An error box that appears silently tells a screen reader nothing."""
+    text = page.read_text(encoding="utf-8")
+    if 'id="error"' not in text:
+        pytest.skip("no error box on this page")
+    assert 'id="error" class="err" role="alert"' in text, page.name
+
+
+def test_the_slider_announces_a_date_not_an_index():
+    """A native range announces its value, which here is an array index.
+
+    Without aria-valuetext a screen reader says "Fecha, 179" for the map's
+    main control instead of the date it stands for.
+    """
+    text = (SITE / "map.html").read_text(encoding="utf-8")
+    assert text.count('setAttribute("aria-valuetext"') >= 2, (
+        "both the daily layer and the radar layer must set it"
+    )

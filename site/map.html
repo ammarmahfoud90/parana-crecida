@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#content" data-t="skipLink"></a>
 <div class="wrap wide">
 
   <header>
@@ -31,13 +32,15 @@
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
+  <main id="content" tabindex="-1">
+
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
     <span data-t="noticeBody"></span>
     <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
   </p>
 
-  <div id="error" class="err" hidden></div>
+  <div id="error" class="err" role="alert" hidden></div>
 
   <div id="map" role="application" data-t-aria="mapLabel"></div>
 
@@ -49,7 +52,7 @@
   <div class="player" id="player" hidden>
     <button type="button" id="play" class="playbtn" aria-label="Play"></button>
     <input type="range" id="slider" min="0" max="0" value="0" step="1" data-t-aria="sliderLabel">
-    <div class="readout">
+    <div class="readout" role="status">
       <b id="windowLabel">–</b>
       <span id="totalLabel"></span>
     </div>
@@ -63,6 +66,8 @@
   </div>
 
   <p class="cap" id="modeNote" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px"></p>
+
+  </main>
 
   <footer>
     <p data-t="method"></p>
@@ -80,7 +85,7 @@ const T = {
     title: "Mapa de la crecida",
     subtitle: "Del límite con Brasil a Villa Constitución: 1.440 km de río, día a día",
     langGroup: "Idioma", viewsNav: "Vistas", mapLabel: "Mapa del río Paraná",
-    viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
     viewFlood: "Superficie", viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto no es un sistema de alerta.",
     noticeBody: "Muestra lo medido — alturas de estaciones y agua detectada por radar — no un pronóstico ni un mapa oficial de riesgo. Entre estaciones el valor se interpola, y el radar no ve el agua bajo la vegetación.",
@@ -109,7 +114,7 @@ const T = {
     title: "Flood map",
     subtitle: "From the Brazil border to Villa Constitución: 1,440 km of river, day by day",
     langGroup: "Language", viewsNav: "Views", mapLabel: "Map of the Paraná",
-    viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
+    skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
     viewFlood: "Flooded area", viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This is not an alert system.",
     noticeBody: "It shows what was measured — gauge heights and water detected by radar — not a forecast and not an official risk map. Between gauges the value is interpolated, and radar cannot see water under vegetation.",
@@ -246,6 +251,9 @@ function drawStage(dayIndex) {
   const day = stage.days[stageIndex];
   document.getElementById("slider").value = String(stageIndex);
   document.getElementById("windowLabel").textContent = dayLabel(day);
+  // Without this a screen reader announces the slider's raw value, which is
+  // an index into an array of days: "Fecha, 179".
+  document.getElementById("slider").setAttribute("aria-valuetext", dayLabel(day));
   // Where the water stops being extreme is where the front has got to.
   let front = null;
   for (const a of stage.anchors) {
@@ -262,8 +270,9 @@ function showFrame(i) {
   overlays.forEach((o, k) => o.setOpacity(k === index ? 0.85 : 0));
   const f = frames[index];
   document.getElementById("slider").value = String(index);
-  document.getElementById("windowLabel").textContent =
-    `${dayLabel(f.start)} – ${dayLabel(f.end)}`;
+  const windowText = `${dayLabel(f.start)} – ${dayLabel(f.end)}`;
+  document.getElementById("windowLabel").textContent = windowText;
+  document.getElementById("slider").setAttribute("aria-valuetext", windowText);
   document.getElementById("totalLabel").textContent =
     f.total_km2 ? T[lang].totalLabel(fmt(f.total_km2, 0)) : "";
 }
@@ -316,6 +325,10 @@ function setMode(next) {
 
 function togglePlay() {
   const btn = document.getElementById("play");
+  // Announcing every frame of a 180-day run would be unusable. The readout
+  // goes quiet while it plays and speaks again once it stops.
+  const readout = document.querySelector(".player .readout");
+  if (readout) readout.setAttribute("aria-live", timer ? "polite" : "off");
   if (timer) {
     clearInterval(timer); timer = null;
     btn.classList.remove("playing");

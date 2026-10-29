@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#content" data-t="skipLink"></a>
 <div class="wrap">
 
   <header>
@@ -30,13 +31,15 @@
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
+  <main id="content" tabindex="-1">
+
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
     <span data-t="noticeBody"></span>
     <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
   </p>
 
-  <div id="error" class="err" hidden></div>
+  <div id="error" class="err" role="alert" hidden></div>
 
   <div class="meta" id="meta" hidden>
     <span><span data-t="stretchLabel"></span> <b id="stretchName"></b></span>
@@ -77,6 +80,8 @@
   <p class="cap" style="color:var(--ink-soft);font-size:.9rem" data-t="limitsBody"></p>
   <p class="cap" style="color:var(--ink-soft);font-size:.9rem" id="methodLine"></p>
 
+  </main>
+
   <footer>
     <p data-t="method"></p>
     <p data-t="credits"></p>
@@ -92,7 +97,7 @@ const T = {
     title: "Superficie inundada",
     subtitle: "Cuánta superficie cubre el río, medida por radar",
     langGroup: "Idioma", viewsNav: "Vistas",
-    viewToday: "El río hoy", viewWave: "La onda",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda",
     viewDrivers: "Aguas arriba", viewFlood: "Superficie",
     viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto es un piso, no un total.",
@@ -124,7 +129,7 @@ const T = {
     title: "Flooded area",
     subtitle: "How much ground the river covers, measured by radar",
     langGroup: "Language", viewsNav: "Views",
-    viewToday: "The river today", viewWave: "The wave",
+    skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave",
     viewDrivers: "Upstream", viewFlood: "Flooded area",
     viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This is a floor, not a total.",

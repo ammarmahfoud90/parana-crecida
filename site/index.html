@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<a class="skip" href="#content" data-t="skipLink"></a>
 <div class="wrap">
 
   <header>
@@ -30,13 +31,15 @@
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
+  <main id="content" tabindex="-1">
+
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
     <span data-t="noticeBody"></span>
     <a id="official" href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
   </p>
 
-  <div id="error" class="err" hidden></div>
+  <div id="error" class="err" role="alert" hidden></div>
 
   <div class="meta" id="meta" hidden>
     <span><span data-t="dataTo"></span> <b id="lastDay"></b> <span id="fresh"></span></span>
@@ -53,6 +56,8 @@
 
   <h2 class="section" data-t="listHeading"></h2>
   <ul class="gauges" id="list"></ul>
+
+  </main>
 
   <footer>
     <p data-t="method"></p>
@@ -85,7 +90,7 @@ const T = {
     tallyOfficial: "con niveles oficiales",
     listHeading: "Estaciones, aguas arriba hacia aguas abajo",
     viewsNav: "Vistas",
-    viewToday: "El río hoy",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy",
     viewWave: "La onda",
     viewDrivers: "Aguas arriba",
     viewFlood: "Superficie",
@@ -127,7 +132,7 @@ const T = {
     tallyOfficial: "with official levels",
     listHeading: "Gauges, upstream to downstream",
     viewsNav: "Views",
-    viewToday: "The river today",
+    skipLink: "Skip to content", viewToday: "The river today",
     viewWave: "The wave",
     viewDrivers: "Upstream",
     viewFlood: "Flooded area",
