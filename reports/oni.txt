@@ -1,0 +1,16 @@
+oni - 2026-10-29T01:04:56-03:00
+
+920 seasons, 1950 to 2026
+latest: JAS 2026  ONI +2.16  (el_nino_very_strong)
+
+last 8 seasons:
+  DJF 2026  -0.39
+  JFM 2026  -0.21
+  FMA 2026  +0.11
+  MAM 2026  +0.46
+  AMJ 2026  +0.95
+  MJJ 2026  +1.39
+  JJA 2026  +1.80
+  JAS 2026  +2.16
+
+oni -> data/oni.json
