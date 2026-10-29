@@ -140,7 +140,12 @@ UPSTREAM = [
     _g(26259, "Itati", tier=3, flags=("regulated",), display="Itatí"),
     _g(26260, "Paso de la Patria", tier=3, flags=("regulated",)),
     _g(26685, "Yacyreta efluente", tier=3, flags=("regulated", "flow"), display="Yacyretá efluente"),
-    _g(26690, "Confluencia", tier=3, flags=("flow",), note="Parana/Paraguay junction"),
+    # Snapped onto Puerto Iguazu's reach, about 660 km upstream of the
+    # junction it is named after, so it carries no usable river position.
+    _g(
+        26690, "Confluencia", tier=3, flags=("flow", "bad_snap"),
+        note="Parana/Paraguay junction; snapped ~660 km upstream",
+    ),
 ]
 
 #: Tier 3: off the main stem, but they explain what the main stem does.

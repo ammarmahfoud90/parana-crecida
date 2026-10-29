@@ -1,0 +1,199 @@
+{
+ "schema": 1,
+ "derived_on": "2026-10-28",
+ "source": "HydroRIVERS v10 via rios-argentina network.json",
+ "note": "River-km are approximate: simplified geometry and flat degree-to-km factors. Good to a few km, not to the kilometre.",
+ "nodes": [
+  {
+   "series_id": "26251",
+   "name": "Puerto Iguazu",
+   "river_km": 0.0,
+   "reach_id": 61386372,
+   "up_skm": 834183.6
+  },
+  {
+   "series_id": "26252",
+   "name": "Libertad",
+   "river_km": 48.4,
+   "reach_id": 61391650,
+   "up_skm": 911816.2
+  },
+  {
+   "series_id": "26253",
+   "name": "El Dorado",
+   "river_km": 117.7,
+   "reach_id": 61399060,
+   "up_skm": 918972.3
+  },
+  {
+   "series_id": "26254",
+   "name": "Libertador",
+   "river_km": 187.7,
+   "reach_id": 61405718,
+   "up_skm": 926222.6
+  },
+  {
+   "series_id": "26255",
+   "name": "Santa Ana",
+   "river_km": 296.3,
+   "reach_id": 61414651,
+   "up_skm": 934473.8
+  },
+  {
+   "series_id": "26256",
+   "name": "Posadas",
+   "river_km": 334.2,
+   "reach_id": 61415001,
+   "up_skm": 936568.4
+  },
+  {
+   "series_id": "26258",
+   "name": "Ita Ibate",
+   "river_km": 493.3,
+   "reach_id": 61415754,
+   "up_skm": 946819.8
+  },
+  {
+   "series_id": "26259",
+   "name": "Itati",
+   "river_km": 585.0,
+   "reach_id": 61413528,
+   "up_skm": 950838.2
+  },
+  {
+   "series_id": "26260",
+   "name": "Paso de la Patria",
+   "river_km": 629.8,
+   "reach_id": 61414252,
+   "up_skm": 951665.1
+  },
+  {
+   "series_id": "26261",
+   "name": "Corrientes",
+   "river_km": 659.8,
+   "reach_id": 61416691,
+   "up_skm": 2110625.0
+  },
+  {
+   "series_id": "26263",
+   "name": "Empedrado",
+   "river_km": 717.2,
+   "reach_id": 61425069,
+   "up_skm": 2137256.0
+  },
+  {
+   "series_id": "26264",
+   "name": "Bella Vista",
+   "river_km": 786.0,
+   "reach_id": 61434894,
+   "up_skm": 2160750.0
+  },
+  {
+   "series_id": "26265",
+   "name": "Goya",
+   "river_km": 869.5,
+   "reach_id": 61444279,
+   "up_skm": 2186065.0
+  },
+  {
+   "series_id": "26267",
+   "name": "Esquina",
+   "river_km": 1000.8,
+   "reach_id": 61459314,
+   "up_skm": 2224376.0
+  },
+  {
+   "series_id": "26268",
+   "name": "La Paz",
+   "river_km": 1085.9,
+   "reach_id": 61467957,
+   "up_skm": 2236300.0
+  },
+  {
+   "series_id": "26269",
+   "name": "Santa Elena",
+   "river_km": 1112.5,
+   "reach_id": 61471691,
+   "up_skm": 2236767.0
+  },
+  {
+   "series_id": "26270",
+   "name": "Hernandarias",
+   "river_km": 1149.9,
+   "reach_id": 61475197,
+   "up_skm": 2245925.0
+  },
+  {
+   "series_id": "26271",
+   "name": "Parana",
+   "river_km": 1229.3,
+   "reach_id": 61480612,
+   "up_skm": 2249453.0
+  },
+  {
+   "series_id": "26273",
+   "name": "Diamante",
+   "river_km": 1287.9,
+   "reach_id": 61485184,
+   "up_skm": 2477144.0
+  },
+  {
+   "series_id": "26275",
+   "name": "San Lorenzo",
+   "river_km": 1369.1,
+   "reach_id": 61493041,
+   "up_skm": 2527607.0
+  },
+  {
+   "series_id": "26276",
+   "name": "Rosario",
+   "river_km": 1390.5,
+   "reach_id": 61494714,
+   "up_skm": 2528628.0
+  },
+  {
+   "series_id": "26277",
+   "name": "Villa Constitucion",
+   "river_km": 1440.5,
+   "reach_id": 61496954,
+   "up_skm": 2535334.0
+  },
+  {
+   "series_id": "26287",
+   "name": "Ibicuy",
+   "river_km": 1628.4,
+   "reach_id": 61503089,
+   "up_skm": 2571434.0
+  },
+  {
+   "series_id": "26286",
+   "name": "Canal Nuevo",
+   "river_km": 1696.6,
+   "reach_id": 61504344,
+   "up_skm": 2594260.0
+  }
+ ],
+ "off_chain": [
+  "26257",
+  "26262",
+  "26266",
+  "26272",
+  "26274",
+  "26278",
+  "26279",
+  "26280",
+  "26281",
+  "26282",
+  "26283",
+  "26284",
+  "26290",
+  "26291",
+  "26294",
+  "26296",
+  "26300",
+  "26442",
+  "26652",
+  "26685",
+  "26690"
+ ]
+}
