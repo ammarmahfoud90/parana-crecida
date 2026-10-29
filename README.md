@@ -558,6 +558,78 @@ links INA's alert, and every file a page fetches is actually published.
 That last one is the check that would have caught the map going live without its
 gauge and departamento layers.
 
+## Arrival projections, and what they are worth
+
+`track.py` is the only thing here that points forward, so it is built to say
+as little as possible and to publish its own accuracy next to every claim.
+
+It takes the **flood front** - the furthest downstream gauge that has already
+passed its peak, with the river still rising below it - and adds the measured
+travel times. Projecting from the front rather than from further upstream
+matters: every leg adds its own error, so projecting Rosario from Corrientes
+when Goya has already crested throws away the better measurement. If any leg
+between the front and a gauge has no confident travel time, that gauge gets no
+projection at all, rather than a total that quietly skipped a stretch.
+
+**It says when, not how high.** A crest's height at the next gauge depends on
+the channel it travels through and on what the tributaries contribute in
+between, and there is no routing model here. A level projected without one
+would be a hunch with a number on it.
+
+**The range is not a confidence interval.** It is every leg at its historical
+fast end against every leg at its slow end. Quantiles do not add, so summing
+per-leg p25s does not give the 25th percentile of the journey - it gives
+something wider and more pessimistic. Wider in the honest direction, and
+labelled as what it is.
+
+**A crest is provisional until it has actually fallen.** When this was written
+Corrientes sat 0.07 m below a peak it had climbed 2.50 m to reach. That is not
+a crest, it is a river that has stopped rising, and the page says which it is.
+
+### How well it actually does
+
+`crecida backtest` runs the tracker over the whole record, as it would have run
+on each day, and scores what it would have published against the crest the
+river then reached. The result is frozen to `data/track_skill.json` and
+published beside the projection, so the page states its own accuracy instead of
+leaving the reader to assume one.
+
+Over 933 projections on 200 occasions since 1998:
+
+| | |
+|---|---|
+| actual crest inside the published window | **23%** |
+| median absolute error | **9 days** |
+| same, with no travel times at all | 14 days |
+| within 7 days | 46% |
+
+So the travel times carry real signal - they beat the no-lag baseline by five
+days - but a nine-day median error on journeys of a few days to a fortnight is
+too large to treat as a date, and the page says so in those words.
+
+There is also a floor under any method here. Measured over 995 annual flood
+crests, a Parana crest sits within 10 cm of its peak for a **median of six
+days**, so "the day of the crest" is itself only defined to about three days
+either way.
+
+Two things in the backtest are easy to misread, and are written down where
+they are computed:
+
+- **The scoring is noisiest next to the anchor.** Error is worst one leg out
+  (median 16 days) and best at four to seven (4 days). That is not the river
+  becoming more predictable with distance; it is that the first local maximum
+  after a date a day or two away is as likely to be a ripple as the crest.
+- **The baseline matters more than the headline.** A method that cannot beat
+  "the crest arrives everywhere the day the anchor peaked" has added nothing,
+  and without computing that there is no way to know.
+
+Two bugs in the projection were found by the backtest and by nothing else: the
+anchor was the furthest gauge that had turned over rather than the wave front
+(over any past window every gauge has turned, so it picked the last gauge on
+the chain, with nothing below it), and the record was not truncated at the day
+being asked about, so a question about a past date saw the whole record after
+it and anchored on a flood that had not happened yet. Both have tests.
+
 ## Status
 
 Built:
@@ -577,6 +649,8 @@ Built:
   `crecida freshness`.
 - Rainfall refreshing itself in CI from an Earth Engine service account.
 - The method-and-limits page, and the first tests over the published pages.
+- Arrival projections from the flood front, with a backtest that scores them
+  and publishes the score beside them.
 
 Not built yet — see `.claude/plans` for the full plan:
 
@@ -584,9 +658,8 @@ Not built yet — see `.claude/plans` for the full plan:
   vegetated, and I would not assume the calibration holds there.
 - An area for the two gorge stretches above Posadas, which would need a method
   that handles radar shadow in a valley rather than a tuned threshold.
-- `track`: projecting where a wave now in progress will arrive downstream. The
-  travel times exist; turning them into arrival dates with honest uncertainty is
-  the next step.
+- A projection of how *high* the crest will be, which needs a routing model
+  rather than a travel time.
 - Stratifying crest speed by wave size. It rises with stage, and one median for a
   whole stretch hides that.
 
