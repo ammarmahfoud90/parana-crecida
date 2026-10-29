@@ -63,6 +63,9 @@ been required for the public endpoints.
 ```bash
 crecida gauges            # the gauges in scope and how far each is trusted
 crecida chain             # the downstream chain and river-km (--rederive to rebuild)
+crecida lags              # measure travel time and freeze the table
+crecida climatology       # day-of-year reference curves for every gauge
+crecida oni               # NOAA's Oceanic Nino Index
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -240,6 +243,52 @@ may be no crest in the window at all, and the travel times must still be there.
 
 **None of it is a forecast.** These are the travel times the river has shown.
 
+## View 3: upstream drivers
+
+`site/drivers.html` shows what is pushing the river: the Iguazú's discharge at
+Andresito, Yacyretá's inflow and release, the Paraná at Confluencia, and the state
+of El Niño. These lead the middle river by days.
+
+Three kinds of thing sit on that page, and the page says which is which, because
+they are not equally solid.
+
+**Series with history**, from a5: Andresito, Yacyretá afluente and efluente, and
+Confluencia. Each is placed against its own day-of-year distribution, so "32,500
+m3/s" also reads as "p96 for late October".
+
+**Values INA prints but does not serve.** Guaíra Porto and Represa Itaipú appear
+in the daily report's flow table and nowhere in the a5 catalogue. There is today's
+number and no history at all, so they are shown as a dated snapshot and explicitly
+not compared to anything.
+
+**ENSO**, from NOAA CPC's Oceanic Niño Index. Monthly, slow, and basin-scale: it
+explains why the whole basin is wet this season, not the timing of any one crest.
+The page labels the *reading*, not the episode — NOAA's episode definition needs
+five consecutive overlapping seasons, which a single number cannot establish.
+
+Adding the drivers also resolved two gauges Stage 1 could not map. INA's report
+lists a *stage* for Puerto Pilcomayo while the series held under that name is
+discharge, and lists Andresito and Yacyretá afluente with no obvious a5 id. The
+catalogue gives Andresito as 26605 and Yacyretá afluente as 26684, both daily-mean
+discharge, so **16 of the 47 gauges in scope now carry official levels**.
+
+### Reference curves
+
+`crecida climatology` trims rios-argentina's day-of-year percentile curves where
+they exist and builds them from the cached record where they do not. The dam and
+inflow series were never in that file, and without a curve the view cannot say
+whether 12,300 m3/s is unusual — which is the only interesting question. A gauge
+whose record is too short is left without one rather than given a thin curve: no
+reference reads as unknown everywhere downstream, which is the honest answer.
+
+### What is missing
+
+Rainfall over the upper basin in Brazil. The sources PLAN.md names — GPM IMERG and
+CHIRPS — are read through Google Earth Engine or Earthdata, and this project has no
+credential for either: there is no `ee` package, no `~/.config/earthengine`, and no
+service account. Until one exists, this view shows the water already in the river,
+not the water about to fall, and the page says so.
+
 ## Status
 
 Built:
@@ -249,10 +298,12 @@ Built:
   tests, the export gate, view 1, and the daily GitHub Actions run.
 - The river chain, normalisation against day-of-year climatology, crest detection,
   travel time between gauges, and view 2.
+- Dam and inflow drivers, ENSO ingestion, reference-curve building, and view 3.
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- Views 3 to 5: upstream drivers, flooded area, method and limits.
+- Views 4 and 5: flooded area (Sentinel-1), method and limits.
+- Basin rainfall, once there is an Earth Engine or Earthdata credential.
 - `track`: projecting where a wave now in progress will arrive downstream. The
   travel times exist; turning them into arrival dates with honest uncertainty is
   the next step.

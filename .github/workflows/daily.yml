@@ -53,6 +53,12 @@ jobs:
         continue-on-error: true
         run: crecida thresholds --report reports/thresholds.txt
 
+      # ENSO moves monthly and the endpoint is a plain text file, but a
+      # NOAA outage must not stop the river data. The committed series stands.
+      - name: Refresh the ENSO index
+        continue-on-error: true
+        run: crecida oni --report reports/oni.txt
+
       # fetch -> load -> data tests -> export. A failed test exits non-zero
       # here, so the commit and deploy steps below are skipped and the
       # already-published site stays exactly as it is.
@@ -63,7 +69,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data data/ina_thresholds.csv reports
+          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json reports
           if git diff --staged --quiet; then
             echo "nothing changed"
           else
