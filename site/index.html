@@ -337,7 +337,11 @@ function render(data) {
   const age = data.data_age_days;
   if (age !== null && age !== undefined && age > 1) {
     fresh.textContent = t.stale(age);
-    fresh.className = age > 7 ? "stale" : "";
+    // Three days, the same threshold `crecida freshness` fails CI on. They
+    // have to agree, because when the scheduled run does not happen at all
+    // the CI check never runs either - and then this line is the only thing
+    // in the world that notices the data has stopped moving.
+    fresh.className = age > 3 ? "stale" : "";
   } else {
     fresh.textContent = "";
     fresh.className = "";
