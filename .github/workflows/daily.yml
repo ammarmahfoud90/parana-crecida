@@ -5,14 +5,15 @@ name: daily
 # is usually out.
 on:
   schedule:
-    # Twice, at odd minutes. GitHub runs schedules on a best-effort basis
-    # and drops them under load; the top of the hour is the most contended
-    # minute there is, and a "0 12 * * *" set here did not fire at all on
-    # its first day. Two attempts make a silent miss much less likely, and
-    # the job is idempotent -- the second run commits nothing if the first
-    # already did the work.
+    # Three attempts a day, at odd minutes, well spaced. GitHub runs
+    # schedules on a best-effort basis and drops them under load, and the
+    # top of the hour is the most contended minute there is -- a
+    # "0 12 * * *" set here was dropped on its first day. Three independent
+    # chances make a silent miss unlikely, and the job is idempotent: a
+    # later run commits nothing if an earlier one already did the work.
     - cron: "23 12 * * *"
-    - cron: "23 18 * * *"
+    - cron: "47 17 * * *"
+    - cron: "11 22 * * *"
   workflow_dispatch:
 
 permissions:
