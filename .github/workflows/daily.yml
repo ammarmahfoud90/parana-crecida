@@ -88,7 +88,15 @@ jobs:
           python -m pip install "earthengine-api>=1.4" "pillow>=10"
           crecida rainfall --report reports/rainfall.txt
           crecida flooded --report reports/flooded.txt
-          crecida animation --report reports/animation.txt
+          # The loop is 1.3 MB and only changes when a new pass lands, which
+          # is every 12 days. Re-rendering and committing it daily would add
+          # most of half a gigabyte of history a year to say the same thing,
+          # so git decides: no change to the series, no new render.
+          if git diff --quiet -- data/flooded.json; then
+            echo "No new satellite pass; keeping the committed loop."
+          else
+            crecida animation --report reports/animation.txt
+          fi
 
       # fetch -> load -> data tests -> export. A failed test exits non-zero
       # here, so the commit and deploy steps below are skipped and the
