@@ -20,13 +20,22 @@ absent, so nothing breaks either way.
 
 **1. Create the service account.** In the Google Cloud console for project
 `prueba-463913`, go to *IAM & Admin → Service Accounts → Create service account*.
-Name it something like `parana-crecida-ci`. It needs no IAM roles for this.
+Name it something like `parana-crecida-ci`. Skip the role prompt here; roles are
+granted separately in step 2.
 
-**2. Register it with Earth Engine.** At
-[signup.earthengine.google.com/#!/service_accounts](https://signup.earthengine.google.com/#!/service_accounts),
-register the account's email (it looks like
-`parana-crecida-ci@prueba-463913.iam.gserviceaccount.com`). Earth Engine will not
-answer it until this is done, even though the account exists.
+**2. Grant it two roles.** In *IAM & Admin → IAM*, click **Grant access**, paste
+the account's email (`parana-crecida-ci@prueba-463913.iam.gserviceaccount.com`)
+and add **both**:
+
+- **Service Usage Consumer** — without it: *"Caller does not have required
+  permission to use project"*
+- **Earth Engine Resource Writer** — without it: *"Permission
+  'earthengine.computations.create' denied"*
+
+Each is needed, and Earth Engine only reports them one at a time, so granting
+just the first looks like progress and then fails again. The legacy
+`signup.earthengine.google.com` service-account page is not part of this flow for
+a Cloud project.
 
 **3. Create a key.** On the service account, *Keys → Add key → Create new key →
 JSON*. A file downloads. This is a long-lived credential: anyone holding it can
@@ -43,13 +52,24 @@ Either through GitHub's UI (*Settings → Secrets and variables → Actions → 
 repository secret*), or from a terminal, which avoids the key ever touching a
 clipboard — point the second command at wherever the JSON downloaded:
 
-```bash
+PowerShell (Windows):
+
+```powershell
 gh secret set EE_PROJECT --body "prueba-463913" --repo ammarmahfoud90/parana-crecida
 ```
 
-```bash
-gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida < "$HOME/Downloads/prueba-463913-xxxxxxxx.json"
+```powershell
+Get-Content "$env:USERPROFILE\Downloads\your-key.json" -Raw | gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida
 ```
+
+bash (macOS, Linux):
+
+```bash
+gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida < ~/Downloads/your-key.json
+```
+
+PowerShell has no `<` input redirection, so the bash form fails there with a
+parser error rather than anything helpful.
 
 **5. Check it.** Run the workflow by hand
 (`gh workflow run daily.yml`, or the *Run workflow* button) and look at the
