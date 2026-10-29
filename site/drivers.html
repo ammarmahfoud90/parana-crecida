@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aguas arriba — Crecida del Paraná</title>
+<meta name="description" content="Lo que empuja al Paraná: las represas, el aporte del Iguazú y el estado del Niño.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <nav class="views" data-t-aria="viewsNav">
+    <a href="index.html" data-t="viewToday"></a>
+    <a href="wave.html" data-t="viewWave"></a>
+    <a href="drivers.html" aria-current="page" data-t="viewDrivers"></a>
+  </nav>
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" hidden></div>
+
+  <div class="meta" id="meta" hidden>
+    <span><span data-t="windowLabel"></span> <b id="windowText"></b></span>
+    <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
+  </div>
+
+  <div class="enso" id="enso" hidden>
+    <span class="phase" id="ensoVal">–</span>
+    <span class="cap" id="ensoPhase"></span>
+    <p class="cap" style="margin:6px 0 0" id="ensoNote"></p>
+    <div class="bars" id="ensoBars"></div>
+    <div class="axis"><span id="ensoFrom"></span><span id="ensoTo"></span></div>
+  </div>
+
+  <h2 class="section" data-t="flowsHeading"></h2>
+  <div class="drivers" id="drivers"></div>
+
+  <h2 class="section" style="margin-top:28px" data-t="printedHeading"></h2>
+  <div class="printed" id="printed"></div>
+  <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="printedNote"></p>
+
+  <h2 class="section" style="margin-top:28px" data-t="missingHeading"></h2>
+  <p class="cap" style="color:var(--ink-soft);font-size:.9rem" data-t="missingNote"></p>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const T = {
+  es: {
+    htmlLang: "es", locale: "es-AR",
+    title: "Aguas arriba",
+    subtitle: "Lo que empuja al Paraná: las represas, el aporte del Iguazú y El Niño",
+    langGroup: "Idioma", viewsNav: "Vistas",
+    viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Los caudales y los niveles de alerta los publica el Instituto Nacional del Agua.",
+    officialLink: "Ver el alerta oficial del INA →",
+    windowLabel: "Período mostrado:", generatedAt: "Generado",
+    flowsHeading: "Caudales de entrada y de las represas",
+    printedHeading: "Caudales que el INA publica pero no sirve por API",
+    printedNote: "Estos valores salen del reporte diario del INA en PDF. Hay el número de hoy y nada de historia, así que no se los puede comparar con lo normal de la estación.",
+    missingHeading: "Lo que falta",
+    missingNote: "La lluvia sobre la cuenca alta en Brasil todavía no está. Las fuentes habituales (GPM IMERG, CHIRPS) se leen desde Google Earth Engine o Earthdata, y este proyecto no tiene esas credenciales. Sin eso, esta vista muestra el agua que ya está en el río, no la que está por caer.",
+    ensoNote: (season, year) => `Índice Niño Oceánico de la NOAA, trimestre ${season} ${year}. Es contexto de cuenca: explica por qué toda la cuenca está húmeda esta temporada, no el pico de una crecida en particular.`,
+    phases: {
+      el_nino_very_strong: "El Niño muy fuerte",
+      el_nino_strong: "El Niño fuerte",
+      el_nino_moderate: "El Niño moderado",
+      el_nino_weak: "El Niño débil",
+      neutral: "Neutral",
+      la_nina_weak: "La Niña débil",
+      la_nina_moderate: "La Niña moderada",
+      la_nina_strong: "La Niña fuerte",
+      la_nina_very_strong: "La Niña muy fuerte",
+      unknown: "Sin dato",
+    },
+    inSevenDays: "en 7 días",
+    noReference: "sin referencia histórica",
+    alertShort: "Alerta", evacShort: "Evac.",
+    method: "Caudales diarios de la API a5 del INA. Donde el INA no tiene una serie histórica en la API, el valor del día se toma del reporte diario en PDF y se marca como tal. Las curvas de referencia de cada estación se arman con su propio registro, entre 20 y 143 años según la estación.",
+    credits: "Fuentes: Instituto Nacional del Agua (INA), Argentina; NOAA Climate Prediction Center.",
+  },
+  en: {
+    htmlLang: "en", locale: "en-GB",
+    title: "Upstream",
+    subtitle: "What is pushing the Paraná: the dams, the Iguazú inflow and El Niño",
+    langGroup: "Language", viewsNav: "Views",
+    viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "Flows and alert levels are published by Argentina's Instituto Nacional del Agua.",
+    officialLink: "See INA's official alert →",
+    windowLabel: "Period shown:", generatedAt: "Generated",
+    flowsHeading: "Inflow and dam discharge",
+    printedHeading: "Flows INA publishes but does not serve by API",
+    printedNote: "These come from INA's daily PDF report. There is today's number and no history at all, so they cannot be placed against what is normal for the station.",
+    missingHeading: "What is missing",
+    missingNote: "Rainfall over the upper basin in Brazil is not here yet. The usual sources (GPM IMERG, CHIRPS) are read through Google Earth Engine or Earthdata, and this project has no credential for either. Without it, this view shows the water already in the river, not the water about to fall.",
+    ensoNote: (season, year) => `NOAA's Oceanic Niño Index for the ${season} ${year} season. This is basin-scale context: it explains why the whole basin is wet this season, not the timing of any one crest.`,
+    phases: {
+      el_nino_very_strong: "Very strong El Niño",
+      el_nino_strong: "Strong El Niño",
+      el_nino_moderate: "Moderate El Niño",
+      el_nino_weak: "Weak El Niño",
+      neutral: "Neutral",
+      la_nina_weak: "Weak La Niña",
+      la_nina_moderate: "Moderate La Niña",
+      la_nina_strong: "Strong La Niña",
+      la_nina_very_strong: "Very strong La Niña",
+      unknown: "No data",
+    },
+    inSevenDays: "in 7 days",
+    noReference: "no historical reference",
+    alertShort: "Alert", evacShort: "Evac.",
+    method: "Daily flows from INA's a5 API. Where INA has no historical series in the API, the day's value is taken from the daily PDF report and marked as such. Each station's reference curves are built from its own record, 20 to 143 years depending on the station.",
+    credits: "Sources: Instituto Nacional del Agua (INA), Argentina; NOAA Climate Prediction Center.",
+  },
+};
+
+let lang = "es";
+let payload = null;
+const SVG = "http://www.w3.org/2000/svg";
+
+function fmt(value, digits) {
+  if (value === null || value === undefined) return "–";
+  return new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: digits, maximumFractionDigits: digits,
+  }).format(value);
+}
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const value = t[el.dataset.t];
+    if (typeof value === "string") el.textContent = value;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  if (payload) render(payload);
+}
+
+function el(name, attrs, text) {
+  const node = document.createElementNS(SVG, name);
+  for (const [k, v] of Object.entries(attrs || {})) node.setAttribute(k, v);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function dayLabel(iso) {
+  return new Intl.DateTimeFormat(T[lang].locale, { day: "numeric", month: "short" })
+    .format(new Date(iso + "T12:00:00"));
+}
+
+function sparkline(gauge) {
+  const W = 300, H = 48, PAD = 4;
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("class", "spark");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("role", "img");
+
+  const values = gauge.values;
+  if (!values.length) return svg;
+  const lines = [gauge.alert, gauge.evacuation].filter((v) => v !== null && v !== undefined);
+  const lo = Math.min(...values, ...lines);
+  const hi = Math.max(...values, ...lines);
+  const span = Math.max(hi - lo, 1e-6);
+  const x = (i) => PAD + (i / Math.max(values.length - 1, 1)) * (W - 2 * PAD);
+  const y = (v) => H - PAD - ((v - lo) / span) * (H - 2 * PAD);
+
+  const points = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+  svg.appendChild(el("path", {
+    class: "area",
+    d: `M${x(0).toFixed(1)},${(H - PAD).toFixed(1)} L` + points.join(" L") +
+       ` L${x(values.length - 1).toFixed(1)},${(H - PAD).toFixed(1)} Z`,
+  }));
+  svg.appendChild(el("path", { class: "line", d: "M" + points.join(" L") }));
+
+  for (const [value, cls] of [[gauge.alert, "alert"], [gauge.evacuation, "evac"]]) {
+    if (value === null || value === undefined) continue;
+    svg.appendChild(el("line", {
+      class: "thr " + cls, x1: PAD, x2: W - PAD, y1: y(value), y2: y(value),
+    }));
+  }
+  svg.appendChild(el("title", {},
+    `${gauge.name}: ${dayLabel(gauge.days[0])} – ${dayLabel(gauge.days[gauge.days.length - 1])}`));
+  return svg;
+}
+
+function driverCard(gauge) {
+  const t = T[lang];
+  const card = document.createElement("div");
+  card.className = "driver";
+
+  const h = document.createElement("h3");
+  h.textContent = gauge.name;
+  card.appendChild(h);
+  const row = document.createElement("div");
+  row.className = "row";
+  const val = document.createElement("span");
+  val.className = "val";
+  val.textContent = fmt(gauge.latest.value, gauge.unit === "m3/s" ? 0 : 2);
+  const unit = document.createElement("span");
+  unit.className = "u";
+  unit.textContent = gauge.unit === "m3/s" ? "m³/s" : "m";
+  val.appendChild(unit);
+  row.appendChild(val);
+
+  const right = document.createElement("span");
+  const pct = document.createElement("span");
+  pct.className = "pct";
+  if (gauge.latest.percentile === null) {
+    pct.textContent = t.noReference;
+    pct.style.color = "var(--unknown)";
+  } else {
+    pct.textContent = "p" + fmt(gauge.latest.percentile, 0);
+    pct.style.color = gauge.latest.percentile >= 90 ? "var(--evac)"
+      : gauge.latest.percentile >= 75 ? "var(--alert)" : "var(--ink-soft)";
+  }
+  right.appendChild(pct);
+  row.appendChild(right);
+  card.appendChild(row);
+
+  if (gauge.change_7d !== null && gauge.change_7d !== undefined) {
+    const d7 = document.createElement("div");
+    d7.className = "d7 " + (gauge.change_7d > 0 ? "up" : gauge.change_7d < 0 ? "down" : "");
+    const sign = gauge.change_7d > 0 ? "+" : gauge.change_7d < 0 ? "−" : "±";
+    d7.textContent = `${sign}${fmt(Math.abs(gauge.change_7d), 0)} ${t.inSevenDays}`;
+    card.appendChild(d7);
+  }
+
+  card.appendChild(sparkline(gauge));
+  return card;
+}
+
+function renderEnso(enso) {
+  const t = T[lang];
+  if (!enso) return;
+  const box = document.getElementById("enso");
+  const value = document.getElementById("ensoVal");
+  value.textContent = (enso.anomaly > 0 ? "+" : "") + fmt(enso.anomaly, 2);
+  value.className = "phase " + (enso.anomaly >= 0.5 ? "warm" : enso.anomaly <= -0.5 ? "cool" : "");
+  document.getElementById("ensoPhase").textContent =
+    t.phases[enso.phase] || t.phases.unknown;
+  document.getElementById("ensoNote").textContent = t.ensoNote(enso.season, enso.year);
+
+  const bars = document.getElementById("ensoBars");
+  bars.replaceChildren();
+  const recent = enso.recent || [];
+  const peak = Math.max(1, ...recent.map((r) => Math.abs(r.anomaly)));
+  for (const reading of recent) {
+    const bar = document.createElement("i");
+    const share = Math.abs(reading.anomaly) / peak;
+    bar.style.height = Math.max(3, share * 50) + "px";
+    if (reading.anomaly >= 1.5) bar.className = "hot";
+    else if (reading.anomaly >= 0.5) bar.className = "warm";
+    else if (reading.anomaly <= -0.5) bar.className = "cool";
+    bar.title = `${reading.season} ${reading.year}: ${reading.anomaly > 0 ? "+" : ""}${fmt(reading.anomaly, 2)}`;
+    bars.appendChild(bar);
+  }
+  if (recent.length) {
+    document.getElementById("ensoFrom").textContent =
+      `${recent[0].season} ${recent[0].year}`;
+    document.getElementById("ensoTo").textContent =
+      `${recent[recent.length - 1].season} ${recent[recent.length - 1].year}`;
+  }
+  box.hidden = false;
+}
+
+function renderPrinted(rows, reportDate) {
+  const t = T[lang];
+  const box = document.getElementById("printed");
+  box.replaceChildren();
+  if (!rows || !rows.length) return;
+  const list = document.createElement("ul");
+  for (const row of rows) {
+    const li = document.createElement("li");
+    const left = document.createElement("span");
+    left.textContent = row.station + (reportDate ? ` · ${dayLabel(reportDate)}` : "");
+    const right = document.createElement("span");
+    right.className = "v";
+    right.textContent = `${fmt(row.value, 0)} ${row.unit === "m3/s" ? "m³/s" : "m"}`;
+    li.append(left, right);
+    list.appendChild(li);
+  }
+  box.appendChild(list);
+}
+
+function render(data) {
+  const t = T[lang];
+  // The window spans a year, so the year has to be in the label: without
+  // it "29 oct - 29 oct" reads as a single day.
+  const spanFmt = new Intl.DateTimeFormat(t.locale, {
+    day: "numeric", month: "short", year: "numeric",
+  });
+  document.getElementById("windowText").textContent =
+    `${spanFmt.format(new Date(data.window.start + "T12:00:00"))} – ` +
+    `${spanFmt.format(new Date(data.window.end + "T12:00:00"))}`;
+  document.getElementById("genAt").textContent =
+    new Intl.DateTimeFormat(t.locale, {
+      day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+    }).format(new Date(data.generated_at));
+  document.getElementById("meta").hidden = false;
+
+  renderEnso(data.enso);
+  document.getElementById("drivers").replaceChildren(
+    ...(data.gauges || []).map(driverCard));
+  renderPrinted(data.report_only, data.report_date);
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+
+setLang(pickLang());
+
+fetch("data/drivers.json", { cache: "no-cache" })
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then((data) => { payload = data; render(data); })
+  .catch((err) => {
+    const box = document.getElementById("error");
+    box.textContent = "No se pudieron cargar los datos / could not load data: " + err.message;
+    box.hidden = false;
+  });
+</script>
+</body>
+</html>
