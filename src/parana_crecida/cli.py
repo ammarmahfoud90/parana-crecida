@@ -984,6 +984,37 @@ def flooded(project: str | None, window_days: int, out: Path, report: Path | Non
     rep.write(report)
 
 
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=Path("site/media/flood.gif"),
+    show_default=True,
+)
+@click.option("--px", default=1000, show_default=True, help="Longest edge, in pixels.")
+@report_option
+def animation(project: str | None, out: Path, px: int, report: Path | None) -> None:
+    """Render the flood as a loop, one frame per satellite pass.
+
+    Built from the committed flooded-area series, so `crecida flooded` has
+    to have run first. Needs an Earth Engine credential.
+    """
+    from .animation import build
+
+    rep = Report("animation")
+    try:
+        info = build(project, out=out, px=px)
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"could not render the animation: {exc}") from exc
+
+    rep.say(f"{info['frames']} frames, {info['first']} to {info['last']}")
+    rep.say(f"peak {info['peak_km2']:,.0f} km2")
+    rep.say(f"{info['bytes'] / 1024 / 1024:.2f} MB -> {info['path']}")
+    rep.write(report)
+
+
 # -- store -----------------------------------------------------------------
 
 db_option = click.option(
