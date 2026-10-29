@@ -159,8 +159,12 @@ def test_the_threshold_still_reproduces_jrc_permanent_water():
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
-def test_the_committed_threshold_is_the_calibrated_one():
-    assert COMMITTED["method"]["threshold_db"] == fl.WATER_THRESHOLD_DB
+def test_each_stretch_carries_its_own_calibrated_threshold():
+    """The threshold does not transfer between stretches, so each stores its own."""
+    corridors = {c.key: c for c in fl.load_corridors()}
+    for stretch in COMMITTED["stretches"]:
+        assert stretch["threshold_db"] == corridors[stretch["key"]].threshold_db
+        assert -18 <= stretch["threshold_db"] <= -14
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")

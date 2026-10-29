@@ -57,7 +57,8 @@ GSW = "JRC/GSW1_4/GlobalSurfaceWater"
 #: Half-width of the corridor. Wide enough to hold the active floodplain
 #: between Corrientes and Goya without reaching into neighbouring basins.
 BUFFER_M = 20_000
-#: Calibrated against JRC permanent water over the 2021 bajante. See above.
+#: Fallback only. Each stretch carries its own calibrated value in
+#: data/corridors.json; see the module docstring for why.
 WATER_THRESHOLD_DB = -16.0
 #: Speckle is the grain in every radar image; a median over this radius
 #: removes it without moving a shoreline more than a pixel or two.
@@ -86,6 +87,10 @@ class Stretch:
     to_name: str
     river_km: float
     centreline: list[list[float]]
+    #: Calibrated for this stretch. It does not transfer between them:
+    #: channel width, island cover and surface roughness all differ.
+    threshold_db: float = WATER_THRESHOLD_DB
+    calibration: dict | None = None
 
 
 def load_corridors(path: Path | str = DEFAULT_CORRIDORS) -> list[Stretch]:
@@ -104,6 +109,8 @@ def load_corridors(path: Path | str = DEFAULT_CORRIDORS) -> list[Stretch]:
             to_name=s["to_name"],
             river_km=float(s["river_km"]),
             centreline=s["centreline"],
+            threshold_db=float(s.get("threshold_db", WATER_THRESHOLD_DB)),
+            calibration=s.get("calibration"),
         )
         for s in payload.get("stretches", [])
     ]
@@ -189,6 +196,14 @@ BATCH_DAYS = 6
 #: come round every 12 days or so, which is the real sampling rate.
 MIN_COVERAGE = 0.95
 
+#: A pass that cannot even find the permanent river did not measure the
+#: flood either. It happens when wind roughens the water surface enough to
+#: lift its backscatter above the threshold, and it survives the coverage
+#: filter because the ground *was* observed -- just not usefully. Anything
+#: below this share of JRC's permanent water is dropped rather than
+#: published as a river that shrank to a third of its channel.
+MIN_PLAUSIBLE_FRACTION = 0.7
+
 
 def area_series(
     corridor,
@@ -198,6 +213,7 @@ def area_series(
     threshold_db: float = WATER_THRESHOLD_DB,
     batch: int = BATCH_DAYS,
     min_coverage: float = MIN_COVERAGE,
+    floor_km2: float | None = None,
 ) -> list[tuple[date, float, int]]:
     """Water area per acquisition date.
 
@@ -262,10 +278,16 @@ def area_series(
                  int(props.get("images") or 0))
             )
         log.debug("flooded area: %d/%d days", min(index + batch, len(all_days)), len(all_days))
+    implausible = 0
+    if floor_km2 is not None:
+        kept = [row for row in out if row[1] >= floor_km2]
+        implausible = len(out) - len(kept)
+        out = kept
+
     out.sort(key=lambda row: row[0])
     log.info(
-        "%d full-coverage passes kept, %d partial passes dropped",
-        len(out), partial,
+        "%d passes kept, %d partial, %d too dark to be believed",
+        len(out), partial, implausible,
     )
     return out
 
@@ -291,12 +313,19 @@ def build(
     out: list[dict[str, object]] = []
     for stretch in stretches:
         corridor = corridor_geometry(stretch)
+        thr = stretch.threshold_db
         area = float(corridor.area(1000).divide(1e6).getInfo())
         permanent = permanent_water_km2(corridor)
         baseline = water_area_km2(
-            corridor, BASELINE_START, BASELINE_END, threshold_db=threshold_db
+            corridor, BASELINE_START, BASELINE_END, threshold_db=thr
         )
-        series = area_series(corridor, start, end, threshold_db=threshold_db)
+        series = area_series(
+            corridor,
+            start,
+            end,
+            threshold_db=thr,
+            floor_km2=permanent * MIN_PLAUSIBLE_FRACTION,
+        )
         log.info(
             "%s: corridor %.0f km2, baseline %.0f km2, %d observations",
             stretch.key, area, baseline or 0, len(series),
@@ -309,6 +338,7 @@ def build(
             "corridor_km2": round(area),
             # The anchor the threshold was calibrated against. Kept in the
             # payload so the calibration can be re-checked, not just trusted.
+            "threshold_db": thr,
             "permanent_water_km2": round(permanent, 1),
             "baseline_km2": baseline,
             "baseline_window": {
@@ -323,7 +353,7 @@ def build(
         "schema": 1,
         "source": S1,
         "method": {
-            "threshold_db": threshold_db,
+            "threshold_db": "per stretch; see each stretch's threshold_db",
             "speckle_radius_m": SPECKLE_RADIUS_M,
             "buffer_m": BUFFER_M,
             "scale_m": AREA_SCALE_M,
