@@ -338,3 +338,20 @@ def _corridor_gauge(stretch: dict, role: str) -> str | None:
         if corridor.key == stretch.get("key"):
             return corridor.from_id if role == "from" else corridor.to_id
     return None
+
+
+#: Static reference layers for the map. They change only when the gauge
+#: roster or the chain does, so they are built once and published, not
+#: regenerated nightly.
+MAP_LAYERS = ("gauges.geojson", "departamentos.geojson")
+
+
+def map_layers_present(out_dir: Path = DEFAULT_SITE_DATA) -> list[str]:
+    """Which map layers are missing from the published directory.
+
+    The map fetches these by relative path from the site, so one written to
+    the repository's data/ directory instead is simply never found -- and
+    the map renders without gauges or departamento lines while otherwise
+    looking entirely healthy.
+    """
+    return [name for name in MAP_LAYERS if not (out_dir / name).exists()]

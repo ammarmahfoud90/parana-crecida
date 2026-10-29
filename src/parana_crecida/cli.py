@@ -917,6 +917,16 @@ def freshness(
         else:
             rep.say("rainfall:   none published")
 
+    from .export import map_layers_present
+
+    missing = map_layers_present(site_data)
+    if missing:
+        problems.append(
+            "map layers missing from the published directory: " + ", ".join(missing)
+        )
+    else:
+        rep.say("map layers: gauges and departamentos published")
+
     water = site_data / "flooded.json"
     if water.exists():
         flood = _json.loads(water.read_text(encoding="utf-8")) or {}
@@ -1012,6 +1022,43 @@ def animation(project: str | None, out: Path, px: int, report: Path | None) -> N
     rep.say(f"{info['frames']} frames, {info['first']} to {info['last']}")
     rep.say(f"peak {info['peak_km2']:,.0f} km2")
     rep.say(f"{info['bytes'] / 1024 / 1024:.2f} MB -> {info['path']}")
+    rep.write(report)
+
+
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
+@click.option("--cycles", default=15, show_default=True,
+              help="How many 12-day windows to render.")
+@click.option("--px", default=1600, show_default=True, help="Longest edge, in pixels.")
+@report_option
+def mapframes(project: str | None, cycles: int, px: int, report: Path | None) -> None:
+    """Render georeferenced water overlays for the map.
+
+    Twelve-day composites rather than single passes: the satellite's swath
+    is narrower than this run of river and the corridors sit across swath
+    edges, so only a full repeat cycle covers every stretch. Needs an Earth
+    Engine credential.
+    """
+    from . import flooded as _fl
+    from .mapframes import render
+
+    rep = Report("map frames")
+    try:
+        _fl.initialize(project)
+        payload = render(cycles=cycles, px=px)
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"could not render the map frames: {exc}") from exc
+
+    rep.say(f"{len(payload['frames'])} frames, {payload['window_days']}-day composites")
+    rep.say(f"bounds {payload['bounds']}")
+    rep.say()
+    for frame in payload["frames"]:
+        per = "  ".join(f"{k.split('_')[0][:4]}:{v:,.0f}" for k, v in frame["km2"].items())
+        rep.say(f"  {frame['start']} .. {frame['end']}  "
+                f"{frame['total_km2']:>8,.0f} km2   {per}")
     rep.write(report)
 
 

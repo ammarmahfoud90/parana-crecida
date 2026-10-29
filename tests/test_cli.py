@@ -177,6 +177,7 @@ def test_only_implemented_commands_are_registered():
         "thresholds",
         "fetch",
         "load",
+        "mapframes",
         "validate",
         "export",
         "daily",
@@ -195,11 +196,18 @@ def test_version(runner):
 # -- freshness -------------------------------------------------------------
 
 
-def write_site(tmp_path, *, age_days=1, rain_stale=0, with_rain=True):
+def write_site(tmp_path, *, age_days=1, rain_stale=0, with_rain=True, with_layers=True):
     import json
 
     data = tmp_path / "site"
     data.mkdir(exist_ok=True)
+    if with_layers:
+        # The map fetches these by relative path from the published site, so
+        # one left behind in the repository's data/ directory is simply never
+        # found and the map renders without gauges or departamento lines.
+        for name in ("gauges.geojson", "departamentos.geojson"):
+            (data / name).write_text('{"type":"FeatureCollection","features":[]}',
+                                     encoding="utf-8")
     (data / "river_today.json").write_text(json.dumps({
         "last_data_day": "2026-10-28", "data_age_days": age_days,
     }), encoding="utf-8")
@@ -242,3 +250,12 @@ def test_freshness_fails_when_nothing_is_published(runner, tmp_path):
     result = runner.invoke(main, ["freshness", "--site-data", str(tmp_path / "nope")])
     assert result.exit_code != 0
     assert "nothing published" in result.output
+
+
+def test_freshness_fails_when_a_map_layer_is_not_published(runner, tmp_path):
+    """A missing layer leaves the map looking healthy but blank."""
+    site = write_site(tmp_path, with_layers=False)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "map layers missing" in result.output
+    assert "gauges.geojson" in result.output
