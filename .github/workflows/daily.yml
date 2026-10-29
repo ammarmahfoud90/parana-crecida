@@ -12,7 +12,7 @@ on:
     # chances make a silent miss unlikely, and the job is idempotent: a
     # later run commits nothing if an earlier one already did the work.
     - cron: "23 12 * * *"
-    - cron: "47 17 * * *"
+    - cron: "19 18 * * *"
     - cron: "11 22 * * *"
   workflow_dispatch:
 
