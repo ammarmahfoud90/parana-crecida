@@ -23,6 +23,7 @@ would mislabel a real flood:
 from __future__ import annotations
 
 import csv
+import json
 import logging
 import re
 import unicodedata
@@ -354,3 +355,48 @@ def classify(
     if threshold.alert is None and threshold.evacuation is None:
         return "unknown"
     return "below"
+
+
+DEFAULT_SNAPSHOT = Path("data/report_snapshot.json")
+
+
+def write_snapshot(
+    path: Path, rows: list[ReportRow], *, source_pdf: str, source_date: date
+) -> None:
+    """Every row of the day's threshold tables, values included.
+
+    The CSV keeps only the thresholds, because those are what the rest of
+    the pipeline matches on. This keeps the whole row: Guaira Porto and
+    Represa Itaipu appear in INA's flow table and nowhere in the a5
+    catalogue, so the report is the only place their numbers exist.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": 1,
+        "source_pdf": source_pdf,
+        "source_date": source_date.isoformat(),
+        "rows": [
+            {
+                "station": r.station,
+                "river": r.river,
+                "unit": r.unit,
+                "value": r.value,
+                "trend": r.trend,
+                "alert": r.alert,
+                "evacuation": r.evacuation,
+                "outlook": r.outlook,
+            }
+            for r in rows
+        ],
+    }
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+
+
+def load_snapshot(path: Path | str = DEFAULT_SNAPSHOT) -> dict:
+    """The stored report snapshot, or an empty one."""
+    path = Path(path)
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
