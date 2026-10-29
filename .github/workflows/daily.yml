@@ -1,0 +1,81 @@
+name: daily
+
+# Fetch, test, export, publish. INA updates through the morning in
+# Argentina, so this runs at 12:00 UTC (09:00 ART), after the daily report
+# is usually out.
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Never let two runs publish at once, and let a newer run supersede a
+# queued one - the river will have moved on.
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: python -m pip install -e packages/ina-a5 -e .
+
+      # The series cache is the raw layer: ~940k daily readings going back
+      # to 1884. Restoring it means each run asks INA only for the last few
+      # days. A cold cache still works, it just starts each series short.
+      - name: Restore the series cache
+        uses: actions/cache@v4
+        with:
+          path: cache
+          key: series-cache-${{ github.run_id }}
+          restore-keys: series-cache-
+
+      # Thresholds move rarely and the PDF is occasionally unavailable, so a
+      # failure here must not stop the river data. The committed CSV stands.
+      - name: Refresh INA alert and evacuation levels
+        continue-on-error: true
+        run: crecida thresholds --report reports/thresholds.txt
+
+      # fetch -> load -> data tests -> export. A failed test exits non-zero
+      # here, so the commit and deploy steps below are skipped and the
+      # already-published site stays exactly as it is.
+      - name: Fetch, test and export
+        run: crecida daily --cache-dir cache --report reports/daily.txt
+
+      - name: Commit the published data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data data/ina_thresholds.csv reports
+          if git diff --staged --quiet; then
+            echo "nothing changed"
+          else
+            git commit -m "datos $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

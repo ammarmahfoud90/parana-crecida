@@ -61,11 +61,71 @@ been required for the public endpoints.
 ## Use
 
 ```bash
-crecida gauges                      # the gauges in scope and how far each is trusted
-crecida catalogue                   # page the whole a5 catalogue to data/
-crecida fetch --tier 1              # top up the cached series
-crecida guards                      # check for stale, stuck or re-zeroed gauges
+crecida gauges            # the gauges in scope and how far each is trusted
+crecida thresholds        # parse INA's alert/evacuation levels into data/
+crecida fetch             # top up the cached series from the a5 API
+crecida load              # load the JSON cache into DuckDB
+crecida validate          # run the data tests
+crecida export            # validate, then write site/data
+crecida daily             # all of the above, in order: what CI runs
+crecida guards            # check for stale, stuck or re-zeroed gauges
+crecida catalogue         # page the whole a5 catalogue to data/
 ```
+
+## Two layers, and the gate between them
+
+The JSON cache under `cache/` is the **raw layer** - one file per series, the
+format rios-argentina already writes, cheap to top up and safe to delete. DuckDB
+is the **clean layer**: typed, keyed on `(series_id, day)` so duplicate days are
+structurally impossible, and the only thing the exporter reads. A bad load can
+always be rebuilt from the raw files without going back to INA's server.
+
+Between the store and the site is the gate. `export` takes a validation result and
+refuses to write unless it passed, so "export without validating" is not a thing
+you can accidentally write. If a test fails, nothing on disk changes, CI skips its
+commit and deploy steps, and the already-published page stays up - with its own
+last-update date visible, so a reader can see the data has not moved.
+
+The data tests, in `src/parana_crecida/validate.py`:
+
+| Test | Blocks? |
+|---|---|
+| There are rows at all | yes - an empty store must never pass vacuously |
+| No null fields, no NaN or infinity | yes |
+| No duplicate `(gauge, day)` | yes |
+| No readings dated after today | yes - that means a timezone bug, not a fast river |
+| No series systematically outside its unit's range | yes |
+| Thresholds in the same unit as their gauge | yes |
+| Every tier-1 gauge has data | warns; blocks only if *none* do |
+| Isolated out-of-range readings | warns |
+| Data is fresh | warns - if INA is down, keep showing the last good reading |
+| Latest reading within the gauge's own record | warns |
+
+The range check splits two faults that look alike. A whole series out of range
+means the series is not what we think it is - discharge filed as stage - and blocks.
+One bad row in twenty thousand is a glitch in INA's archive and only warns. Both
+cases are real and both turned up on the first run against live data.
+
+## Alert and evacuation levels
+
+The a5 API does not publish thresholds; they are only in INA's daily report PDF.
+`crecida thresholds` parses that into `data/ina_thresholds.csv`, which is then the
+one source for them.
+
+Three rules it follows, because a wrong threshold would mislabel a real flood:
+
+- **Nothing is invented.** A gauge INA does not list gets an empty row saying so,
+  and a missing threshold reads as *unknown* everywhere downstream, never as 0 m.
+- **Nothing is dropped.** Report rows that match no gauge in scope are written out
+  too, marked `unmatched_report_row`, so the CSV can be checked against the PDF
+  line by line.
+- **Matching is on name and unit.** INA lists a *stage* for Puerto Pilcomayo, but
+  the series held under that name is *discharge*; attaching a 5.35 m alert to an
+  1,800 m3/s reading would mark every day of the record as catastrophic, so the
+  match is refused and reported.
+
+As of the 2026-10-28 report, **14 of the 45 gauges in scope have official levels**.
+The other 31 are shown as having none.
 
 Reuse rios-argentina's existing history instead of re-downloading a century:
 
@@ -104,16 +164,34 @@ Six gauges are flagged `bad_snap`: `snap_v2.py` put Barranqueras, Santa Fe, San
 Nicolás, Ramallo, San Pedro and Zárate on small tributary reaches. They need a
 manual reach override before they can contribute river-km.
 
+## View 1: river today
+
+`site/index.html` is a plain page with no build step: it fetches the committed
+`site/data/river_today.json` and renders every gauge from Puerto Iguazú to San
+Fernando in river order, with the latest level, the change since the previous
+reading, and the official alert and evacuation lines where INA publishes them.
+
+Spanish and English, switchable, remembered per reader. Nothing in the pipeline is
+translated — the JSON carries proper nouns and stable keys, and the page turns
+those into text — so adding a third language touches one file. Gauge names carry
+their real spelling on the page (*Paraná*, *Iguazú*, *Zárate*) while the CLI prints
+ASCII, because a Windows console is cp1252 and an accent there is a crash.
+
+The change is measured against the *previous reading*, not "yesterday": gauges have
+gaps, and calling a two-day gap a one-day rise would overstate how fast the river
+moved. Where there is a gap, the page says how many days it spans.
+
 ## Status
 
 Built:
 
 - `ina-a5`: client, catalogue paging, observation download, cache, quality guards.
-- `parana_crecida`: the gauge roster, and the `gauges` / `catalogue` / `fetch` /
-  `guards` commands.
+- `parana_crecida`: gauge roster, INA threshold parsing, the DuckDB store, the data
+  tests, the export gate, view 1, and the daily GitHub Actions run.
 
 Not built yet — see `.claude/plans` for the full plan:
 
+- Views 2 to 5: the wave, upstream drivers, flooded area, method and limits.
 - `data/parana_chain.json`, the reviewed downstream chain with river-km, derived
   from the HydroRIVERS topology and hand-corrected for the bad snaps.
 - `normalize`: stage anomaly against the day-of-year percentile curves. Raw metres
@@ -122,17 +200,13 @@ Not built yet — see `.claude/plans` for the full plan:
 - `lag`: travel time by cross-correlation and by crest matching, with a celerity
   fit stratified by wave amplitude.
 - `track`: the live wave and its projected arrivals.
-- `site/index.html`: a wave trajectory plot — river-km against time, where a flood
-  wave is a diagonal streak whose slope is the celerity.
-- The daily GitHub Actions job that publishes it.
+- The wave trajectory plot — river-km against time, where a flood wave is a
+  diagonal streak whose slope is the celerity.
 
-INA does publish per-gauge alert and evacuation levels, but in its daily report
-PDF rather than through the a5 API — so they have to be parsed from
-`alerta.ina.gob.ar/ina/06-INFORMES/diario/` once and stored. Until that is done, an
-event is defined relative to each gauge's own seasonal normal (the day-of-year
-p90/p95 curves from rios-argentina's `climatology_final.json`). Both definitions
-are worth having: the official levels are what people act on, the percentiles are
-what make gauges comparable.
+Events are defined relative to each gauge's own seasonal normal (the day-of-year
+p90/p95 curves from rios-argentina's `climatology_final.json`) as well as against
+the official levels. Both are worth having: the official levels are what people act
+on, the percentiles are what make gauges comparable.
 
 **This is not an alert system.** Travel times describe what has already happened,
 not a forecast. Every page links to INA's official alert.
