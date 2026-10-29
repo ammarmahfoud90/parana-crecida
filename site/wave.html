@@ -27,6 +27,7 @@
     <a href="drivers.html" data-t="viewDrivers"></a>
     <a href="flood.html" data-t="viewFlood"></a>
     <a href="map.html" data-t="viewMap"></a>
+    <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
   <p class="notice">
@@ -70,19 +71,21 @@
   </div>
 
   <h2 class="section" style="margin-top:28px" data-t="legsHeading"></h2>
-  <table class="legs">
-    <thead>
-      <tr>
-        <th data-t="colLeg"></th>
-        <th data-t="colKm"></th>
-        <th data-t="colDays"></th>
-        <th data-t="colSpread"></th>
-        <th data-t="colWaves"></th>
-        <th data-t="colSpeed"></th>
-      </tr>
-    </thead>
-    <tbody id="legs"></tbody>
-  </table>
+  <div class="tablewrap">
+    <table class="legs">
+      <thead>
+        <tr>
+          <th data-t="colLeg"></th>
+          <th data-t="colKm"></th>
+          <th data-t="colDays"></th>
+          <th data-t="colSpread"></th>
+          <th data-t="colWaves"></th>
+          <th data-t="colSpeed"></th>
+        </tr>
+      </thead>
+      <tbody id="legs"></tbody>
+    </table>
+  </div>
   <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="legsNote"></p>
 
   <footer>
@@ -103,7 +106,7 @@ const T = {
     viewToday: "El río hoy", viewWave: "La onda",
     viewDrivers: "Aguas arriba",
     viewFlood: "Superficie",
-    viewMap: "Mapa",
+    viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto describe lo que ya pasó.",
     noticeBody: "Los tiempos de viaje salen del registro histórico de cada tramo. No son un pronóstico, y esto no es un sistema de alerta.",
     officialLink: "Ver el alerta oficial del INA →",
@@ -133,7 +136,7 @@ const T = {
     viewToday: "The river today", viewWave: "The wave",
     viewDrivers: "Upstream",
     viewFlood: "Flooded area",
-    viewMap: "Map",
+    viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This describes what has already happened.",
     noticeBody: "Travel times come from each stretch's historical record. They are not a forecast, and this is not an alert system.",
     officialLink: "See INA's official alert →",
