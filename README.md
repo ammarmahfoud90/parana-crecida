@@ -411,35 +411,99 @@ with that.
 ## View 5: the map
 
 `site/map.html` puts the measurement on a real map: OpenStreetMap underneath, the
-water as transparent overlays, the thirteen tier-1 gauges as markers carrying
-their current level, and departamento boundaries so you can see which ones are
-affected. Play the slider and the flood moves down the river over the towns it
-actually passes.
+gauges as markers carrying their current level, and departamento boundaries so you
+can see which ones are affected. It covers the whole Argentine Parana above the
+Delta - **1,440 km from the Brazil frontier at Puerto Iguazu to Villa
+Constitucion** - and carries two layers over it.
 
-### Four stretches, four thresholds
+### Two layers, because they answer different questions
 
-The run from Corrientes to Villa Constitucion is cut into four corridors at gauge
-pairs. **The threshold does not transfer between them**, so each is calibrated
-separately against JRC permanent water over the 2021 bajante:
+**The river, day by day** (the default). Every segment of the river line is
+coloured by how high the water is *for the time of year*, every day. This is the
+layer that shows movement: a wave travelling down the river reads as a band of
+colour moving south over the weeks.
+
+**Water by radar.** The twelve-day Sentinel-1 composites, as transparent overlays.
+This is the layer that shows extent: how far the water has actually spread off the
+channel and over the land.
+
+The daily layer is the default because it is the one that updates every day and
+covers the river evenly. The radar layer needs an Earth Engine credential and a
+satellite pass; the daily layer is built from the store on every scheduled run,
+which is why `crecida export` writes it and `crecida freshness` checks it.
+
+They are different lengths - 179 daily values against 15 composites - so the
+slider position cannot carry across a switch. What carries is the **date**:
+switching layer lands on the nearest date the other layer has.
+
+### Colouring a river from gauges along it
+
+Stage is measured at 22 gauges on this run, daily. Between them the value is
+interpolated, and two decisions make that defensible:
+
+**Percentiles, not metres.** Every gauge has its own zero, so 5.7 m is a flood at
+Goya and an ordinary day at Puerto Iguazu. The day-of-year percentile makes them
+comparable: "above the 95th for late October" means the same thing everywhere.
+
+**Interpolated along the river, not across the map.** Two points 20 km apart on a
+meander are far closer along the water than two points 20 km apart across a bend.
+
+**The line breaks at Yacyreta.** Above the dam is a reservoir pool, below it a
+regulated river. They are hydraulically separate, and a smooth gradient across the
+wall would be plainly wrong while looking perfectly smooth.
+
+A gauge may not colour the river if its level is not a river signal: `flow` is a
+different quantity, `bad_snap` and `unrouted` have no trustworthy position, and
+`tide_affected` Delta gauges rise with the Rio de la Plata - painting the Parana
+with their percentile would show a tide as a flood wave.
+
+River-km come from the frozen chain. Walking a stretch's centreline vertices gives
+1 to 7% more than the chain's gauge-to-gauge spacing, so each walk is scaled onto
+its chain spacing; every gauge then lands exactly on its own point of the line,
+and the line is monotonic by construction.
+
+### Eight stretches, eight thresholds - and two that publish no number
+
+The run is cut into eight corridors at gauge pairs. **The threshold does not
+transfer between them**, so each is calibrated separately against JRC permanent
+water over the 2021 bajante:
 
 | stretch | km | threshold | bajante vs JRC | residual |
 |---|---|---|---|---|
+| Puerto Iguazu - Libertador | 189 | -17.0 dB | 192 / 149 | **29%** |
+| Libertador - Posadas | 150 | -17.0 dB | 318 / 215 | **48%** |
+| Posadas - Ita Ibate | 163 | -14.5 dB | 784 / 816 | 3.9% |
+| Ita Ibate - Corrientes | 170 | -15.5 dB | 587 / 548 | 7.1% |
 | Corrientes - Goya | 212 | -16.0 dB | 536 / 521 | 3.0% |
 | Goya - La Paz | 218 | -16.5 dB | 496 / 536 | 7.5% |
 | La Paz - Parana | 154 | -16.0 dB | 562 / 556 | 1.2% |
 | Parana - Villa Constitucion | 221 | -16.5 dB | 738 / 715 | 3.3% |
 
-Whole decibels were not enough - two stretches sat 13-19% off at -16 dB. At half
-decibels all four come within 8%, and reassuringly they land at only -16.0 or
--16.5 rather than scattering, which would have meant the method was fitting noise.
+Whole decibels were not enough - stretches sat 13-19% off at -16 dB. At half
+decibels the six southern ones come within 8%, and they land in a tight band
+rather than scattering, which is what says the method is measuring water.
+
+**The two gorge stretches never got there, so they claim no area.** Above Posadas
+the Parana runs in a basalt gorge. Widening the search did find thresholds that
+matched JRC - around -20 and -21 dB - but with a 6.5 dB spread between
+neighbouring reaches, which is a threshold compensating for radar shadow on the
+valley walls rather than measuring water. Slope masking helped (455 to 296 km2)
+and still not enough. They are marked `calibrated: false`: they render a picture,
+they are kept out of every published total, and a test asserts both.
+
+That is the one thing extending north cost. The measured result south of it is
+unambiguous: at the flood's peak, water covers 3.1x the bajante baseline at
+Posadas-Ita Ibate and Corrientes-Goya, falling to 1.5x by Parana-Villa
+Constitucion - the wave spreading hardest where the valley is widest.
 
 ### Composites for the map, single passes for the charts
 
 Sentinel-1's swath is narrower than this run of river and the corridors sit across
 swath edges. Goya to La Paz gets full coverage **five** times in six months while
-Esquina to La Paz gets it twenty; splitting the corridor does not fix it, because
-one half still straddles the edge. A 12-day composite covers every stretch at
-99.6%, every window.
+Esquina to La Paz gets it twenty, and two of the northern stretches get it **not
+once**; splitting a corridor does not fix it, because one half still straddles the
+edge. A 12-day composite covers every stretch at 99.6%, every window, and gives
+all eight 14 or 15 cycles over the same six months.
 
 So the map animates composites and the charts use single passes, and each says
 which it is. A composite is a window, not an instant, and labelling it that way
@@ -461,6 +525,7 @@ permanent channel alone is 556.
   Argentina's own IGN service was timing out, and GADM - the obvious alternative -
   forbids redistribution, which committing it to a public repository would be.
 - Gauges: INA, positioned from rios-argentina's snapped station file
+- River line: HydroRIVERS centrelines, scaled onto the frozen chain's river-km
 
 ## Status
 
@@ -473,8 +538,13 @@ Built:
   travel time between gauges, and view 2.
 - Dam and inflow drivers, ENSO ingestion, reference-curve building, basin rainfall
   from Earth Engine, and view 3.
-- Flooded area from Sentinel-1 for four stretches, Corrientes to Villa
-  Constitucion, each separately calibrated; views 4 and 5, and the loop.
+- Flooded area from Sentinel-1 for eight stretches, Puerto Iguazu to Villa
+  Constitucion, each separately calibrated - six of them successfully; views 4
+  and 5, and the loop.
+- The daily river line: stage as a day-of-year percentile along all 1,440 km,
+  written by `crecida export` on every scheduled run and checked by
+  `crecida freshness`.
+- Rainfall refreshing itself in CI from an Earth Engine service account.
 
 Not built yet — see `.claude/plans` for the full plan:
 
@@ -482,7 +552,8 @@ Not built yet — see `.claude/plans` for the full plan:
   across the views.
 - The stretches below Villa Constitucion, into the Delta. Tidal, differently
   vegetated, and I would not assume the calibration holds there.
-- Refreshing rainfall in CI, which needs a service-account key in GitHub secrets.
+- An area for the two gorge stretches above Posadas, which would need a method
+  that handles radar shadow in a valley rather than a tuned threshold.
 - `track`: projecting where a wave now in progress will arrive downstream. The
   travel times exist; turning them into arrival dates with honest uncertainty is
   the next step.
