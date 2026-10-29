@@ -44,13 +44,20 @@ MAIN = "main"
 PALMAS = "palmas"
 GUAZU = "guazu"
 IBICUY = "ibicuy"
+VICTORIA = "victoria"
 ESTUARY = "estuary"
 TRIBUTARY = "tributary"
 
 
 @dataclass(frozen=True, slots=True)
 class Gauge:
-    """One gauge in scope."""
+    """One gauge in scope.
+
+    ``name`` is ASCII and is what the CLI prints: a Windows console is
+    cp1252 and an accent there is a crash, not a cosmetic problem.
+    ``display`` carries the real Spanish spelling and is what the published
+    site shows. Only gauges whose names differ set it.
+    """
 
     series_id: str
     name: str
@@ -58,6 +65,12 @@ class Gauge:
     tier: int = 3
     flags: frozenset[str] = field(default_factory=frozenset)
     note: str = ""
+    display: str = ""
+
+    @property
+    def label(self) -> str:
+        """The name a reader should see."""
+        return self.display or self.name
 
     @property
     def is_routing_node(self) -> bool:
@@ -65,8 +78,8 @@ class Gauge:
         return self.tier == 1 and not (self.flags & {"bad_snap", "unrouted", "flow"})
 
 
-def _g(series_id, name, branch=MAIN, tier=3, flags=(), note="") -> Gauge:
-    return Gauge(str(series_id), name, branch, tier, frozenset(flags), note)
+def _g(series_id, name, branch=MAIN, tier=3, flags=(), note="", display="") -> Gauge:
+    return Gauge(str(series_id), name, branch, tier, frozenset(flags), note, display)
 
 
 #: Tier 1: the main-stem routing chain, in downstream order.
@@ -81,20 +94,24 @@ MAIN_STEM = [
     _g(26268, "La Paz", tier=1, note="121-year record"),
     _g(26269, "Santa Elena", tier=1),
     _g(26270, "Hernandarias", tier=1),
-    _g(26271, "Parana", tier=1, note="125-year record"),
+    _g(26271, "Parana", tier=1, note="125-year record", display="Paraná"),
     _g(26273, "Diamante", tier=1, note="125-year record"),
     _g(26275, "San Lorenzo", tier=1),
     _g(26276, "Rosario", tier=1, note="143-year record, the longest in scope"),
-    _g(26277, "Villa Constitucion", tier=1, note="last reliably routed gauge"),
+    _g(26277, "Villa Constitucion", tier=1, note="last reliably routed gauge", display="Villa Constitución"),
 ]
 
 #: Tier 2: below Villa Constitucion. Tracked, not trusted for celerity.
 DELTA = [
-    _g(26278, "San Nicolas", tier=2, flags=("bad_snap",)),
+    # INA publishes alert and evacuation levels for Victoria and calls its
+    # river "Parana/Delta", so it belongs in scope even though it sits on a
+    # right-bank delta channel rather than the stem.
+    _g(26274, "Victoria", VICTORIA, 2, (), "Riacho Victoria, opposite Rosario"),
+    _g(26278, "San Nicolas", tier=2, flags=("bad_snap",), display="San Nicolás"),
     _g(26279, "Ramallo", tier=2, flags=("bad_snap",)),
     _g(26280, "San Pedro", tier=2, flags=("bad_snap",)),
     _g(26281, "Baradero", TRIBUTARY, 2, ("unrouted",), "on the Rio Baradero"),
-    _g(26282, "Zarate", PALMAS, 2, ("bad_snap", "tide_affected")),
+    _g(26282, "Zarate", PALMAS, 2, ("bad_snap", "tide_affected"), display="Zárate"),
     _g(26283, "Campana", PALMAS, 2, ("unrouted", "tide_affected")),
     _g(26284, "Escobar", PALMAS, 2, ("unrouted", "tide_affected")),
     _g(26286, "Canal Nuevo", IBICUY, 2, ("tide_affected",)),
@@ -112,17 +129,17 @@ DELTA = [
 #: Puerto Iguazu down to Santa Ana sits between Itaipu and Yacyreta; Posadas
 #: to Paso de la Patria sits below Yacyreta. All of it is dam-operated.
 UPSTREAM = [
-    _g(26251, "Puerto Iguazu", tier=3, flags=("regulated",), note="upstream boundary"),
+    _g(26251, "Puerto Iguazu", tier=3, flags=("regulated",), note="upstream boundary", display="Puerto Iguazú"),
     _g(26252, "Libertad", tier=3, flags=("regulated",)),
     _g(26253, "El Dorado", tier=3, flags=("regulated",)),
     _g(26254, "Libertador", tier=3, flags=("regulated",)),
     _g(26255, "Santa Ana", tier=3, flags=("regulated",)),
     _g(26256, "Posadas", tier=3, flags=("regulated",)),
-    _g(26257, "Ituzaingo", tier=3, flags=("regulated", "unrouted")),
-    _g(26258, "Ita Ibate", tier=3, flags=("regulated",)),
-    _g(26259, "Itati", tier=3, flags=("regulated",)),
+    _g(26257, "Ituzaingo", tier=3, flags=("regulated", "unrouted"), display="Ituzaingó"),
+    _g(26258, "Ita Ibate", tier=3, flags=("regulated",), display="Itá Ibaté"),
+    _g(26259, "Itati", tier=3, flags=("regulated",), display="Itatí"),
     _g(26260, "Paso de la Patria", tier=3, flags=("regulated",)),
-    _g(26685, "Yacyreta efluente", tier=3, flags=("regulated", "flow")),
+    _g(26685, "Yacyreta efluente", tier=3, flags=("regulated", "flow"), display="Yacyretá efluente"),
     _g(26690, "Confluencia", tier=3, flags=("flow",), note="Parana/Paraguay junction"),
 ]
 
@@ -131,7 +148,11 @@ TRIBUTARIES = [
     _g(26262, "Barranqueras", TRIBUTARY, 3, ("bad_snap",), "Chaco side at Corrientes"),
     _g(26266, "Reconquista", TRIBUTARY, 3),
     _g(26272, "Santa Fe", TRIBUTARY, 3, ("bad_snap",), "snapped off the main stem"),
-    _g(26652, "Puerto Pilcomayo", TRIBUTARY, 3, (), "Paraguay"),
+    # Discharge, not stage: the record runs 500-12,600, which is the
+    # Paraguay's flow in m3/s and not metres on any datum. INA's daily
+    # report lists a *level* for Puerto Pilcomayo, so its official
+    # thresholds belong to a stage series whose id we do not have yet.
+    _g(26652, "Puerto Pilcomayo", TRIBUTARY, 3, ("flow",), "Paraguay, discharge"),
     _g(26442, "Puerto Formosa", TRIBUTARY, 3, ("bad_snap",), "Paraguay"),
     _g(26300, "Bermejo", TRIBUTARY, 3),
 ]
@@ -154,3 +175,17 @@ def series_ids(*, tiers: tuple[int, ...] = (1, 2, 3)) -> list[str]:
 def routing_nodes() -> list[Gauge]:
     """The gauges travel time may be fitted between, in downstream order."""
     return [g for g in MAIN_STEM if g.is_routing_node]
+
+
+def main_stem_sequence() -> list[Gauge]:
+    """Every stage gauge from Puerto Iguazu to San Fernando, in river order.
+
+    This is the display order for the "river today" view: one pass down the
+    river. Flow gauges are left out because m3/s does not belong on a stage
+    profile, and the tributaries are not on the stem at all.
+    """
+    return [
+        g
+        for g in (*UPSTREAM, *MAIN_STEM, *DELTA)
+        if "flow" not in g.flags
+    ]

@@ -128,6 +128,7 @@ def test_branches_are_from_the_documented_set():
         roster.PALMAS,
         roster.GUAZU,
         roster.IBICUY,
+        roster.VICTORIA,
         roster.ESTUARY,
         roster.TRIBUTARY,
     }
