@@ -1,4 +1,4 @@
-flooded area - 2026-10-29T13:34:59-03:00
+flooded area - 2026-10-29T14:16:36-03:00
 
 source COPERNICUS/S1_GRD  threshold -16.0 dB
 window 2026-04-30 to 2026-10-27
@@ -8,5 +8,23 @@ window 2026-04-30 to 2026-10-27
     JRC permanent water     521 km2
     2021 bajante            536 km2   <- the calibration check
     20 full passes, latest 1,651 km2 on 2026-10-25, peak 1,651 km2
+
+  Goya -> La Paz  (218 km of river)
+    corridor              9,501 km2
+    JRC permanent water     536 km2
+    2021 bajante            496 km2   <- the calibration check
+    5 full passes, latest 751 km2 on 2026-06-21, peak 751 km2
+
+  La Paz -> Parana  (154 km of river)
+    corridor              7,103 km2
+    JRC permanent water     556 km2
+    2021 bajante            562 km2   <- the calibration check
+    19 full passes, latest 706 km2 on 2026-10-19, peak 1,002 km2
+
+  Parana -> Villa Constitucion  (221 km of river)
+    corridor              9,621 km2
+    JRC permanent water     715 km2
+    2021 bajante            738 km2   <- the calibration check
+    14 full passes, latest 1,030 km2 on 2026-10-19, peak 1,293 km2
 
 flooded -> data/flooded.json
