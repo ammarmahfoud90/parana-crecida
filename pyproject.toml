@@ -25,6 +25,10 @@ dependencies = [
 [project.optional-dependencies]
 # Only needed to re-derive the gauge chain from the HydroRIVERS shapefile.
 geo = ["pyshp>=2.3"]
+# Only needed to refresh basin rainfall. Needs a Google Earth Engine
+# credential, which the scheduled run does not have, so the series is
+# derived locally and committed.
+gee = ["earthengine-api>=1.4"]
 dev = ["pytest>=8", "responses>=0.25"]
 
 [project.scripts]
