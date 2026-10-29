@@ -820,8 +820,9 @@ def climatology(
 
 @main.command()
 @click.option(
-    "--project", envvar="EE_PROJECT", required=True,
-    help="Your Earth Engine cloud project id. Also read from EE_PROJECT.",
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT; a "
+         "service-account key carries its own.",
 )
 @click.option("--window-days", default=180, show_default=True)
 @click.option(
@@ -829,7 +830,9 @@ def climatology(
     show_default=True,
 )
 @report_option
-def rainfall(project: str, window_days: int, out: Path, report: Path | None) -> None:
+def rainfall(
+    project: str | None, window_days: int, out: Path, report: Path | None
+) -> None:
     """Fetch basin rainfall from Earth Engine and freeze it.
 
     Needs a Google Earth Engine credential, which a scheduled run does not
@@ -862,6 +865,64 @@ def rainfall(project: str, window_days: int, out: Path, report: Path | None) -> 
             )
     rep.say()
     rep.say(f"rainfall -> {out}")
+    rep.write(report)
+
+
+@main.command()
+@click.option(
+    "--site-data", type=click.Path(path_type=Path), default=DEFAULT_SITE_DATA,
+    show_default=True,
+)
+@click.option("--max-age-days", default=3, show_default=True)
+@click.option("--max-rain-age-days", default=10, show_default=True)
+@report_option
+def freshness(
+    site_data: Path, max_age_days: int, max_rain_age_days: int, report: Path | None
+) -> None:
+    """Fail if what is published has gone stale.
+
+    The export gate deliberately lets stale data through: if INA is down
+    the honest thing is to keep showing the last good reading with its
+    date, not to take the site down. But that leaves nobody knowing, so
+    this runs last, after the deploy. The site stays up and the run goes
+    red, which is what reaches a person.
+    """
+    import json as _json
+
+    rep = Report("freshness")
+    problems: list[str] = []
+
+    river = site_data / "river_today.json"
+    if not river.exists():
+        raise click.ClickException(f"nothing published at {river}")
+    data = _json.loads(river.read_text(encoding="utf-8"))
+    age = data.get("data_age_days")
+    rep.say(f"river data: {data.get('last_data_day')} ({age} days old)")
+    if age is None or age > max_age_days:
+        problems.append(f"river data is {age} days old, over the {max_age_days} allowed")
+
+    drivers = site_data / "drivers.json"
+    if drivers.exists():
+        rain = (_json.loads(drivers.read_text(encoding="utf-8")) or {}).get("rainfall")
+        if rain:
+            stale = rain.get("stale_days")
+            rep.say(f"rainfall:   {rain.get('fetched_on')} ({stale} days old)")
+            if stale is None or stale > max_rain_age_days:
+                problems.append(
+                    f"rainfall is {stale} days old, over the {max_rain_age_days} "
+                    "allowed; it needs a local `crecida rainfall` run or a "
+                    "service account in CI"
+                )
+        else:
+            rep.say("rainfall:   none published")
+
+    rep.say()
+    if problems:
+        for problem in problems:
+            rep.say(f"  STALE: {problem}")
+        rep.write(report)
+        raise click.ClickException("; ".join(problems))
+    rep.say("everything published is current")
     rep.write(report)
 
 

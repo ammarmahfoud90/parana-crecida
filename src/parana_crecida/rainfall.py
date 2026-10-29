@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -75,11 +76,47 @@ LAG_DAYS = 2
 WINDOW_DAYS = 180
 
 
-def initialize(project: str) -> None:
-    """Start Earth Engine. Raises if the credential or project is missing."""
+def parse_service_account_key(key: str) -> tuple[str, str, str | None]:
+    """``(json, client_email, project_id)`` from a key given inline or by path.
+
+    Split out from :func:`initialize` so it can be checked without Earth
+    Engine installed, which a test runner usually does not have.
+    """
+    key = (key or "").strip()
+    if not key:
+        raise ValueError("no service-account key given")
+    raw = key if key.startswith("{") else Path(key).read_text(encoding="utf-8")
+    try:
+        info = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"service-account key is not JSON: {exc}") from exc
+    email = info.get("client_email")
+    if not email:
+        raise ValueError("service-account key has no client_email")
+    return raw, str(email), info.get("project_id")
+
+
+def initialize(project: str | None = None, *, key: str | None = None) -> None:
+    """Start Earth Engine, by service account where one is offered.
+
+    A person running this locally has an OAuth credential from
+    ``earthengine authenticate``. A CI runner cannot have one, so it passes
+    a service-account key instead - as the JSON itself in
+    ``EE_SERVICE_ACCOUNT_KEY``, or a path to it. Without either, this falls
+    back to the local credential, which is the common case.
+    """
     import ee
 
-    ee.Initialize(project=project)
+    key = key or os.environ.get("EE_SERVICE_ACCOUNT_KEY") or ""
+    key = key.strip()
+    if not key:
+        ee.Initialize(project=project)
+        return
+
+    raw, email, key_project = parse_service_account_key(key)
+    credentials = ee.ServiceAccountCredentials(email, key_data=raw)
+    ee.Initialize(credentials, project=project or key_project)
+    log.info("Earth Engine: service account %s", email)
 
 
 def upstream_ids(seed: int, *, main_basin: int = MAIN_BASIN) -> set[int]:
@@ -188,7 +225,7 @@ def daily_rainfall(geometry, start: date, end: date) -> list[tuple[date, float |
 
 
 def build(
-    project: str,
+    project: str | None = None,
     *,
     window_days: int = WINDOW_DAYS,
     today: date | None = None,

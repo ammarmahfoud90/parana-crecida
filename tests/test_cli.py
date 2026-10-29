@@ -179,6 +179,7 @@ def test_only_implemented_commands_are_registered():
         "validate",
         "export",
         "daily",
+        "freshness",
         "guards",
     }
 
@@ -187,3 +188,55 @@ def test_version(runner):
     result = runner.invoke(main, ["--version"])
     assert result.exit_code == 0
     assert "0.1.0" in result.output
+
+
+# -- freshness -------------------------------------------------------------
+
+
+def write_site(tmp_path, *, age_days=1, rain_stale=0, with_rain=True):
+    import json
+
+    data = tmp_path / "site"
+    data.mkdir(exist_ok=True)
+    (data / "river_today.json").write_text(json.dumps({
+        "last_data_day": "2026-10-28", "data_age_days": age_days,
+    }), encoding="utf-8")
+    if with_rain:
+        (data / "drivers.json").write_text(json.dumps({
+            "rainfall": {"fetched_on": "2026-10-29", "stale_days": rain_stale},
+        }), encoding="utf-8")
+    return data
+
+
+def test_freshness_passes_on_current_data(runner, tmp_path):
+    site = write_site(tmp_path)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code == 0
+    assert "current" in result.output
+
+
+def test_freshness_fails_on_a_stalled_river_feed(runner, tmp_path):
+    """The site stays up; the run goes red, which is what reaches a person."""
+    site = write_site(tmp_path, age_days=9)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "9 days old" in result.output
+
+
+def test_freshness_fails_on_rainfall_left_to_rot(runner, tmp_path):
+    site = write_site(tmp_path, rain_stale=40)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "service account" in result.output
+
+
+def test_freshness_tolerates_a_site_with_no_rainfall(runner, tmp_path):
+    site = write_site(tmp_path, with_rain=False)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code == 0
+
+
+def test_freshness_fails_when_nothing_is_published(runner, tmp_path):
+    result = runner.invoke(main, ["freshness", "--site-data", str(tmp_path / "nope")])
+    assert result.exit_code != 0
+    assert "nothing published" in result.output

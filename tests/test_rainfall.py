@@ -180,3 +180,39 @@ def test_the_committed_window_stops_short_of_today():
 @pytest.mark.skipif(not COMMITTED, reason="no committed rainfall")
 def test_the_committed_table_is_small_enough_to_commit():
     assert len(json.dumps(COMMITTED)) < 200_000
+
+
+# -- service-account auth --------------------------------------------------
+
+
+def test_a_key_given_inline_is_parsed():
+    key = json.dumps({"client_email": "bot@x.iam.gserviceaccount.com",
+                      "project_id": "prueba-1", "private_key": "..."})
+    raw, email, project = rf.parse_service_account_key(key)
+    assert email == "bot@x.iam.gserviceaccount.com"
+    assert project == "prueba-1"
+    assert json.loads(raw)["private_key"] == "..."
+
+
+def test_a_key_given_by_path_is_read(tmp_path):
+    path = tmp_path / "key.json"
+    path.write_text(json.dumps({"client_email": "bot@x", "project_id": "p"}),
+                    encoding="utf-8")
+    _, email, project = rf.parse_service_account_key(str(path))
+    assert (email, project) == ("bot@x", "p")
+
+
+def test_a_key_without_an_email_is_refused():
+    with pytest.raises(ValueError, match="client_email"):
+        rf.parse_service_account_key(json.dumps({"project_id": "p"}))
+
+
+def test_a_key_that_is_not_json_is_refused():
+    with pytest.raises(ValueError, match="not JSON"):
+        rf.parse_service_account_key("{definitely not json")
+
+
+def test_an_empty_key_is_refused():
+    """Empty means "use the local credential", decided by the caller."""
+    with pytest.raises(ValueError, match="no service-account key"):
+        rf.parse_service_account_key("   ")
