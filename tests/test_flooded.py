@@ -116,6 +116,22 @@ def test_load_corridors_of_a_missing_file_is_empty(tmp_path):
 # -- summarising -----------------------------------------------------------
 
 
+def test_summarise_carries_the_calibration_to_the_page():
+    """The method page states the calibration, so it must receive it.
+
+    Otherwise the published threshold is whatever someone last typed into
+    the page, which is exactly the kind of claim this project does not make.
+    """
+    out = fl.summarise(table(stretches=[{
+        "key": "x", "from_name": "A", "to_name": "B", "river_km": 1,
+        "corridor_km2": 1, "baseline_km2": 10.0, "permanent_water_km2": 9.0,
+        "threshold_db": -16.5, "calibrated": False,
+        "days": ["2026-10-25"], "km2": [100.0],
+    }]))[0]
+    assert out["threshold_db"] == -16.5
+    assert out["calibrated"] is False
+
+
 def test_summarise_reports_the_latest_pass():
     out = fl.summarise(table())[0]
     assert out["latest"] == {"day": "2026-10-25", "km2": 1651.3}

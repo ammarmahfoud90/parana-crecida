@@ -443,9 +443,14 @@ def summarise(payload: dict[str, object]) -> list[dict[str, object]]:
             else round(latest["km2"] - baseline, 1)
         )
         out.append({
+            # threshold_db and calibrated travel to the page so the method
+            # page can state the calibration from the measurement itself
+            # rather than from a table someone typed and has to remember to
+            # update.
             **{k: stretch[k] for k in (
                 "key", "from_name", "to_name", "river_km", "corridor_km2",
                 "baseline_km2", "permanent_water_km2", "days", "km2",
+                "threshold_db", "calibrated",
             ) if k in stretch},
             "latest": latest,
             "extra_km2": extra,
