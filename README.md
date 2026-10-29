@@ -311,7 +311,8 @@ different thing from 12 mm on one town, and the page says so.
 `earthengine authenticate`. A scheduled run cannot have one, so it looks for a
 service-account key in `EE_SERVICE_ACCOUNT_KEY`; without that secret the rainfall
 step is skipped and the committed series stands, going stale until someone runs
-`crecida rainfall` by hand. The page shows when it was last refreshed and marks it
+`crecida rainfall` by hand. Setting that up is written out in
+[docs/earth-engine-service-account.md](docs/earth-engine-service-account.md). The page shows when it was last refreshed and marks it
 once it falls behind.
 
 ## Knowing when it stops working
