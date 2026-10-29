@@ -132,6 +132,33 @@ def test_summarise_carries_the_calibration_to_the_page():
     assert out["calibrated"] is False
 
 
+def test_an_uncalibrated_stretch_publishes_no_number_at_all():
+    """Not a low number - no number.
+
+    The gorge reaches went on reporting 190 km2 of water against a 192 km2
+    bajante baseline, which reads as a record flood covering less ground
+    than the worst drought in seventy-seven years. The figure was not low,
+    it was meaningless: in a basalt gorge the threshold fits radar shadow
+    rather than water. Withholding it only from the map's totals was not
+    enough.
+    """
+    out = fl.summarise(table(stretches=[{
+        "key": "gorge", "from_name": "A", "to_name": "B", "river_km": 189,
+        "corridor_km2": 5000, "baseline_km2": 192.1,
+        "permanent_water_km2": 148.5, "threshold_db": -17.0,
+        "calibrated": False,
+        "days": ["2026-10-27"], "km2": [189.9],
+    }]))[0]
+    assert out["latest"] is None
+    assert out["extra_km2"] is None
+    assert out["peak"] is None
+    assert out["km2"] == [] and out["days"] == []
+    assert out["baseline_km2"] is None
+    assert out["withheld"] == "uncalibrated"
+    # What it keeps: enough for a page to say nothing is claimed, and why.
+    assert out["from_name"] == "A" and out["calibrated"] is False
+
+
 def test_summarise_reports_the_latest_pass():
     out = fl.summarise(table())[0]
     assert out["latest"] == {"day": "2026-10-25", "km2": 1651.3}
@@ -252,6 +279,22 @@ def test_each_stretch_carries_its_own_calibrated_threshold():
     for stretch in COMMITTED["stretches"]:
         assert stretch["threshold_db"] == corridors[stretch["key"]].threshold_db
         assert -18 <= stretch["threshold_db"] <= -14
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
+def test_what_is_published_is_all_or_nothing():
+    """Every stretch either carries a calibrated measurement or carries none."""
+    published = json.loads(
+        Path("site/data/flooded.json").read_text(encoding="utf-8")
+    )
+    for stretch in published["stretches"]:
+        if stretch.get("calibrated") is False:
+            assert stretch["latest"] is None, stretch["key"]
+            assert stretch["extra_km2"] is None, stretch["key"]
+            assert stretch["peak"] is None, stretch["key"]
+            assert not stretch["km2"], stretch["key"]
+        else:
+            assert stretch["latest"], stretch["key"]
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")

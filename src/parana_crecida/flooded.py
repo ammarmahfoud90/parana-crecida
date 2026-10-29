@@ -430,13 +430,27 @@ def load_table(path: Path | str = DEFAULT_TABLE) -> dict[str, object]:
 
 
 def summarise(payload: dict[str, object]) -> list[dict[str, object]]:
-    """Latest observation and extra water per stretch, for the page."""
+    """Latest observation and extra water per stretch, for the page.
+
+    A stretch that never calibrated publishes **no area**. It keeps its
+    name, its length and its ``calibrated: false``, so a page can say that
+    nothing is claimed here and why, but every number is withheld.
+
+    This is the rule the gorge reaches were marked for, and withholding
+    them only from the map's totals was not enough: the per-stretch view
+    went on reporting 190 km2 of water against a 192 km2 bajante baseline,
+    which reads as a record flood covering less ground than the worst
+    drought in seventy-seven years. The number was not low, it was
+    meaningless - in a basalt gorge the threshold is fitting radar shadow,
+    not water - and a meaningless number is worse published than absent.
+    """
     out: list[dict[str, object]] = []
     for stretch in payload.get("stretches", []):
-        values = stretch.get("km2") or []
-        days = stretch.get("days") or []
+        uncalibrated = stretch.get("calibrated") is False
+        values = [] if uncalibrated else (stretch.get("km2") or [])
+        days = [] if uncalibrated else (stretch.get("days") or [])
         latest = {"day": days[-1], "km2": values[-1]} if values else None
-        baseline = stretch.get("baseline_km2")
+        baseline = None if uncalibrated else stretch.get("baseline_km2")
         extra = (
             None
             if latest is None or baseline is None
@@ -452,6 +466,13 @@ def summarise(payload: dict[str, object]) -> list[dict[str, object]]:
                 "baseline_km2", "permanent_water_km2", "days", "km2",
                 "threshold_db", "calibrated",
             ) if k in stretch},
+            **({
+                "baseline_km2": None,
+                "permanent_water_km2": None,
+                "days": [],
+                "km2": [],
+                "withheld": "uncalibrated",
+            } if uncalibrated else {}),
             "latest": latest,
             "extra_km2": extra,
             "peak": (

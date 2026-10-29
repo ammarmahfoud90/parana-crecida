@@ -108,8 +108,8 @@ const T = {
       `${latest} km² de agua el ${day}, contra ${base} km² en la bajante de 2021 — la más baja en 77 años.`,
     limitsHeading: "Qué mide y qué no",
     limitsBody: "El radar Sentinel-1 ve a través de las nubes, que es lo que hace falta en el Litoral cuando llueve. El agua quieta y abierta se ve oscura porque refleja el pulso lejos del satélite. Pero el agua bajo el monte se ve clara y cuenta como tierra, así que en las islas y los bañados esta cifra queda corta. El satélite cubre todo el tramo cada 12 días: entre pasadas no hay dato, y un pico puede pasar sin verse.",
-    methodLine: (thr, buf, obs) =>
-      `Umbral fijo de ${thr} dB sobre un corredor de ${buf} km a cada lado del cauce. Verificado contra el agua permanente del JRC: en la bajante de 2021 el método da 536 km² donde el JRC mide 521. ${obs} pasadas completas en el período.`,
+    methodLine: (thr, buf, obs, base, jrc) =>
+      `Umbral fijo de ${thr} dB sobre un corredor de ${buf} km a cada lado del cauce. Verificado contra el agua permanente del JRC: en la bajante de 2021 el método da ${base} km² donde el JRC mide ${jrc}. ${obs} pasadas completas en el período.`,
     method: "Sentinel-1 GRD, polarización VV, filtro de moteado de 50 m. Sólo se usan las pasadas que cubren todo el corredor: una pasada parcial deja superficie sin observar, que al contarse como cero haría parecer que el río se achicó.",
     credits: "Fuentes: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; alturas del INA.",
     noData: "sin dato",
@@ -139,8 +139,8 @@ const T = {
       `${latest} km² of water on ${day}, against ${base} km² during the 2021 bajante — the lowest Paraná in 77 years.`,
     limitsHeading: "What it measures, and what it misses",
     limitsBody: "Sentinel-1 radar sees through cloud, which is what the Litoral needs when it rains. Calm open water looks dark because it reflects the pulse away from the satellite. But water under trees looks bright and counts as land, so over the wooded islands and wetlands this figure falls short. The satellite covers the whole stretch every 12 days: between passes there is no measurement, and a peak can slip by unseen.",
-    methodLine: (thr, buf, obs) =>
-      `Fixed threshold of ${thr} dB over a corridor ${buf} km either side of the channel. Checked against JRC permanent water: over the 2021 bajante the method gives 536 km² where JRC measures 521. ${obs} full passes in the period.`,
+    methodLine: (thr, buf, obs, base, jrc) =>
+      `Fixed threshold of ${thr} dB over a corridor ${buf} km either side of the channel. Checked against JRC permanent water: over the 2021 bajante the method gives ${base} km² where JRC measures ${jrc}. ${obs} full passes in the period.`,
     method: "Sentinel-1 GRD, VV polarisation, 50 m speckle filter. Only passes covering the whole corridor are used: a partial pass leaves ground unobserved, which counted as zero water would read as the river shrinking.",
     credits: "Sources: Copernicus Sentinel-1 (ESA); JRC Global Surface Water; INA gauge levels.",
     noData: "no data",
@@ -282,7 +282,15 @@ function drawChart(stretch) {
 
 function render(data) {
   const t = T[lang];
-  const stretch = (data.stretches || [])[0];
+  // Not stretches[0]. The corridors are ordered upstream first, so when
+  // the run was extended north to the Brazil frontier, position zero
+  // silently became a gorge reach that publishes no area at all - and this
+  // page, whose loop and prose are about Corrientes to Goya, started
+  // showing it. Ask for the stretch this page is actually about, and fall
+  // back to the first one that has a calibrated measurement.
+  const all = data.stretches || [];
+  const stretch = all.find((s) => s.key === "corrientes_goya")
+    || all.find((s) => s.calibrated !== false && s.latest);
   if (!stretch) return;
 
   document.getElementById("stretchName").textContent =
@@ -308,8 +316,10 @@ function render(data) {
   if (box) box.scrollLeft = box.scrollWidth;
   document.getElementById("keys").hidden = false;
   document.getElementById("methodLine").textContent = t.methodLine(
-    (data.method || {}).threshold_db, ((data.method || {}).buffer_m || 0) / 1000,
-    (stretch.days || []).length);
+    stretch.threshold_db ?? (data.method || {}).threshold_db,
+    ((data.method || {}).buffer_m || 0) / 1000,
+    (stretch.days || []).length,
+    fmt(stretch.baseline_km2, 0), fmt(stretch.permanent_water_km2, 0));
 }
 
 for (const b of document.querySelectorAll(".langs button")) {

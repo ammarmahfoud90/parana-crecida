@@ -194,6 +194,25 @@ def test_every_fetched_file_is_published(page):
         assert (SITE / target).exists(), f"{page.name} fetches a missing {target}"
 
 
+def test_the_flood_page_does_not_take_whichever_stretch_is_first():
+    """Position zero is not a stable choice.
+
+    The corridors are ordered upstream first. When the run was extended
+    north to the Brazil frontier, stretches[0] silently became a gorge
+    reach that publishes no area, and this page - whose loop and prose are
+    about Corrientes to Goya - started showing it.
+    """
+    text = (SITE / "flood.html").read_text(encoding="utf-8")
+    assert "(data.stretches || [])[0]" not in text
+    assert 'corrientes_goya' in text
+
+
+def test_the_flood_page_states_the_calibration_from_the_data():
+    """Not from numbers typed into the prose, which drift when it changes."""
+    text = (SITE / "flood.html").read_text(encoding="utf-8")
+    assert "536" not in text and "521" not in text
+
+
 def test_the_method_page_builds_its_tables_from_published_data():
     """Its calibration table must not be numbers somebody typed.
 
