@@ -400,3 +400,22 @@ figure.loop figcaption {
 .prose td.note { color: var(--ink-faint); font-size: .8rem; white-space: normal; }
 .prose tr.uncalibrated td { color: var(--ink-faint); }
 .prose tr.uncalibrated td:first-child::after { content: " *"; color: var(--alert); }
+
+/* -- arrival projections -------------------------------------------------- */
+
+.anchorline { margin: 0 0 12px; color: var(--ink-soft); line-height: 1.55; }
+table.arrivals td:first-child { font-weight: 600; }
+.timing {
+  display: inline-block; margin-left: 6px; padding: 1px 7px;
+  border-radius: 999px; font-size: .72rem; font-weight: 600;
+  border: 1px solid var(--line); color: var(--ink-faint);
+}
+.timing.due { color: var(--alert); border-color: var(--alert); }
+.timing.overdue { color: var(--evac); border-color: var(--evac); }
+/* The measured accuracy sits with the projection, never apart from it. */
+.skillnote {
+  margin: 12px 0 0; padding: 11px 14px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 3px solid var(--alert); border-radius: var(--radius);
+  color: var(--ink-soft); font-size: .86rem; line-height: 1.6;
+}

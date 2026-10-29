@@ -70,6 +70,28 @@
     <span class="key"><span class="dot"></span> <span data-t="legendCrest"></span></span>
   </div>
 
+  <section id="ahead" hidden>
+    <h2 class="section" style="margin-top:28px" data-t="aheadHeading"></h2>
+    <p class="anchorline" id="anchorLine"></p>
+    <div class="tablewrap">
+      <table class="legs arrivals">
+        <thead>
+          <tr>
+            <th data-t="colGauge"></th>
+            <th data-t="colDue"></th>
+            <th data-t="colWindow"></th>
+            <th data-t="colNow"></th>
+          </tr>
+        </thead>
+        <tbody id="arrivals"></tbody>
+      </table>
+    </div>
+    <p class="skillnote" id="skillNote"></p>
+  </section>
+
+  <p class="cap" id="aheadNone" hidden
+     style="color:var(--ink-faint);font-size:.86rem"></p>
+
   <h2 class="section" style="margin-top:28px" data-t="legsHeading"></h2>
   <div class="tablewrap">
     <table class="legs">
@@ -117,6 +139,20 @@ const T = {
     legendLow: "Bajo para la época",
     legendHigh: "Muy alto",
     legendCrest: "Pico detectado",
+    aheadHeading: "Cuándo llegaría el pico, según el registro",
+    anchorLine: (name, day, provisional) =>
+      provisional
+        ? `El río dejó de subir en ${name} el ${day}, pero todavía no bajó lo suficiente como para dar el pico por pasado. Si ése resulta ser el pico, el registro dice que llegaría así:`
+        : `El pico pasó por ${name} el ${day}. Según el registro, llegaría río abajo así:`,
+    colGauge: "Estación", colDue: "Llegaría", colWindow: "Ventana", colNow: "Hoy",
+    timingAhead: "", timingDue: "en ventana", timingOverdue: "atrasado",
+    pctNow: (p) => `percentil ${fmt(p, 0)}`,
+    skillNote: (inside, scored, pct, median, baseline, flat) =>
+      `Esto no es un pronóstico: es lo que tardaron las crecidas anteriores. Medido sobre el registro desde 1998, el pico real cayó dentro de esta ventana ${inside} de ${scored} veces (${pct}%), con un error mediano de ${median} días. Sin usar los tiempos de viaje, el error mediano sería de ${baseline} días. Y el pico del Paraná se queda a menos de 10 cm de su máximo durante ${flat} días, así que "el día del pico" tampoco está definido más fino que eso. Tómelo como un orden de magnitud, no como una fecha.`,
+    aheadNoneCrest: "Ninguna estación pasó todavía el pico con otras subiendo más abajo, así que no hay nada que proyectar.",
+    aheadNoneBelow: "El pico ya pasó por todas las estaciones que podemos seguir.",
+    aheadNoneLegs: "El pico está en un tramo sin tiempos de viaje medidos, así que no se puede seguir río abajo.",
+    aheadNoneData: "Sin datos suficientes para ubicar el frente de la crecida.",
     legsHeading: "Cuánto tarda el pico en cada tramo",
     colLeg: "Tramo", colKm: "km", colDays: "Días", colSpread: "Rango",
     colWaves: "Crecidas", colSpeed: "km/día",
@@ -147,6 +183,20 @@ const T = {
     legendLow: "Low for the season",
     legendHigh: "Very high",
     legendCrest: "Detected crest",
+    aheadHeading: "When the crest would arrive, going by the record",
+    anchorLine: (name, day, provisional) =>
+      provisional
+        ? `The river stopped rising at ${name} on ${day}, but has not yet fallen far enough to call the crest past. If that turns out to be the crest, the record says it would arrive like this:`
+        : `The crest passed ${name} on ${day}. Going by the record, it would arrive downstream like this:`,
+    colGauge: "Gauge", colDue: "Due", colWindow: "Window", colNow: "Today",
+    timingAhead: "", timingDue: "in window", timingOverdue: "overdue",
+    pctNow: (p) => `${fmt(p, 0)}th percentile`,
+    skillNote: (inside, scored, pct, median, baseline, flat) =>
+      `This is not a forecast: it is how long past floods took. Measured over the record since 1998, the actual crest fell inside this window ${inside} times out of ${scored} (${pct}%), with a median error of ${median} days. Without the travel times at all, the median error would be ${baseline} days. And a Paraná crest stays within 10 cm of its peak for ${flat} days, so "the day of the crest" is not defined any finer than that either. Treat it as an order of magnitude, not a date.`,
+    aheadNoneCrest: "No gauge has passed its peak with others still rising below it, so there is nothing to project.",
+    aheadNoneBelow: "The crest has already passed every gauge we can follow.",
+    aheadNoneLegs: "The crest is on a stretch with no measured travel times, so it cannot be followed downstream.",
+    aheadNoneData: "Not enough data to place the flood front.",
     legsHeading: "How long the crest takes on each stretch",
     colLeg: "Stretch", colKm: "km", colDays: "Days", colSpread: "Range",
     colWaves: "Floods", colSpeed: "km/day",
@@ -162,6 +212,9 @@ const T = {
 
 let lang = "es";
 let payload = null;
+// Declared up here with the other state: setLang runs before the fetches
+// below and calls renderAhead, which reads it.
+let track = null;
 
 function fmt(value, digits) {
   if (value === null || value === undefined) return "–";
@@ -195,6 +248,7 @@ function setLang(next) {
   document.getElementById("chartTitle").textContent = t.chartTitle;
   document.getElementById("chartDesc").textContent = t.chartDesc;
   if (payload) render(payload);
+  else renderAhead();
 }
 
 // Six bands rather than a continuous ramp: a reader can name which band a
@@ -225,7 +279,14 @@ function el(name, attrs, text) {
 function drawChart(data) {
   const svg = document.getElementById("chart");
   const t = T[lang];
-  while (svg.childNodes.length > 2) svg.removeChild(svg.lastChild);
+  // Keep everything up to and including <desc>, which carries the chart's
+  // accessible description, and drop the drawing below it. Counting nodes
+  // instead would count the whitespace between the tags: childNodes here is
+  // [text, title, text, desc, text], so keeping the first two kept <title>
+  // and deleted <desc> - after which setLang threw on every switch of
+  // language, and the chart was never redrawn into the new one.
+  const keep = document.getElementById("chartDesc");
+  while (svg.lastChild && svg.lastChild !== keep) svg.removeChild(svg.lastChild);
 
   const gauges = data.gauges;
   const days = data.window.days + 1;
@@ -346,6 +407,65 @@ function render(data) {
   drawChart(data);
   document.getElementById("legend").hidden = false;
   renderLegs(data);
+  renderAhead();
+}
+
+const REASONS = {
+  no_crest_yet: "aheadNoneCrest",
+  crest_past_every_gauge: "aheadNoneBelow",
+  no_measured_legs_below_anchor: "aheadNoneLegs",
+  no_data: "aheadNoneData",
+};
+
+function renderAhead() {
+  const t = T[lang];
+  const section = document.getElementById("ahead");
+  const none = document.getElementById("aheadNone");
+  if (!track) { section.hidden = true; none.hidden = true; return; }
+
+  if (!track.projections.length || !track.anchor) {
+    section.hidden = true;
+    none.textContent = t[REASONS[track.reason] || "aheadNoneData"];
+    none.hidden = false;
+    return;
+  }
+  none.hidden = true;
+
+  document.getElementById("anchorLine").textContent = t.anchorLine(
+    track.anchor.name, dayLabel(track.anchor.peak_day), !track.anchor.confirmed);
+
+  const body = document.getElementById("arrivals");
+  body.replaceChildren(...track.projections.map((p) => {
+    const tr = document.createElement("tr");
+    const timing = t["timing" + p.timing.charAt(0).toUpperCase() + p.timing.slice(1)] || "";
+    const cells = [
+      p.name,
+      dayLabel(p.expected),
+      `${dayLabel(p.earliest)} – ${dayLabel(p.latest)}`,
+      p.percentile_now === null ? "—" : t.pctNow(p.percentile_now),
+    ];
+    cells.forEach((text, i) => {
+      const td = document.createElement("td");
+      td.textContent = text;
+      if (i === 1 && timing) {
+        const tag = document.createElement("span");
+        tag.className = "timing " + p.timing;
+        tag.textContent = timing;
+        td.append(" ", tag);
+      }
+      tr.appendChild(td);
+    });
+    return tr;
+  }));
+
+  const s = track.skill || {};
+  const flat = (s.crest_flatness || {}).median_days;
+  document.getElementById("skillNote").textContent =
+    (s.scored && flat)
+      ? t.skillNote(s.inside_window, s.scored, s.inside_window_pct,
+                    s.median_error_days, s.baseline_median_error_days, flat)
+      : "";
+  section.hidden = false;
 }
 
 for (const b of document.querySelectorAll(".langs button")) {
@@ -353,6 +473,11 @@ for (const b of document.querySelectorAll(".langs button")) {
 }
 
 setLang(pickLang());
+
+fetch("data/track.json", { cache: "no-cache" })
+  .then((r) => (r.ok ? r.json() : null))
+  .then((data) => { track = data; if (payload) renderAhead(); })
+  .catch(() => { /* the wave view stands without it */ });
 
 fetch("data/wave.json", { cache: "no-cache" })
   .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })

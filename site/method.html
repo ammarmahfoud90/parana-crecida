@@ -86,6 +86,15 @@
     </section>
 
     <section>
+      <h2 data-t="aheadHeading"></h2>
+      <p data-t="aheadBody"></p>
+      <p data-t="aheadAnchor"></p>
+      <p data-t="aheadWindow"></p>
+      <p class="warn" id="aheadSkill"></p>
+      <p data-t="aheadHeight"></p>
+    </section>
+
+    <section>
       <h2 data-t="officialHeading"></h2>
       <p data-t="officialBody"></p>
     </section>
@@ -189,6 +198,13 @@ const T = {
     celerity: (kmd, km, days, legs) =>
       `Sobre ${km} km y ${legs} tramos, la onda viaja a unos ${kmd} km por día: unos ${days} días de punta a punta. Se calcula sobre el recorrido entero justamente para esquivar el problema anterior, y es un promedio de todo el registro, no de esta crecida.`,
 
+    aheadHeading: "Las llegadas proyectadas",
+    aheadBody: "Es lo único en este sitio que mira hacia adelante, así que está construido para decir lo menos posible. Toma el frente de la crecida \u2014 la estación más abajo que ya pasó el pico, con el río todavía subiendo debajo \u2014 y le suma los tiempos de viaje medidos en el registro.",
+    aheadAnchor: "Se proyecta desde el frente y no desde más arriba, porque cada tramo agrega su propio error: proyectar Rosario desde Corrientes cuando Goya ya pasó el pico es tirar a la basura la medición mejor. Y si algún tramo entre el frente y una estación no tiene tiempo de viaje confiable, esa estación no recibe proyección: mejor nada que un total que se saltó un pedazo de río en silencio.",
+    aheadWindow: "La ventana no es un intervalo de confianza y no se la presenta como tal. Es lo que pasa si todos los tramos corren en su extremo rápido, contra todos en su extremo lento. Los cuantiles no se suman, así que sumar los percentiles 25 de cada tramo no da el percentil 25 del viaje entero; da algo más ancho y más pesimista. Ancho para el lado honesto, y dicho como lo que es.",
+    aheadHeight: "Y dice cuándo, no cuánto. La altura de un pico en la estación siguiente depende del cauce por el que viaja y de lo que aporten los afluentes en el medio, y acá no hay un modelo de tránsito que resuelva eso. Un nivel proyectado sin él sería una corazonada con un número puesto.",
+    skillLine: (inside, scored, pct, median, baseline, flat, from_) =>
+      `Medido, no supuesto: corriendo el método sobre el registro desde ${from_} como habría corrido cada día, el pico real cayó dentro de la ventana publicada ${inside} de ${scored} veces (${pct}%), con un error mediano de ${median} días. Sin los tiempos de viaje el error mediano sería de ${baseline} días, así que el método aporta algo, pero un error de ${median} días sobre viajes de pocos días a dos semanas es demasiado grande para tratarlo como una fecha. Hay además un piso: el pico del Paraná se queda a menos de 10 cm de su máximo durante ${flat} días, así que el día exacto del pico tampoco está definido más fino.`,
     officialHeading: "Los niveles oficiales de alerta y evacuación",
     officialBody: "Los niveles de alerta y evacuación no son nuestros: están publicados por el INA en su informe diario y acá se transcriben tal cual. Donde una estación no tiene nivel publicado, el campo queda vacío y la estación se muestra sin línea de alerta. No se interpola, no se estima y no se completa con el de la estación de al lado.",
 
@@ -215,8 +231,8 @@ const T = {
 
     notHeading: "Lo que este sitio no hace",
     notList: [
-      "No pronostica. No hay un modelo hidrológico detrás: todo lo que se muestra ya pasó.",
-      "Todavía no proyecta llegadas. Los tiempos de viaje están medidos, pero convertirlos en una fecha de llegada con una incertidumbre honesta es el paso siguiente, y no está hecho.",
+      "No pronostica. No hay un modelo hidrológico detrás: las llegadas proyectadas son tiempos de viaje medidos en crecidas anteriores, publicados junto con su error.",
+      "No dice cuánto va a subir, sólo cuándo llegaría el pico.",
       "No cubre el Delta. Abajo de Villa Constitución el río se abre en brazos, la marea manda, y la calibración del radar no se puede dar por válida ahí.",
       "No publica superficie en los dos tramos del cañón arriba de Posadas.",
       "No separa la velocidad de la onda por tamaño de crecida, aunque se sabe que depende de eso.",
@@ -267,6 +283,13 @@ const T = {
     celerity: (kmd, km, days, legs) =>
       `Over ${km} km and ${legs} legs, the wave travels at about ${kmd} km per day: roughly ${days} days end to end. It is computed over the whole run precisely to sidestep the problem above, and it is an average over the whole record, not this flood.`,
 
+    aheadHeading: "The projected arrivals",
+    aheadBody: "This is the only thing on the site that looks forward, so it is built to say as little as possible. It takes the flood front \u2014 the furthest downstream gauge that has already passed its peak, with the river still rising below it \u2014 and adds the travel times measured over the record.",
+    aheadAnchor: "It projects from the front rather than from further up, because every leg adds its own error: projecting Rosario from Corrientes when Goya has already crested throws away the better measurement. And if any leg between the front and a gauge has no confident travel time, that gauge gets no projection at all \u2014 better nothing than a total that quietly skipped a stretch of river.",
+    aheadWindow: "The range is not a confidence interval and is not presented as one. It is what happens if every leg runs at its historical fast end, against every leg at its slow end. Quantiles do not add, so summing the per-leg 25th percentiles does not give the 25th percentile of the whole journey; it gives something wider and more pessimistic. Wider in the honest direction, and labelled for what it is.",
+    aheadHeight: "And it says when, not how high. A crest's height at the next gauge depends on the channel it travels through and on whatever the tributaries in between contribute, and there is no routing model here to work that out. A level projected without one would be a hunch with a number on it.",
+    skillLine: (inside, scored, pct, median, baseline, flat, from_) =>
+      `Measured, not assumed: running the method over the record since ${from_} as it would have run on each day, the actual crest fell inside the published window ${inside} times out of ${scored} (${pct}%), with a median error of ${median} days. Without the travel times the median error would be ${baseline} days, so the method does add something, but an error of ${median} days on journeys of a few days to a fortnight is too large to treat as a date. There is also a floor: a Paraná crest stays within 10 cm of its peak for ${flat} days, so the exact day of the crest is not defined any finer either.`,
     officialHeading: "The official alert and evacuation levels",
     officialBody: "The alert and evacuation levels are not ours: INA publishes them in its daily report and they are transcribed here as they stand. Where a gauge has no published level the field is left empty and the gauge is shown without an alert line. Nothing is interpolated, estimated, or filled in from the gauge next door.",
 
@@ -293,8 +316,8 @@ const T = {
 
     notHeading: "What this site does not do",
     notList: [
-      "It does not forecast. There is no hydrological model behind it: everything shown has already happened.",
-      "It does not yet project arrivals. Travel times are measured, but turning them into an arrival date with honest uncertainty is the next step, and it is not done.",
+      "It does not forecast. There is no hydrological model behind it: the projected arrivals are travel times measured on past floods, published alongside their error.",
+      "It does not say how high the river will get, only when the crest would arrive.",
       "It does not cover the Delta. Below Villa Constitución the river opens into branches, the tide dominates, and the radar calibration cannot be assumed to hold there.",
       "It publishes no area for the two gorge stretches above Posadas.",
       "It does not separate wave speed by flood size, although speed is known to depend on it.",
@@ -307,7 +330,7 @@ const T = {
 };
 
 let lang = stored();
-let flooded = null, wave = null;
+let flooded = null, wave = null, track = null;
 
 function stored() {
   try {
@@ -344,6 +367,19 @@ function setLang(next) {
   renderNotList();
   renderCalibration();
   renderLegs();
+  renderSkill();
+}
+
+function renderSkill() {
+  const box = document.getElementById("aheadSkill");
+  const s = (track || {}).skill || {};
+  const flat = (s.crest_flatness || {}).median_days;
+  box.textContent = (s.scored && flat)
+    ? T[lang].skillLine(s.inside_window, s.scored, s.inside_window_pct,
+                        s.median_error_days, s.baseline_median_error_days,
+                        flat, (s.window || {}).from)
+    : "";
+  box.hidden = !box.textContent;
 }
 
 function renderNotList() {
@@ -422,9 +458,11 @@ for (const b of document.querySelectorAll(".langs button")) {
 Promise.all([
   fetch("data/flooded.json").then((r) => r.ok ? r.json() : null).catch(() => null),
   fetch("data/wave.json").then((r) => r.ok ? r.json() : null).catch(() => null),
-]).then(([f, w]) => {
+  fetch("data/track.json").then((r) => r.ok ? r.json() : null).catch(() => null),
+]).then(([f, w, k]) => {
   flooded = f;
   wave = w;
+  track = k;
   setLang(lang);
 });
 
