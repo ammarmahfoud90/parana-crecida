@@ -282,6 +282,11 @@ function render(data) {
   }
 
   drawChart(stretch);
+  // On a narrow screen the chart scrolls, and the newest pass -- the one
+  // that matters -- is the one that ends up off the right edge. Open at
+  // the recent end rather than the start.
+  const box = document.querySelector(".chartbox");
+  if (box) box.scrollLeft = box.scrollWidth;
   document.getElementById("keys").hidden = false;
   document.getElementById("methodLine").textContent = t.methodLine(
     (data.method || {}).threshold_db, ((data.method || {}).buffer_m || 0) / 1000,
