@@ -51,12 +51,13 @@
   <h2 class="section" data-t="flowsHeading"></h2>
   <div class="drivers" id="drivers"></div>
 
+  <h2 class="section" style="margin-top:28px" data-t="rainHeading"></h2>
+  <div class="rain" id="rain"></div>
+  <p class="cap" style="color:var(--ink-faint);font-size:.82rem" id="rainNote"></p>
+
   <h2 class="section" style="margin-top:28px" data-t="printedHeading"></h2>
   <div class="printed" id="printed"></div>
   <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="printedNote"></p>
-
-  <h2 class="section" style="margin-top:28px" data-t="missingHeading"></h2>
-  <p class="cap" style="color:var(--ink-soft);font-size:.9rem" data-t="missingNote"></p>
 
   <footer>
     <p data-t="method"></p>
@@ -79,10 +80,16 @@ const T = {
     officialLink: "Ver el alerta oficial del INA →",
     windowLabel: "Período mostrado:", generatedAt: "Generado",
     flowsHeading: "Caudales de entrada y de las represas",
+    rainHeading: "Lluvia sobre las cuencas de aporte",
+    rainBasins: { alto_parana: "Alto Paraná, sobre Itaipú", iguazu: "Cuenca del Iguazú" },
+    rainLast: (n) => `en los últimos ${n} días`,
+    rainPeak: (mm, day) => `día más lluvioso: ${mm} mm el ${day}`,
+    rainArea: (km2) => `${km2} km² de cuenca`,
+    rainNote: (src, when, stale) =>
+      `Promedio sobre toda la cuenca, de ${src}. 12 mm sobre un área así no es lo mismo que 12 mm sobre un pueblo. ` +
+      `Datos al ${when}` + (stale > 3 ? `, hace ${stale} días.` : "."),
     printedHeading: "Caudales que el INA publica pero no sirve por API",
     printedNote: "Estos valores salen del reporte diario del INA en PDF. Hay el número de hoy y nada de historia, así que no se los puede comparar con lo normal de la estación.",
-    missingHeading: "Lo que falta",
-    missingNote: "La lluvia sobre la cuenca alta en Brasil todavía no está. Las fuentes habituales (GPM IMERG, CHIRPS) se leen desde Google Earth Engine o Earthdata, y este proyecto no tiene esas credenciales. Sin eso, esta vista muestra el agua que ya está en el río, no la que está por caer.",
     ensoNote: (season, year) => `Índice Niño Oceánico de la NOAA, trimestre ${season} ${year}. Es contexto de cuenca: explica por qué toda la cuenca está húmeda esta temporada, no el pico de una crecida en particular.`,
     phases: {
       el_nino_very_strong: "El Niño muy fuerte",
@@ -113,10 +120,16 @@ const T = {
     officialLink: "See INA's official alert →",
     windowLabel: "Period shown:", generatedAt: "Generated",
     flowsHeading: "Inflow and dam discharge",
+    rainHeading: "Rain over the contributing basins",
+    rainBasins: { alto_parana: "Alto Paraná, above Itaipú", iguazu: "Iguazú basin" },
+    rainLast: (n) => `over the last ${n} days`,
+    rainPeak: (mm, day) => `wettest day: ${mm} mm on ${day}`,
+    rainArea: (km2) => `${km2} km² of basin`,
+    rainNote: (src, when, stale) =>
+      `A basin-wide average, from ${src}. 12 mm over an area this size is not the same as 12 mm on one town. ` +
+      `Data to ${when}` + (stale > 3 ? `, ${stale} days ago.` : "."),
     printedHeading: "Flows INA publishes but does not serve by API",
     printedNote: "These come from INA's daily PDF report. There is today's number and no history at all, so they cannot be placed against what is normal for the station.",
-    missingHeading: "What is missing",
-    missingNote: "Rainfall over the upper basin in Brazil is not here yet. The usual sources (GPM IMERG, CHIRPS) are read through Google Earth Engine or Earthdata, and this project has no credential for either. Without it, this view shows the water already in the river, not the water about to fall.",
     ensoNote: (season, year) => `NOAA's Oceanic Niño Index for the ${season} ${year} season. This is basin-scale context: it explains why the whole basin is wet this season, not the timing of any one crest.`,
     phases: {
       el_nino_very_strong: "Very strong El Niño",
@@ -302,6 +315,76 @@ function renderEnso(enso) {
   box.hidden = false;
 }
 
+function renderRain(rain) {
+  const t = T[lang];
+  const box = document.getElementById("rain");
+  const note = document.getElementById("rainNote");
+  box.replaceChildren();
+  note.textContent = "";
+  if (!rain || !rain.basins || !rain.basins.length) return;
+
+  for (const basin of rain.basins) {
+    const card = document.createElement("div");
+    card.className = "rainbox";
+
+    const h = document.createElement("h3");
+    h.textContent = t.rainBasins[basin.key] || basin.key;
+    card.appendChild(h);
+
+    const area = document.createElement("p");
+    area.className = "area";
+    area.textContent = t.rainArea(fmt(basin.area_km2, 0));
+    card.appendChild(area);
+
+    const tot = document.createElement("div");
+    tot.className = "tot";
+    tot.textContent = fmt(basin.recent_mm, 0);
+    const u = document.createElement("span");
+    u.className = "u";
+    u.textContent = "mm " + t.rainLast(basin.recent_days);
+    tot.appendChild(u);
+    card.appendChild(tot);
+
+    if (basin.wettest_day) {
+      const peak = document.createElement("div");
+      peak.className = "peak";
+      peak.textContent = t.rainPeak(fmt(basin.wettest_day.mm, 0),
+                                    dayLabel(basin.wettest_day.day));
+      card.appendChild(peak);
+    }
+
+    // Daily bars. The scale is per basin: the Iguazu peaks near 90 mm and
+    // the Alto Parana near 24, and one shared axis would flatten the
+    // smaller basin into nothing.
+    const W = 300, H = 56;
+    const svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("class", "rainbars");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("role", "img");
+    const values = basin.mm.map((v) => (v === null ? 0 : v));
+    const peakValue = Math.max(1, ...values);
+    const barW = W / values.length;
+    values.forEach((value, i) => {
+      const h = Math.max(value > 0 ? 1 : 0, (value / peakValue) * (H - 2));
+      const rect = el("rect", {
+        x: (i * barW).toFixed(2), y: (H - h).toFixed(2),
+        width: Math.max(barW - 0.3, 0.6).toFixed(2), height: h.toFixed(2),
+      });
+      if (value >= peakValue * 0.6) rect.setAttribute("class", "big");
+      rect.appendChild(el("title", {}, `${dayLabel(basin.days[i])}: ${fmt(value, 1)} mm`));
+      svg.appendChild(rect);
+    });
+    card.appendChild(svg);
+    box.appendChild(card);
+  }
+
+  note.textContent = t.rainNote(
+    rain.source || "IMERG", dayLabel(rain.window.end), rain.stale_days || 0);
+  if ((rain.stale_days || 0) > 3) note.classList.add("stalewarn");
+  else note.classList.remove("stalewarn");
+}
+
 function renderPrinted(rows, reportDate) {
   const t = T[lang];
   const box = document.getElementById("printed");
@@ -340,6 +423,7 @@ function render(data) {
   renderEnso(data.enso);
   document.getElementById("drivers").replaceChildren(
     ...(data.gauges || []).map(driverCard));
+  renderRain(data.rainfall);
   renderPrinted(data.report_only, data.report_date);
 }
 

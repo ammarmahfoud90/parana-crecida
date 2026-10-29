@@ -245,3 +245,19 @@ footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line);
 .printed ul { margin: 0; padding: 0; }
 .printed li:last-child { border-bottom: 0; }
 .printed .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* rainfall panel */
+.rain { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.rainbox {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 13px 15px;
+}
+.rainbox h3 { margin: 0; font-size: 1rem; font-weight: 620; }
+.rainbox .area { color: var(--ink-faint); font-size: .78rem; margin: 2px 0 0; }
+.rainbox .tot { font-size: 1.45rem; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 8px; }
+.rainbox .tot .u { font-size: .78rem; color: var(--ink-faint); margin-left: 3px; }
+.rainbox .peak { font-size: .82rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.rainbars { display: block; width: 100%; height: 56px; margin-top: 9px; }
+.rainbars rect { fill: var(--accent); }
+.rainbars rect.big { fill: var(--evac); }
+.stalewarn { color: var(--alert); font-weight: 600; }

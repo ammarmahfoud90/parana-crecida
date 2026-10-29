@@ -66,6 +66,7 @@ crecida chain             # the downstream chain and river-km (--rederive to reb
 crecida lags              # measure travel time and freeze the table
 crecida climatology       # day-of-year reference curves for every gauge
 crecida oni               # NOAA's Oceanic Nino Index
+crecida rainfall          # basin rainfall from Earth Engine (needs a credential)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -281,13 +282,35 @@ whether 12,300 m3/s is unusual — which is the only interesting question. A gau
 whose record is too short is left without one rather than given a thin curve: no
 reference reads as unknown everywhere downstream, which is the honest answer.
 
-### What is missing
+### Basin rainfall
 
-Rainfall over the upper basin in Brazil. The sources PLAN.md names — GPM IMERG and
-CHIRPS — are read through Google Earth Engine or Earthdata, and this project has no
-credential for either: there is no `ee` package, no `~/.config/earthengine`, and no
-service account. Until one exists, this view shows the water already in the river,
-not the water about to fall, and the page says so.
+`crecida rainfall` pulls GPM IMERG from Google Earth Engine and averages it over
+the two basins that meet at Puerto Iguazú:
+
+| Basin | Area | Sub-basins |
+|---|---|---|
+| Alto Paraná, above the confluence | 834,192 km² | 115 |
+| Iguazú | 67,536 km² | 9 |
+
+Neither is hand-drawn. Both are built by walking HydroSHEDS' basin topology
+upstream from the sub-basin at their outlet, and the walk is checked against
+HydroSHEDS' own published upstream area — 834,184 km² and 67,537 km², reproduced to
+within a rounding error. A test asserts it. They are disjoint siblings draining to
+the same junction, so they do not double-count.
+
+The scale difference is the point. Over seven days in late October 2026 the Iguazú
+took 162 mm against the Alto Paraná's 65, and peaked at 89 mm in a day against 23.
+A basin a twelfth the size responds to a storm that a continental average barely
+registers, which is why Andresito rose 7,353 m³/s in a week.
+
+Rainfall is a basin **average**: 12 mm over an area the size of France is a very
+different thing from 12 mm on one town, and the page says so.
+
+**This needs an Earth Engine credential, which a GitHub Actions run does not have**,
+so the series is derived locally and committed, like the chain and the travel
+times. Unlike those two it genuinely goes stale, so the page shows the date it was
+last refreshed and marks it when it falls behind. Refreshing it daily in CI would
+mean putting a Google service-account key in the repository's secrets.
 
 ## Status
 
@@ -298,12 +321,13 @@ Built:
   tests, the export gate, view 1, and the daily GitHub Actions run.
 - The river chain, normalisation against day-of-year climatology, crest detection,
   travel time between gauges, and view 2.
-- Dam and inflow drivers, ENSO ingestion, reference-curve building, and view 3.
+- Dam and inflow drivers, ENSO ingestion, reference-curve building, basin rainfall
+  from Earth Engine, and view 3.
 
 Not built yet — see `.claude/plans` for the full plan:
 
 - Views 4 and 5: flooded area (Sentinel-1), method and limits.
-- Basin rainfall, once there is an Earth Engine or Earthdata credential.
+- Refreshing rainfall in CI, which needs a service-account key in GitHub secrets.
 - `track`: projecting where a wave now in progress will arrive downstream. The
   travel times exist; turning them into arrival dates with honest uncertainty is
   the next step.
