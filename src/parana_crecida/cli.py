@@ -47,6 +47,7 @@ from .export import (
     export_drivers,
     export_flooded,
     export_river_stage,
+    export_track,
     export_river_today,
     export_wave,
 )
@@ -1205,11 +1206,13 @@ def export(
             drivers = export_drivers(store, result, out_dir=out, today=today)
             water = export_flooded(store, result, out_dir=out, today=today)
             river = export_river_stage(store, result, out_dir=out, today=today)
+            ahead = export_track(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    rep.say(f"{ahead.gauges} arrival projections -> {ahead.path}")
     rep.say(f"{river.gauges} anchors on the river line -> {river.path}")
     rep.say(f"{water.gauges} river stretches -> {water.path}")
     rep.say(f"{drivers.gauges} driver gauges -> {drivers.path}")
@@ -1219,6 +1222,64 @@ def export(
     rep.say(f"newest reading: {exported.last_data_day}")
     if result.warnings:
         rep.say(f"warnings: {', '.join(c.name for c in result.warnings)}")
+    rep.write(report)
+
+
+@main.command()
+@db_option
+@click.option(
+    "--climatology", type=click.Path(path_type=Path),
+    default=Path("data/climatology_parana.json"), show_default=True,
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=None, help="Where to freeze the result.",
+)
+@click.option("--from-year", default=1998, show_default=True)
+@report_option
+def backtest(
+    db: Path, climatology: Path, out: Path | None, from_year: int, report: Path | None
+) -> None:
+    """Score the arrival projections against what the river actually did.
+
+    Run over the whole record, as the tracker would have run on each day,
+    and compare what it would have published against the crest that then
+    arrived. The result is frozen and published beside the projection, so
+    the page states its own accuracy.
+
+    This needs the long record, so it is a local command: the scheduled
+    run's cache holds about a year. The frozen file is what CI publishes.
+    """
+    from . import backtest as bt
+    from .normalize import Climatology
+
+    rep = Report("backtest")
+    clim = Climatology.load(climatology)
+    with Store(db, read_only=True) as store:
+        payload = bt.run(store, clim, first_year=from_year)
+
+    if not payload.get("scored"):
+        raise click.ClickException("nothing could be scored")
+
+    bt.write(out or bt.DEFAULT_OUT, payload)
+    rep.say(f"{payload['scored']} projections over {payload['occasions']} occasions")
+    rep.say(
+        f"inside the published window: {payload['inside_window']}"
+        f"/{payload['scored']} ({payload['inside_window_pct']}%)"
+    )
+    rep.say(f"median error: {payload['median_error_days']} days")
+    rep.say(
+        f"baseline with no travel times: "
+        f"{payload['baseline_median_error_days']} days"
+    )
+    flat = payload.get("crest_flatness") or {}
+    if flat:
+        rep.say(
+            f"a crest sits within {flat['tolerance_m']*100:.0f} cm of its peak "
+            f"for a median of {flat['median_days']} days, so the crest date "
+            "is itself only good to a few days"
+        )
+    rep.say(f"-> {out or bt.DEFAULT_OUT}")
     rep.write(report)
 
 

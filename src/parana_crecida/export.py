@@ -37,6 +37,7 @@ WAVE = "wave.json"
 DRIVERS = "drivers.json"
 FLOODED = "flooded.json"
 RIVER_STAGE = "river_stage.json"
+TRACK = "track.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -310,6 +311,61 @@ def export_river_stage(
     return ExportResult(
         path=path,
         gauges=len(payload["anchors"]),
+        with_official_thresholds=0,
+        last_data_day=store.last_data_day(),
+    )
+
+
+def export_track(
+    store: Store,
+    result: ValidationResult,
+    *,
+    climatology_path: Path | None = None,
+    skill_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    now: datetime | None = None,
+    today: date | None = None,
+) -> ExportResult:
+    """Validate-then-write the arrival projections, behind the same gate.
+
+    The measured accuracy travels with the projection, always. This is the
+    one forward-looking thing on the site, and a projection published
+    without its own track record invites the reader to supply a confidence
+    nobody measured. On the record since 1998 the actual crest landed
+    inside the published window about a quarter of the time.
+    """
+    from . import backtest as bt
+    from . import track as tr
+    from .normalize import Climatology
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    payload = tr.payload(tr.build(store, clim, today=today), today=today)
+    payload["generated_at"] = (now or datetime.now(DEFAULT_TZ)).isoformat(
+        timespec="seconds"
+    )
+    skill = bt.load(skill_path or bt.DEFAULT_OUT)
+    if not skill:
+        raise ExportBlocked(
+            "no backtest to publish beside the projections; run "
+            "`crecida backtest`. A projection without its measured accuracy "
+            "is not publishable here"
+        )
+    payload["skill"] = skill
+    path = out_dir / TRACK
+    write_json(path, payload)
+    log.info(
+        "exported %d projections to %s", len(payload["projections"]), path
+    )
+    return ExportResult(
+        path=path,
+        gauges=len(payload["projections"]),
         with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )
