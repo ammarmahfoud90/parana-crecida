@@ -1,4 +1,4 @@
-ina thresholds - 2026-10-29T12:31:47-03:00
+ina thresholds - 2026-10-29T12:38:51-03:00
 
   2026-10-29: 2773 KB -> reporte_diario_2026-10-29.pdf
 parsed 25 rows from the report's threshold tables
