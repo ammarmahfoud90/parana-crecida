@@ -223,6 +223,7 @@ def export_drivers(
     climatology_path: Path | None = None,
     oni_path: Path | None = None,
     snapshot_path: Path | None = None,
+    rainfall_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
     now: datetime | None = None,
     today: date | None = None,
@@ -230,6 +231,8 @@ def export_drivers(
     """Validate-then-write the upstream drivers, behind the same gate."""
     from .drivers import DEFAULT_ONI, build_payload, load_oni
     from .normalize import Climatology
+    from .rainfall import DEFAULT_TABLE as RAIN_TABLE
+    from .rainfall import load_table as load_rain
     from .thresholds import DEFAULT_SNAPSHOT, load_snapshot
 
     if not result.ok:
@@ -245,6 +248,7 @@ def export_drivers(
         clim,
         oni=load_oni(oni_path or DEFAULT_ONI),
         snapshot=load_snapshot(snapshot_path or DEFAULT_SNAPSHOT),
+        rain=load_rain(rainfall_path or RAIN_TABLE),
         now=now,
         today=today,
     )

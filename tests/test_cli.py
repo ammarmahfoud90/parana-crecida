@@ -172,6 +172,7 @@ def test_only_implemented_commands_are_registered():
         "climatology",
         "lags",
         "oni",
+        "rainfall",
         "thresholds",
         "fetch",
         "load",

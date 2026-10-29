@@ -818,6 +818,53 @@ def climatology(
     rep.write(report)
 
 
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", required=True,
+    help="Your Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
+@click.option("--window-days", default=180, show_default=True)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=Path("data/rainfall.json"),
+    show_default=True,
+)
+@report_option
+def rainfall(project: str, window_days: int, out: Path, report: Path | None) -> None:
+    """Fetch basin rainfall from Earth Engine and freeze it.
+
+    Needs a Google Earth Engine credential, which a scheduled run does not
+    have, so this is derived locally and committed. Unlike the chain and
+    the travel times it does go stale, and the page says how old it is.
+    """
+    from .rainfall import BASINS, build, write_table
+
+    rep = Report("rainfall")
+    try:
+        payload = build(project, window_days=window_days)
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"Earth Engine fetch failed: {exc}") from exc
+
+    write_table(out, payload)
+    rep.say(f"source {payload['source']}")
+    rep.say(f"window {payload['window']['start']} to {payload['window']['end']}")
+    rep.say()
+    published = {b.key: b.published_km2 for b in BASINS}
+    for basin in payload["basins"]:
+        values = [v for v in basin["mm"] if v is not None]
+        rep.say(
+            f"  {basin['key']:<14} {basin['sub_basins']:>4} sub-basins  "
+            f"{basin['area_km2']:>9,} km2 (published {published[basin['key']]:,.0f})"
+        )
+        if values:
+            rep.say(
+                f"       {len(values)} days, max {max(values):.1f} mm/day, "
+                f"last 7 days {sum(values[-7:]):.1f} mm"
+            )
+    rep.say()
+    rep.say(f"rainfall -> {out}")
+    rep.write(report)
+
+
 # -- store -----------------------------------------------------------------
 
 db_option = click.option(

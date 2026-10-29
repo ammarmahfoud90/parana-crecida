@@ -190,6 +190,7 @@ def build_payload(
     *,
     oni: list[OniReading] | None = None,
     snapshot: dict | None = None,
+    rain: dict | None = None,
     window_days: int = 365,
     now: datetime | None = None,
     today: date | None = None,
@@ -269,6 +270,20 @@ def build_payload(
                 }
             )
 
+    # Rainfall is frozen, unlike everything else here, so the page is told
+    # how old it is rather than left to imply it is current.
+    rainfall = None
+    if rain:
+        from .rainfall import stale_days, summarise
+
+        rainfall = {
+            "source": rain.get("source"),
+            "fetched_on": rain.get("fetched_on"),
+            "stale_days": stale_days(rain, today),
+            "window": rain.get("window"),
+            "basins": summarise(rain),
+        }
+
     latest_oni = oni[-1] if oni else None
     recent = [r for r in oni if r.year >= today.year - 3]
 
@@ -279,6 +294,7 @@ def build_payload(
         "gauges": gauges,
         "report_only": printed,
         "report_date": (snapshot or {}).get("source_date"),
+        "rainfall": rainfall,
         "enso": None
         if latest_oni is None
         else {
