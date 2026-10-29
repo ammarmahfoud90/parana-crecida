@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de la crecida — Crecida del Paraná</title>
+<meta name="description" content="Mapa del Paraná de Corrientes a Villa Constitución: agua detectada por radar, estaciones, departamentos.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap wide">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <nav class="views" data-t-aria="viewsNav">
+    <a href="index.html" data-t="viewToday"></a>
+    <a href="wave.html" data-t="viewWave"></a>
+    <a href="drivers.html" data-t="viewDrivers"></a>
+    <a href="flood.html" data-t="viewFlood"></a>
+    <a href="map.html" aria-current="page" data-t="viewMap"></a>
+  </nav>
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" hidden></div>
+
+  <div id="map" role="application" data-t-aria="mapLabel"></div>
+
+  <div class="player" id="player" hidden>
+    <button type="button" id="play" class="playbtn" aria-label="Play"></button>
+    <input type="range" id="slider" min="0" max="0" value="0" step="1" data-t-aria="sliderLabel">
+    <div class="readout">
+      <b id="windowLabel">–</b>
+      <span id="totalLabel"></span>
+    </div>
+  </div>
+
+  <div class="maplegend" id="legend" hidden>
+    <span><i class="sw chan"></i><span data-t="keyChannel"></span></span>
+    <span><i class="sw flood"></i><span data-t="keyFlood"></span></span>
+    <span><i class="sw gauge"></i><span data-t="keyGauge"></span></span>
+    <span><i class="sw dept"></i><span data-t="keyDept"></span></span>
+  </div>
+
+  <p class="cap" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px" data-t="windowNote"></p>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+"use strict";
+
+const T = {
+  es: {
+    htmlLang: "es", locale: "es-AR",
+    title: "Mapa de la crecida",
+    subtitle: "De Corrientes a Villa Constitución, con estaciones y departamentos",
+    langGroup: "Idioma", viewsNav: "Vistas", mapLabel: "Mapa del río Paraná",
+    viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
+    viewFlood: "Superficie", viewMap: "Mapa",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Muestra agua detectada por radar, no un pronóstico ni un mapa oficial de riesgo. El radar no ve el agua bajo la vegetación, así que la superficie real es mayor.",
+    officialLink: "Ver el alerta oficial del INA →",
+    sliderLabel: "Fecha",
+    keyChannel: "cauce permanente", keyFlood: "agua de la crecida",
+    keyGauge: "estación", keyDept: "departamento",
+    windowNote: "Cada cuadro es un compuesto de 12 días, no un instante. La franja que ve el satélite es más angosta que este tramo de río, así que para cubrirlo entero hace falta un ciclo completo.",
+    totalLabel: (km2) => `${km2} km² de agua en el tramo`,
+    popupKm: (km) => `km ${km} del río`,
+    popupLevel: (v, u) => `${v} ${u}`,
+    popupNoLevel: "sin dato hoy",
+    statusEvacuation: "supera evacuación", statusAlert: "supera alerta",
+    statusBelow: "bajo alerta", statusUnknown: "sin niveles oficiales",
+    method: "Agua detectada con Sentinel-1 (banda VV). El umbral se calibra por tramo contra el agua permanente del JRC: los cuatro tramos dan entre -16,0 y -16,5 dB.",
+    credits: "Mapa base © colaboradores de OpenStreetMap. Radar: Copernicus Sentinel-1 (ESA). Departamentos: geoBoundaries (CC BY 4.0). Estaciones y alturas: INA.",
+    play: "Reproducir", pause: "Pausar",
+  },
+  en: {
+    htmlLang: "en", locale: "en-GB",
+    title: "Flood map",
+    subtitle: "Corrientes to Villa Constitución, with gauges and departments",
+    langGroup: "Language", viewsNav: "Views", mapLabel: "Map of the Paraná",
+    viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
+    viewFlood: "Flooded area", viewMap: "Map",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "It shows water detected by radar, not a forecast and not an official risk map. Radar cannot see water under vegetation, so the real flooded area is larger.",
+    officialLink: "See INA's official alert →",
+    sliderLabel: "Date",
+    keyChannel: "permanent channel", keyFlood: "flood water",
+    keyGauge: "gauge", keyDept: "department",
+    windowNote: "Each frame is a 12-day composite, not an instant. The satellite's swath is narrower than this run of river, so covering it whole takes a full repeat cycle.",
+    totalLabel: (km2) => `${km2} km² of water along the run`,
+    popupKm: (km) => `river km ${km}`,
+    popupLevel: (v, u) => `${v} ${u}`,
+    popupNoLevel: "no reading today",
+    statusEvacuation: "above evacuation", statusAlert: "above alert",
+    statusBelow: "below alert", statusUnknown: "no official levels",
+    method: "Water detected with Sentinel-1 (VV band). The threshold is calibrated per stretch against JRC permanent water: the four land between -16.0 and -16.5 dB.",
+    credits: "Basemap © OpenStreetMap contributors. Radar: Copernicus Sentinel-1 (ESA). Departments: geoBoundaries (CC BY 4.0). Gauges and levels: INA.",
+    play: "Play", pause: "Pause",
+  },
+};
+
+let lang = "es";
+let map, overlays = [], frames = [], index = 0, timer = null;
+let gaugeLayer = null, deptLayer = null, levels = {};
+
+function fmt(v, d) {
+  if (v === null || v === undefined) return "–";
+  return new Intl.NumberFormat(T[lang].locale,
+    { minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
+}
+
+function dayLabel(iso) {
+  return new Intl.DateTimeFormat(T[lang].locale, { day: "numeric", month: "short" })
+    .format(new Date(iso + "T12:00:00"));
+}
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const v = t[el.dataset.t];
+    if (typeof v === "string") el.textContent = v;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  document.getElementById("play").setAttribute(
+    "aria-label", timer ? t.pause : t.play);
+  if (frames.length) showFrame(index);
+  if (gaugeLayer) gaugeLayer.eachLayer((l) => l.getPopup() && l.setPopupContent(l.options.buildPopup()));
+}
+
+function statusColour(status) {
+  return status === "evacuation" ? "#ab2f26"
+    : status === "alert" ? "#b4761b"
+    : status === "below" ? "#2f7d52" : "#9a9892";
+}
+
+function showFrame(i) {
+  index = (i + frames.length) % frames.length;
+  overlays.forEach((o, k) => o.setOpacity(k === index ? 0.85 : 0));
+  const f = frames[index];
+  document.getElementById("slider").value = String(index);
+  document.getElementById("windowLabel").textContent =
+    `${dayLabel(f.start)} – ${dayLabel(f.end)}`;
+  document.getElementById("totalLabel").textContent =
+    f.total_km2 ? T[lang].totalLabel(fmt(f.total_km2, 0)) : "";
+}
+
+function togglePlay() {
+  const btn = document.getElementById("play");
+  if (timer) {
+    clearInterval(timer); timer = null;
+    btn.classList.remove("playing");
+    btn.setAttribute("aria-label", T[lang].play);
+  } else {
+    timer = setInterval(() => showFrame(index + 1), 900);
+    btn.classList.add("playing");
+    btn.setAttribute("aria-label", T[lang].pause);
+  }
+}
+
+function addGauges(geo) {
+  const t = T[lang];
+  gaugeLayer = L.layerGroup();
+  for (const f of geo.features) {
+    const p = f.properties;
+    if (!p.routing_node) continue;   // the map is the tier-1 run
+    const [lon, lat] = f.geometry.coordinates;
+    const live = levels[p.series_id] || {};
+    const marker = L.circleMarker([lat, lon], {
+      radius: 6, weight: 2, color: "#ffffff",
+      fillColor: statusColour(live.status), fillOpacity: 1,
+    });
+    marker.options.buildPopup = () => {
+      const tt = T[lang];
+      const status = live.status === "evacuation" ? tt.statusEvacuation
+        : live.status === "alert" ? tt.statusAlert
+        : live.status === "below" ? tt.statusBelow : tt.statusUnknown;
+      const reading = live.value === null || live.value === undefined
+        ? tt.popupNoLevel
+        : tt.popupLevel(fmt(live.value, 2), live.unit === "m3/s" ? "m³/s" : "m");
+      return `<b>${p.name}</b><br>${reading}<br>` +
+             `<span style="color:${statusColour(live.status)}">${status}</span><br>` +
+             `<span style="color:#8b8984">${tt.popupKm(fmt(p.river_km, 0))}</span>`;
+    };
+    marker.bindPopup(marker.options.buildPopup());
+    marker.bindTooltip(p.name, { direction: "right", offset: [8, 0] });
+    gaugeLayer.addLayer(marker);
+  }
+  gaugeLayer.addTo(map);
+}
+
+function start(index_json, gaugesGeo, deptGeo, today) {
+  frames = index_json.frames || [];
+  const bounds = L.latLngBounds(index_json.bounds[0], index_json.bounds[1]);
+
+  map = L.map("map", { scrollWheelZoom: false }).fitBounds(bounds);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18, attribution: "&copy; OpenStreetMap",
+  }).addTo(map);
+  L.control.scale({ imperial: false }).addTo(map);
+
+  if (deptGeo) {
+    deptLayer = L.geoJSON(deptGeo, {
+      style: { color: "#5d5c57", weight: 1, opacity: .55, fill: false,
+               dashArray: "3 3" },
+      onEachFeature: (f, layer) => layer.bindTooltip(f.properties.name,
+        { sticky: true, className: "depttip" }),
+    }).addTo(map);
+  }
+
+  // Every overlay is created once and hidden; swapping opacity avoids the
+  // blank flash that reloading one overlay's URL would give on each step.
+  overlays = frames.map((f) =>
+    L.imageOverlay(f.image, bounds, { opacity: 0, interactive: false }).addTo(map));
+
+  if (gaugesGeo) addGauges(gaugesGeo);
+  if (deptLayer) deptLayer.bringToBack();
+
+  const slider = document.getElementById("slider");
+  slider.max = String(Math.max(frames.length - 1, 0));
+  slider.addEventListener("input", () => {
+    if (timer) togglePlay();
+    showFrame(Number(slider.value));
+  });
+  document.getElementById("play").addEventListener("click", togglePlay);
+
+  document.getElementById("player").hidden = false;
+  document.getElementById("legend").hidden = false;
+  showFrame(frames.length - 1);   // open on the most recent window
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+setLang(pickLang());
+
+const grab = (url) => fetch(url, { cache: "no-cache" })
+  .then((r) => (r.ok ? r.json() : null))
+  .catch(() => null);
+
+Promise.all([
+  grab("data/map_frames.json"),
+  grab("data/gauges.geojson"),
+  grab("data/departamentos.geojson"),
+  grab("data/river_today.json"),
+]).then(([idx, gaugesGeo, deptGeo, today]) => {
+  if (!idx || !idx.frames || !idx.frames.length) {
+    throw new Error("no map frames");
+  }
+  for (const g of (today && today.gauges) || []) levels[g.series_id] = g;
+  start(idx, gaugesGeo, deptGeo, today);
+}).catch((err) => {
+  const box = document.getElementById("error");
+  box.textContent = "No se pudo cargar el mapa / could not load the map: " + err.message;
+  box.hidden = false;
+});
+</script>
+</body>
+</html>
