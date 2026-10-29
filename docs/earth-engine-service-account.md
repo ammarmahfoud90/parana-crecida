@@ -52,24 +52,32 @@ Either through GitHub's UI (*Settings → Secrets and variables → Actions → 
 repository secret*), or from a terminal, which avoids the key ever touching a
 clipboard — point the second command at wherever the JSON downloaded:
 
-PowerShell (Windows):
+**Use GitHub's web UI for the key.** *Settings → Secrets and variables → Actions
+→ New repository secret*, name `EE_SERVICE_ACCOUNT_KEY`, and paste the whole
+JSON file into the value box.
+
+The command-line routes for this one are a trap on Windows. `gh secret set` takes
+either `--body` or standard input -- there is no `--body-file` -- and PowerShell
+piping into a native program's stdin does not reliably deliver the content. It
+fails *silently*: `gh` reports success and the secret is set to an empty string,
+which then looks exactly like "no secret configured" at the other end.
+
+The project name is a plain string, so it is fine either way:
 
 ```powershell
 gh secret set EE_PROJECT --body "prueba-463913" --repo ammarmahfoud90/parana-crecida
 ```
 
-```powershell
-Get-Content "$env:USERPROFILE\Downloads\your-key.json" -Raw | gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida
-```
-
-bash (macOS, Linux):
+If you want the key on the command line, use a shell with real input redirection
+-- Git Bash on Windows, or any Unix shell:
 
 ```bash
 gh secret set EE_SERVICE_ACCOUNT_KEY --repo ammarmahfoud90/parana-crecida < ~/Downloads/your-key.json
 ```
 
-PowerShell has no `<` input redirection, so the bash form fails there with a
-parser error rather than anything helpful.
+Either way, check it afterwards: run the workflow and look at the *Refresh basin
+rainfall* step's log. If the env block shows `EE_SERVICE_ACCOUNT_KEY:` with
+nothing after it, the secret is empty; a real one is masked as `***`.
 
 **5. Check it.** Run the workflow by hand
 (`gh workflow run daily.yml`, or the *Run workflow* button) and look at the
