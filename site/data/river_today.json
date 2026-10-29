@@ -1,0 +1,628 @@
+{
+ "schema": 1,
+ "generated_at": "2026-10-28T22:29:37-03:00",
+ "last_data_day": "2026-10-27",
+ "data_age_days": 1,
+ "freshness": "1 day behind",
+ "official_source_url": "https://alerta.ina.gob.ar/",
+ "thresholds": {
+  "source_date": "2026-10-28",
+  "gauges_with_values": 14
+ },
+ "validation": {
+  "ok": true,
+  "warnings": [
+   "no_isolated_outliers"
+  ]
+ },
+ "gauges": [
+  {
+   "series_id": "26251",
+   "name": "Puerto Iguazú",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 28.5,
+   "change": 0.4,
+   "change_days": 1,
+   "alert": 25.0,
+   "evacuation": 28.0,
+   "status": "evacuation"
+  },
+  {
+   "series_id": "26252",
+   "name": "Libertad",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 26.8,
+   "change": 0.5,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26253",
+   "name": "El Dorado",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 21.1,
+   "change": 0.0,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26254",
+   "name": "Libertador",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 15.81,
+   "change": -0.11,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26255",
+   "name": "Santa Ana",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 9.35,
+   "change": -0.1,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26256",
+   "name": "Posadas",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 9.9,
+   "change": -0.08,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26257",
+   "name": "Ituzaingó",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 4.4,
+   "change": -0.1,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26258",
+   "name": "Itá Ibaté",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 6.76,
+   "change": 0.0,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26259",
+   "name": "Itatí",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 8.21,
+   "change": 0.01,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26260",
+   "name": "Paso de la Patria",
+   "branch": "main",
+   "tier": 3,
+   "flags": [
+    "regulated"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 7.74,
+   "change": 0.03,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26261",
+   "name": "Corrientes",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 7.35,
+   "change": 0.0,
+   "change_days": 1,
+   "alert": 6.5,
+   "evacuation": 7.0,
+   "status": "evacuation"
+  },
+  {
+   "series_id": "26263",
+   "name": "Empedrado",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 6.21,
+   "change": 0.01,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26264",
+   "name": "Bella Vista",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 6.36,
+   "change": 0.0,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26265",
+   "name": "Goya",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 5.66,
+   "change": 0.02,
+   "change_days": 1,
+   "alert": 5.2,
+   "evacuation": 5.7,
+   "status": "alert"
+  },
+  {
+   "series_id": "26267",
+   "name": "Esquina",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 5.12,
+   "change": 0.03,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26268",
+   "name": "La Paz",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 5.71,
+   "change": 0.06,
+   "change_days": 1,
+   "alert": 5.8,
+   "evacuation": 6.15,
+   "status": "below"
+  },
+  {
+   "series_id": "26269",
+   "name": "Santa Elena",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 5.38,
+   "change": 0.05,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26270",
+   "name": "Hernandarias",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 4.83,
+   "change": 0.05,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26271",
+   "name": "Paraná",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 4.16,
+   "change": 0.05,
+   "change_days": 1,
+   "alert": 4.7,
+   "evacuation": 5.0,
+   "status": "below"
+  },
+  {
+   "series_id": "26273",
+   "name": "Diamante",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 4.5,
+   "change": 0.05,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26275",
+   "name": "San Lorenzo",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 4.08,
+   "change": 0.06,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26276",
+   "name": "Rosario",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 3.75,
+   "change": 0.07,
+   "change_days": 1,
+   "alert": 5.0,
+   "evacuation": 5.25,
+   "status": "below"
+  },
+  {
+   "series_id": "26277",
+   "name": "Villa Constitución",
+   "branch": "main",
+   "tier": 1,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 3.01,
+   "change": 0.02,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26274",
+   "name": "Victoria",
+   "branch": "victoria",
+   "tier": 2,
+   "flags": [],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 3.93,
+   "change": 0.03,
+   "change_days": 1,
+   "alert": 4.6,
+   "evacuation": 5.9,
+   "status": "below"
+  },
+  {
+   "series_id": "26278",
+   "name": "San Nicolás",
+   "branch": "main",
+   "tier": 2,
+   "flags": [
+    "bad_snap"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 2.77,
+   "change": 0.02,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26279",
+   "name": "Ramallo",
+   "branch": "main",
+   "tier": 2,
+   "flags": [
+    "bad_snap"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 2.42,
+   "change": 0.08,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26280",
+   "name": "San Pedro",
+   "branch": "main",
+   "tier": 2,
+   "flags": [
+    "bad_snap"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 2.04,
+   "change": -0.1,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26281",
+   "name": "Baradero",
+   "branch": "tributary",
+   "tier": 2,
+   "flags": [
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.85,
+   "change": -0.07,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26282",
+   "name": "Zárate",
+   "branch": "palmas",
+   "tier": 2,
+   "flags": [
+    "bad_snap",
+    "tide_affected"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.06,
+   "change": -0.17,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26283",
+   "name": "Campana",
+   "branch": "palmas",
+   "tier": 2,
+   "flags": [
+    "tide_affected",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 0.7,
+   "change": -0.1,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26284",
+   "name": "Escobar",
+   "branch": "palmas",
+   "tier": 2,
+   "flags": [
+    "tide_affected",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.0,
+   "change": 0.1,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26286",
+   "name": "Canal Nuevo",
+   "branch": "ibicuy",
+   "tier": 2,
+   "flags": [
+    "tide_affected"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 2.14,
+   "change": -0.16,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26287",
+   "name": "Ibicuy",
+   "branch": "ibicuy",
+   "tier": 2,
+   "flags": [
+    "tide_affected"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.1,
+   "change": -0.15,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26290",
+   "name": "Guazucito",
+   "branch": "guazu",
+   "tier": 2,
+   "flags": [
+    "tide_affected"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.6,
+   "change": -0.2,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26291",
+   "name": "Tigre",
+   "branch": "estuary",
+   "tier": 2,
+   "flags": [
+    "tide_affected",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 0.9,
+   "change": -0.2,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  },
+  {
+   "series_id": "26294",
+   "name": "San Fernando",
+   "branch": "estuary",
+   "tier": 2,
+   "flags": [
+    "tide_affected",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.0,
+   "change": -0.24,
+   "change_days": 1,
+   "alert": 3.0,
+   "evacuation": 3.5,
+   "status": "below"
+  },
+  {
+   "series_id": "26296",
+   "name": "Olivos",
+   "branch": "estuary",
+   "tier": 2,
+   "flags": [
+    "tide_affected",
+    "unrouted"
+   ],
+   "unit": "m",
+   "day": "2026-10-27",
+   "value": 1.0,
+   "change": 0.2,
+   "change_days": 1,
+   "alert": null,
+   "evacuation": null,
+   "status": "unknown"
+  }
+ ]
+}

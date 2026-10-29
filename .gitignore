@@ -13,3 +13,10 @@ cache/
 
 # Local scratch
 *.local.json
+
+# Daily report PDFs: 2.7 MB each, regenerable from INA.
+.reports/
+
+# The DuckDB store is rebuilt from the JSON cache.
+data/*.duckdb
+data/*.duckdb.wal
