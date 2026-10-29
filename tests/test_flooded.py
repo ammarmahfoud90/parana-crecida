@@ -49,11 +49,11 @@ BY_KEY = {c.key: c for c in CORRIDORS}
 
 
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
-def test_the_corridors_run_the_frontier_to_villa_constitucion():
-    """Eight stretches, end to end, each starting where the last one ended."""
-    assert len(CORRIDORS) == 8
+def test_the_corridors_run_the_frontier_to_the_delta():
+    """Nine stretches, end to end, each starting where the last one ended."""
+    assert len(CORRIDORS) == 9
     assert CORRIDORS[0].from_name == "Puerto Iguazu"
-    assert CORRIDORS[-1].to_name == "Villa Constitucion"
+    assert CORRIDORS[-1].to_name == "Ibicuy"
     for upstream, downstream in zip(CORRIDORS, CORRIDORS[1:]):
         assert upstream.to_id == downstream.from_id, (
             f"{upstream.key} ends at {upstream.to_id} but "
@@ -93,6 +93,22 @@ def test_the_centrelines_match_the_chain():
         assert stretch.river_km >= expected, (
             f"{stretch.key}: the vertex walk should not be shorter than the chain"
         )
+
+
+@pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
+def test_the_delta_stretch_publishes_no_area():
+    """It calibrates on low water and falls apart on a flood.
+
+    At -15.5 dB the 2021 bajante lands 8.2% from JRC, which would pass. But
+    over six months of a record flood the series swings between 430 and
+    1,326 km2 with no trend, and correlates -0.39 with the gauge at Ibicuy:
+    the water area falls as the river rises. The six calibrated stretches
+    upstream run +0.43 to +0.72 on the same test. A negative correlation is
+    not a weak measurement, it is a measurement of something else.
+    """
+    delta = BY_KEY["villa_constitucion_ibicuy"]
+    assert delta.calibrated is False
+    assert "-0.39" in delta.calibration.get("reason", "")
 
 
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
@@ -259,7 +275,11 @@ def test_an_uncalibrated_stretch_publishes_no_number():
     uncalibrated = {
         s["key"] for s in frames["stretches"] if not s["calibrated"]
     }
-    assert uncalibrated == {"puerto_iguazu_libertador", "libertador_posadas"}
+    assert uncalibrated == {
+        "puerto_iguazu_libertador",      # the gorge: radar shadow
+        "libertador_posadas",            # the gorge
+        "villa_constitucion_ibicuy",     # the Delta: tide and wind
+    }
 
     for frame in frames["frames"]:
         if frame["total_km2"] is None:
@@ -336,3 +356,59 @@ def test_the_window_stops_short_of_today():
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
 def test_the_committed_table_is_small_enough_to_commit():
     assert len(json.dumps(COMMITTED)) < 100_000
+
+
+# -- does the measurement track the river at all? --------------------------
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
+def test_every_published_area_moves_with_the_river():
+    """The check a passing calibration does not give you.
+
+    Calibration asks one question: over the 2021 bajante, does the threshold
+    reproduce the permanent water JRC maps? The Delta corridor answered yes
+    - 277 km2 against 302, an 8.2% residual, comfortably inside the bar -
+    and then produced a series that swings between 430 and 1,326 km2 over
+    six months of a record flood, correlating -0.39 with the gauge at
+    Ibicuy. The area falls as the river rises.
+
+    A calibration that passes is necessary and not sufficient. This is the
+    sufficient half: whatever is published must actually move with the
+    river. The six calibrated stretches run +0.43 to +0.72; the bar is set
+    only to catch a measurement pointing the wrong way, because one
+    stretch (La Paz to Parana) sits near zero on a flood that barely moved
+    it, and near zero is weak rather than wrong.
+    """
+    numpy = pytest.importorskip("numpy")
+    from parana_crecida.store import DEFAULT_DB, Store
+
+    if not Path(DEFAULT_DB).exists():
+        pytest.skip("no store to read gauge levels from")
+
+    downstream = {c.key: c.to_id for c in fl.load_corridors()}
+    checked = 0
+    with Store(DEFAULT_DB, read_only=True) as store:
+        for stretch in COMMITTED["stretches"]:
+            if not stretch.get("calibrated", True):
+                continue
+            series_id = downstream.get(stretch["key"])
+            if series_id is None:
+                continue
+            levels = {v.day.isoformat(): v.value for v in store.series(series_id)}
+            pairs = [
+                (levels[day], km2)
+                for day, km2 in zip(stretch["days"], stretch["km2"])
+                if day in levels
+            ]
+            if len(pairs) < 8:
+                continue
+            checked += 1
+            r = float(numpy.corrcoef(
+                [p[0] for p in pairs], [p[1] for p in pairs]
+            )[0, 1])
+            assert r > -0.2, (
+                f"{stretch['key']}: water area correlates {r:+.2f} with the "
+                f"stage at {stretch['to_name']} - it is measuring something "
+                "that is not the flood"
+            )
+    assert checked >= 4, f"only {checked} stretches could be checked"
