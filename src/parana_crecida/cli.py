@@ -44,6 +44,7 @@ from .lag import DEFAULT_TABLE
 from .export import (
     DEFAULT_SITE_DATA,
     ExportBlocked,
+    export_drivers,
     export_river_today,
     export_wave,
 )
@@ -498,6 +499,9 @@ def thresholds(
 
     csv_rows = th.build_rows(rows, source_pdf=pdf_path.name, source_date=source_day)
     th.write_csv(out, csv_rows)
+    th.write_snapshot(
+        th.DEFAULT_SNAPSHOT, rows, source_pdf=pdf_path.name, source_date=source_day
+    )
 
     by_status: dict[str, list[str]] = {}
     for row in csv_rows:
@@ -716,6 +720,104 @@ def lags(
     rep.write(report)
 
 
+@main.command()
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=Path("data/oni.json"),
+    show_default=True,
+)
+@report_option
+def oni(out: Path, report: Path | None) -> None:
+    """Fetch NOAA CPC's Oceanic Nino Index.
+
+    ENSO is basin-scale context, not a driver you can trace to one crest,
+    but it is why the whole basin is wet this season.
+    """
+    from .drivers import ONI_URL, classify_enso, fetch_oni, write_oni
+
+    rep = Report("oni")
+    try:
+        readings = fetch_oni()
+    except Exception as exc:  # noqa: BLE001 - reported, not swallowed
+        raise click.ClickException(f"could not fetch ONI from {ONI_URL}: {exc}") from exc
+
+    write_oni(out, readings)
+    latest = readings[-1]
+    rep.say(f"{len(readings)} seasons, {readings[0].year} to {latest.year}")
+    rep.say(f"latest: {latest.season} {latest.year}  ONI {latest.anomaly:+.2f}  "
+            f"({classify_enso(latest.anomaly)})")
+    rep.say()
+    rep.say("last 8 seasons:")
+    for r in readings[-8:]:
+        rep.say(f"  {r.season} {r.year}  {r.anomaly:+.2f}")
+    rep.say()
+    rep.say(f"oni -> {out}")
+    rep.write(report)
+
+
+@main.command()
+@cache_option
+@click.option(
+    "--source",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="rios-argentina's climatology_final.json, to trim from.",
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=Path("data/climatology_parana.json"), show_default=True,
+)
+@report_option
+def climatology(
+    cache_dirs: Sequence[Path], source: Path | None, out: Path, report: Path | None
+) -> None:
+    """Build the day-of-year reference curves for the gauges in scope.
+
+    Trims rios-argentina's curves where they exist and computes them from
+    the cached record where they do not, so a gauge it never covered - the
+    dam and inflow series - can still be placed against its own normal.
+    """
+    import json as _json
+
+    from .normalize import entry_for, trim
+
+    rep = Report("climatology")
+    cache = _cache(cache_dirs)
+    wanted = roster.series_ids()
+
+    if source is not None:
+        kept = trim(source, wanted, out)
+        rep.say(f"trimmed {kept} series from {source.name}")
+    existing = _json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
+
+    built, thin = [], []
+    for series_id in wanted:
+        if series_id in existing:
+            continue
+        values = cache.read(series_id)
+        gauge = roster.BY_ID[series_id]
+        entry = entry_for(
+            series_id,
+            values,
+            station=gauge.name,
+            family="flow" if "flow" in gauge.flags else "level",
+        )
+        if entry is None:
+            thin.append(gauge.name)
+            continue
+        existing[series_id] = entry
+        built.append(f"{gauge.name} ({entry['years']} years)")
+
+    out.write_text(
+        _json.dumps(existing, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    rep.say(f"{len(existing)} series have a climatology -> {out}")
+    if built:
+        rep.say(f"built from the cache: {', '.join(built)}")
+    if thin:
+        rep.say(f"record too short, left without one: {', '.join(thin)}")
+    rep.write(report)
+
+
 # -- store -----------------------------------------------------------------
 
 db_option = click.option(
@@ -834,11 +936,13 @@ def export(
         try:
             exported = export_river_today(store, loaded, result, out_dir=out, today=today)
             wave = export_wave(store, result, out_dir=out, today=today)
+            drivers = export_drivers(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    rep.say(f"{drivers.gauges} driver gauges -> {drivers.path}")
     rep.say(f"{wave.gauges} chain gauges -> {wave.path}")
     rep.say(f"{exported.gauges} gauges -> {exported.path}")
     rep.say(f"{exported.with_official_thresholds} carry official alert/evacuation lines")

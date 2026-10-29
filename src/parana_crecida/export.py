@@ -34,6 +34,7 @@ log = logging.getLogger(__name__)
 DEFAULT_SITE_DATA = Path("site/data")
 RIVER_TODAY = "river_today.json"
 WAVE = "wave.json"
+DRIVERS = "drivers.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -210,6 +211,49 @@ def export_wave(
     return ExportResult(
         path=path,
         gauges=len(analysis.gauges),
+        with_official_thresholds=0,
+        last_data_day=store.last_data_day(),
+    )
+
+
+def export_drivers(
+    store: Store,
+    result: ValidationResult,
+    *,
+    climatology_path: Path | None = None,
+    oni_path: Path | None = None,
+    snapshot_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    now: datetime | None = None,
+    today: date | None = None,
+) -> ExportResult:
+    """Validate-then-write the upstream drivers, behind the same gate."""
+    from .drivers import DEFAULT_ONI, build_payload, load_oni
+    from .normalize import Climatology
+    from .thresholds import DEFAULT_SNAPSHOT, load_snapshot
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    payload = build_payload(
+        store,
+        clim,
+        oni=load_oni(oni_path or DEFAULT_ONI),
+        snapshot=load_snapshot(snapshot_path or DEFAULT_SNAPSHOT),
+        now=now,
+        today=today,
+    )
+    path = out_dir / DRIVERS
+    write_json(path, payload)
+    log.info("exported %d driver gauges to %s", len(payload["gauges"]), path)
+    return ExportResult(
+        path=path,
+        gauges=len(payload["gauges"]),  # type: ignore[arg-type]
         with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )
