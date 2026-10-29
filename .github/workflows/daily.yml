@@ -5,7 +5,14 @@ name: daily
 # is usually out.
 on:
   schedule:
-    - cron: "0 12 * * *"
+    # Twice, at odd minutes. GitHub runs schedules on a best-effort basis
+    # and drops them under load; the top of the hour is the most contended
+    # minute there is, and a "0 12 * * *" set here did not fire at all on
+    # its first day. Two attempts make a silent miss much less likely, and
+    # the job is idempotent -- the second run commits nothing if the first
+    # already did the work.
+    - cron: "23 12 * * *"
+    - cron: "23 18 * * *"
   workflow_dispatch:
 
 permissions:
@@ -63,13 +70,21 @@ jobs:
       # have added a service-account key. Without the secret this step is
       # skipped and the committed series stands, going stale until someone
       # runs `crecida rainfall` locally.
+      # The check is in the shell, not in `if:`. A step's own `env:` block is
+      # not in scope for that step's `if:` expression -- it is evaluated
+      # first -- so an `if: env.X != ''` guard here is always false and the
+      # step skips even when the secret is set. That is not obvious from a
+      # green run: a skipped step looks like a passing one.
       - name: Refresh basin rainfall
         env:
           EE_SERVICE_ACCOUNT_KEY: ${{ secrets.EE_SERVICE_ACCOUNT_KEY }}
           EE_PROJECT: ${{ secrets.EE_PROJECT }}
-        if: env.EE_SERVICE_ACCOUNT_KEY != ''
         continue-on-error: true
         run: |
+          if [ -z "$EE_SERVICE_ACCOUNT_KEY" ]; then
+            echo "No EE_SERVICE_ACCOUNT_KEY secret; leaving the committed series alone."
+            exit 0
+          fi
           python -m pip install "earthengine-api>=1.4"
           crecida rainfall --report reports/rainfall.txt
 
