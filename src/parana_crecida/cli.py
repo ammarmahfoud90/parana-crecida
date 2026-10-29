@@ -17,7 +17,7 @@ import logging
 import threading
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import click
@@ -37,12 +37,19 @@ from rich.console import Console
 from rich.table import Table
 
 from . import gauges as roster
+from . import thresholds as th
+from .export import DEFAULT_SITE_DATA, ExportBlocked, export_river_today
+from .store import DEFAULT_DB, Store
+from .validate import validate as run_validate
 
 console = Console()
 
 DEFAULT_CACHE_DIRS = ("cache", "cache_recent")
 #: The server belongs to a public agency. Keep this low.
 DEFAULT_WORKERS = 4
+DEFAULT_THRESHOLDS_CSV = Path("data/ina_thresholds.csv")
+#: Daily report PDFs are 2.7 MB each and regenerable, so they stay untracked.
+DEFAULT_PDF_DIR = Path(".reports")
 
 
 class Report:
@@ -395,6 +402,319 @@ def guards(
     rep.say()
     rep.say(f"{clean} clean, {len(flagged)} flagged")
     rep.write(report)
+
+
+# -- thresholds ------------------------------------------------------------
+
+
+@main.command()
+@click.option(
+    "--date",
+    "report_date",
+    type=click.DateTime(["%Y-%m-%d"]),
+    help="Which daily report to read. Default: today, falling back day by day.",
+)
+@click.option(
+    "--pdf",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="Parse this local PDF instead of downloading one.",
+)
+@click.option(
+    "--pdf-dir", type=click.Path(path_type=Path), default=DEFAULT_PDF_DIR, show_default=True
+)
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=DEFAULT_THRESHOLDS_CSV,
+    show_default=True,
+)
+@click.option("--back-days", default=7, show_default=True, help="How far to fall back.")
+@report_option
+def thresholds(
+    report_date: datetime | None,
+    pdf: Path | None,
+    pdf_dir: Path,
+    out: Path,
+    back_days: int,
+    report: Path | None,
+) -> None:
+    """Parse INA's alert and evacuation levels into a CSV.
+
+    The a5 API does not publish thresholds; they are only in the daily
+    report PDF. No value is ever invented: a gauge INA does not list gets an
+    empty row saying so, and report rows that match no gauge in scope are
+    written out too, so the CSV can be checked against the PDF line by line.
+    """
+    import requests
+
+    rep = Report("ina thresholds")
+
+    if pdf is not None:
+        pdf_path, source_day = pdf, report_date.date() if report_date else date.today()
+        rep.say(f"reading local PDF {pdf_path}")
+    else:
+        pdf_dir.mkdir(parents=True, exist_ok=True)
+        first = report_date.date() if report_date else date.today()
+        pdf_path = None
+        source_day = first
+        session = requests.Session()
+        session.headers["User-Agent"] = "parana-crecida/0.1 (hydrology research)"
+        for back in range(back_days + 1):
+            day = first - timedelta(days=back)
+            url = th.report_url(day)
+            try:
+                response = session.get(url, timeout=120)
+            except requests.RequestException as exc:
+                rep.say(f"  {day}: {type(exc).__name__}")
+                continue
+            # A missing report answers 404 with a short error page, so size
+            # is as much a signal as status here.
+            if response.status_code == 200 and len(response.content) > 50_000:
+                pdf_path = pdf_dir / f"reporte_diario_{day.isoformat()}.pdf"
+                pdf_path.write_bytes(response.content)
+                source_day = day
+                rep.say(f"  {day}: {len(response.content) // 1024} KB -> {pdf_path.name}")
+                break
+            rep.say(f"  {day}: HTTP {response.status_code}, {len(response.content)} bytes")
+        if pdf_path is None:
+            raise click.ClickException(
+                f"no daily report found between {first - timedelta(days=back_days)} and {first}"
+            )
+
+    rows = th.parse_report(pdf_path)
+    if not rows:
+        raise click.ClickException(
+            f"found no threshold tables in {pdf_path}; the report layout may have changed"
+        )
+    rep.say(f"parsed {len(rows)} rows from the report's threshold tables")
+
+    csv_rows = th.build_rows(rows, source_pdf=pdf_path.name, source_date=source_day)
+    th.write_csv(out, csv_rows)
+
+    by_status: dict[str, list[str]] = {}
+    for row in csv_rows:
+        label = row["gauge"] or row["ina_station"]
+        by_status.setdefault(row["status"], []).append(label)
+
+    rep.say()
+    official = by_status.get(th.STATUS_OFFICIAL, [])
+    rep.say(f"{len(official)} gauges in scope have official levels:")
+    for name in official:
+        entry = next(r for r in csv_rows if (r["gauge"] or r["ina_station"]) == name)
+        rep.say(f"  {name:<22} alert {entry['alert'] or '-':>8}  "
+                f"evac {entry['evacuation'] or '-':>8}  {entry['unit']}")
+
+    absent = by_status.get(th.STATUS_NOT_IN_REPORT, [])
+    rep.say()
+    rep.say(f"{len(absent)} gauges in scope are NOT in the report, left empty:")
+    for chunk in range(0, len(absent), 4):
+        rep.say("  " + ", ".join(absent[chunk:chunk + 4]))
+
+    empty = by_status.get(th.STATUS_NO_VALUE, [])
+    if empty:
+        rep.say()
+        rep.say(f"{len(empty)} gauges are listed but carry no parseable value: "
+                + ", ".join(empty))
+
+    extra = by_status.get(th.STATUS_UNMATCHED, [])
+    rep.say()
+    rep.say(f"{len(extra)} report rows match no gauge in scope (kept for checking):")
+    for chunk in range(0, len(extra), 3):
+        rep.say("  " + ", ".join(extra[chunk:chunk + 3]))
+
+    rep.say()
+    rep.say(f"thresholds -> {out}  (check it against {pdf_path.name})")
+    rep.write(report)
+
+
+# -- store -----------------------------------------------------------------
+
+db_option = click.option(
+    "--db", type=click.Path(path_type=Path), default=DEFAULT_DB, show_default=True
+)
+thresholds_option = click.option(
+    "--thresholds",
+    "thresholds_csv",
+    type=click.Path(path_type=Path),
+    default=DEFAULT_THRESHOLDS_CSV,
+    show_default=True,
+)
+
+
+@main.command()
+@db_option
+@cache_option
+@tier_option
+@series_option
+@thresholds_option
+@report_option
+def load(
+    db: Path,
+    cache_dirs: Sequence[Path],
+    tiers: Sequence[int],
+    series: Sequence[str],
+    thresholds_csv: Path,
+    report: Path | None,
+) -> None:
+    """Load the raw JSON cache into DuckDB, with gauges and thresholds.
+
+    The JSON cache stays the raw layer; this is the clean one. A series is
+    replaced wholesale, so re-running after a top-up cannot double-count.
+    """
+    cache = _cache(cache_dirs)
+    wanted = _resolve_series(series, tiers or (1, 2, 3))
+    rep = Report("load")
+    rep.say(f"db {db}, cache roots: {', '.join(str(r) for r in cache.roots)}")
+
+    with Store(db) as store:
+        n_gauges = store.load_gauges()
+        n_series, n_rows = store.load_observations(cache, wanted, note="crecida load")
+        loaded = th.load_csv(thresholds_csv)
+        n_thresholds = store.load_thresholds(loaded)
+        last = store.last_data_day()
+
+    rep.say(f"{n_gauges} gauges, {n_series} series, {n_rows} observation rows")
+    rep.say(f"{n_thresholds} gauges with official thresholds from {thresholds_csv}")
+    rep.say(f"newest reading: {last}")
+    if n_series < len(wanted):
+        rep.say(f"{len(wanted) - n_series} requested series had nothing cached")
+    rep.write(report)
+
+
+@main.command("validate")
+@db_option
+@click.option("--as-of", type=click.DateTime(["%Y-%m-%d"]), help="Judge as of this day.")
+@report_option
+def validate_cmd(db: Path, as_of: datetime | None, report: Path | None) -> None:
+    """Run the data tests. Exits non-zero if any error-level test fails."""
+    today = as_of.date() if as_of else datetime.now(DEFAULT_TZ).date()
+    rep = Report("validate")
+    with Store(db, read_only=True) as store:
+        result = run_validate(store, today=today)
+
+    for line in result.lines():
+        rep.say(line)
+    rep.say()
+    rep.say(
+        f"{len(result.failures)} failed, {len(result.warnings)} warnings, "
+        f"{len(result.checks)} checks"
+    )
+    for check in result.failures:
+        for offender in check.offenders[:10]:
+            rep.say(f"    {check.name}: {offender}")
+    rep.write(report)
+
+    if not result.ok:
+        raise click.ClickException(
+            f"{len(result.failures)} data test(s) failed; nothing should be exported"
+        )
+
+
+# -- export ----------------------------------------------------------------
+
+
+@main.command()
+@db_option
+@thresholds_option
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=DEFAULT_SITE_DATA, show_default=True
+)
+@click.option("--as-of", type=click.DateTime(["%Y-%m-%d"]), help="Judge as of this day.")
+@report_option
+def export(
+    db: Path,
+    thresholds_csv: Path,
+    out: Path,
+    as_of: datetime | None,
+    report: Path | None,
+) -> None:
+    """Validate, then write the site's data files.
+
+    If a data test fails nothing is written, so whatever is already
+    published stays published, with its own last-update date on the page.
+    """
+    today = as_of.date() if as_of else datetime.now(DEFAULT_TZ).date()
+    rep = Report("export")
+    loaded = th.load_csv(thresholds_csv)
+
+    with Store(db, read_only=True) as store:
+        result = run_validate(store, today=today)
+        for line in result.lines():
+            rep.say(line)
+        rep.say()
+        try:
+            exported = export_river_today(store, loaded, result, out_dir=out, today=today)
+        except ExportBlocked as exc:
+            rep.say(f"EXPORT BLOCKED: {exc}")
+            rep.write(report)
+            raise click.ClickException(str(exc)) from exc
+
+    rep.say(f"{exported.gauges} gauges -> {exported.path}")
+    rep.say(f"{exported.with_official_thresholds} carry official alert/evacuation lines")
+    rep.say(f"newest reading: {exported.last_data_day}")
+    if result.warnings:
+        rep.say(f"warnings: {', '.join(c.name for c in result.warnings)}")
+    rep.write(report)
+
+
+# -- daily -----------------------------------------------------------------
+
+
+@main.command()
+@db_option
+@cache_option
+@thresholds_option
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=DEFAULT_SITE_DATA, show_default=True
+)
+@click.option("--workers", default=DEFAULT_WORKERS, show_default=True)
+@click.option("--skip-fetch", is_flag=True, help="Use the cache as it is.")
+@report_option
+@click.pass_context
+def daily(
+    ctx: click.Context,
+    db: Path,
+    cache_dirs: Sequence[Path],
+    thresholds_csv: Path,
+    out: Path,
+    workers: int,
+    skip_fetch: bool,
+    report: Path | None,
+) -> None:
+    """The scheduled run: fetch, load, test, export.
+
+    One command so that CI has one thing to call and one exit code to read.
+    A failed data test stops it before the export, which is the point.
+    """
+    if not skip_fetch:
+        console.rule("[bold]fetch")
+        ctx.invoke(
+            fetch,
+            cache_dirs=tuple(cache_dirs),
+            tiers=(),
+            series=(),
+            history=False,
+            start=datetime(1900, 1, 1),
+            workers=workers,
+            dry_run=False,
+            report=None,
+        )
+
+    console.rule("[bold]load")
+    ctx.invoke(
+        load,
+        db=db,
+        cache_dirs=tuple(cache_dirs),
+        tiers=(),
+        series=(),
+        thresholds_csv=thresholds_csv,
+        report=None,
+    )
+
+    console.rule("[bold]test and export")
+    ctx.invoke(
+        export, db=db, thresholds_csv=thresholds_csv, out=out, as_of=None, report=report
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover

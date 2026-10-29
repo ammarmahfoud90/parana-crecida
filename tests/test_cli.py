@@ -160,14 +160,22 @@ def test_guards_searches_cache_roots_in_order(runner, tmp_path):
 # -- plumbing --------------------------------------------------------------
 
 
-def test_help_lists_only_implemented_commands(runner):
-    """No stubs: a command in --help must actually do something."""
-    result = runner.invoke(main, ["--help"])
-    assert result.exit_code == 0
-    for command in ("gauges", "catalogue", "fetch", "guards"):
-        assert command in result.output
-    for not_yet in ("events", "lags", "track", "site"):
-        assert not_yet not in result.output
+def test_only_implemented_commands_are_registered():
+    """No stubs: every registered command must actually do something.
+
+    The analysis commands (events, lags, track) arrive with their modules.
+    """
+    assert set(main.commands) == {
+        "gauges",
+        "catalogue",
+        "thresholds",
+        "fetch",
+        "load",
+        "validate",
+        "export",
+        "daily",
+        "guards",
+    }
 
 
 def test_version(runner):
