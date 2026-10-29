@@ -75,7 +75,7 @@ jobs:
       # first -- so an `if: env.X != ''` guard here is always false and the
       # step skips even when the secret is set. That is not obvious from a
       # green run: a skipped step looks like a passing one.
-      - name: Refresh basin rainfall
+      - name: Refresh the Earth Engine products
         env:
           EE_SERVICE_ACCOUNT_KEY: ${{ secrets.EE_SERVICE_ACCOUNT_KEY }}
           EE_PROJECT: ${{ secrets.EE_PROJECT }}
@@ -87,6 +87,7 @@ jobs:
           fi
           python -m pip install "earthengine-api>=1.4"
           crecida rainfall --report reports/rainfall.txt
+          crecida flooded --report reports/flooded.txt
 
       # fetch -> load -> data tests -> export. A failed test exits non-zero
       # here, so the commit and deploy steps below are skipped and the
@@ -98,7 +99,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json reports
+          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json reports
           if git diff --staged --quiet; then
             echo "nothing changed"
           else

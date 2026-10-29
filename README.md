@@ -67,6 +67,7 @@ crecida lags              # measure travel time and freeze the table
 crecida climatology       # day-of-year reference curves for every gauge
 crecida oni               # NOAA's Oceanic Nino Index
 crecida rainfall          # basin rainfall from Earth Engine (needs a credential)
+crecida flooded           # flooded area from Sentinel-1 (needs a credential)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
 crecida load              # load the JSON cache into DuckDB
@@ -328,6 +329,65 @@ run red — which is what actually reaches a person, since GitHub emails on a fa
 scheduled run. It fails if the river data is more than 3 days old, or the rainfall
 more than 10.
 
+## View 4: flooded area
+
+`site/flood.html` shows how much ground the river covers between Corrientes and
+Goya, measured by Sentinel-1 radar, with the stage at Corrientes on the same
+dates. A gauge says how high the river is at one point; it says nothing about how
+wide, and on a floodplain tens of kilometres across that is the question.
+
+Radar rather than optical imagery because the Litoral is cloudy exactly when it
+floods. In VV polarisation calm open water is dark: it reflects the pulse away
+from the satellite instead of scattering it back.
+
+### Why the threshold is fixed, not Otsu
+
+The textbook recipe is Otsu's method. It does not work here, and it fails in a way
+that looks like success. Over this corridor:
+
+| | median VV |
+|---|---|
+| water JRC maps as permanent | −15.9 dB |
+| dry land | −11.2 dB |
+
+Four decibels apart with overlapping tails, and water is only about 5% of the
+corridor's area. There is no second mode to find, so Otsu splits *land* in two and
+returns about −12 dB — which labelled **4,445 km² as water during the worst drought
+in 77 years**, more than the flood it was compared against.
+
+The threshold is fixed at **−16 dB**, chosen because it reproduces an independent
+measurement: over the 2021 bajante it gives 536 km² where JRC Global Surface Water
+maps 521 km² of permanent water in the same corridor. A test asserts that
+agreement, so if the method drifts the suite says so rather than the site quietly
+publishing a wrong number.
+
+### Only full passes count
+
+A Sentinel-1 pass crosses part of the corridor; the rest has no data, and
+unobserved ground reduces to zero water — which reads as the river shrinking.
+Coverage per date here is either about 99.7% or about 23–40%, with nothing in
+between, so partial passes are dropped. Full coverage comes round every 12 days,
+and that is the real sampling rate.
+
+### What it shows
+
+Through May to mid-October the area sits between 490 and 824 km² while the stage
+wanders between 2.3 and 5.3 m. Then on 25 October, with Corrientes at 7.36 m —
+above its evacuation level — it reaches **1,651 km²**, three times the low-water
+baseline.
+
+The correlation between area and stage across all passes is only r = 0.57, and
+that is the finding rather than a problem: below about 5 m the river stays in its
+channel and the floodplain does not respond at all. Area and stage are not two
+measurements of the same thing.
+
+### What it misses
+
+Radar does not see water under vegetation. A flooded forest scatters the pulse
+back from trunks and canopy and reads as dry land, so over the wooded islands and
+wetlands this figure is too low. It is a floor, not a total, and the page leads
+with that.
+
 ## Status
 
 Built:
@@ -339,10 +399,13 @@ Built:
   travel time between gauges, and view 2.
 - Dam and inflow drivers, ENSO ingestion, reference-curve building, basin rainfall
   from Earth Engine, and view 3.
+- Flooded area from Sentinel-1 for the Corrientes-Goya stretch, and view 4.
 
 Not built yet — see `.claude/plans` for the full plan:
 
-- Views 4 and 5: flooded area (Sentinel-1), method and limits.
+- View 5: method and limits.
+- The remaining stretches, from Misiones to the Delta. Each needs its own
+  corridor and its own calibration check before it can be trusted.
 - Refreshing rainfall in CI, which needs a service-account key in GitHub secrets.
 - `track`: projecting where a wave now in progress will arrive downstream. The
   travel times exist; turning them into arrival dates with honest uncertainty is
