@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mapa de la crecida — Crecida del Paraná</title>
-<meta name="description" content="Mapa del Paraná de Corrientes a Villa Constitución: agua detectada por radar, estaciones, departamentos.">
+<meta name="description" content="Mapa del Paraná del límite con Brasil a Villa Constitución: altura del río día a día, agua detectada por radar, estaciones y departamentos.">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -40,6 +40,11 @@
 
   <div id="map" role="application" data-t-aria="mapLabel"></div>
 
+  <div class="layerswitch" id="layerswitch" hidden role="group" data-t-aria="layerLabel">
+    <button type="button" data-layer="stage" aria-pressed="true" data-t="layerStage"></button>
+    <button type="button" data-layer="radar" aria-pressed="false" data-t="layerRadar"></button>
+  </div>
+
   <div class="player" id="player" hidden>
     <button type="button" id="play" class="playbtn" aria-label="Play"></button>
     <input type="range" id="slider" min="0" max="0" value="0" step="1" data-t-aria="sliderLabel">
@@ -56,7 +61,7 @@
     <span><i class="sw dept"></i><span data-t="keyDept"></span></span>
   </div>
 
-  <p class="cap" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px" data-t="windowNote"></p>
+  <p class="cap" id="modeNote" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px"></p>
 
   <footer>
     <p data-t="method"></p>
@@ -72,14 +77,19 @@ const T = {
   es: {
     htmlLang: "es", locale: "es-AR",
     title: "Mapa de la crecida",
-    subtitle: "De Corrientes a Villa Constitución, con estaciones y departamentos",
+    subtitle: "Del límite con Brasil a Villa Constitución: 1.440 km de río, día a día",
     langGroup: "Idioma", viewsNav: "Vistas", mapLabel: "Mapa del río Paraná",
     viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
     viewFlood: "Superficie", viewMap: "Mapa",
     noticeStrong: "Esto no es un sistema de alerta.",
-    noticeBody: "Muestra agua detectada por radar, no un pronóstico ni un mapa oficial de riesgo. El radar no ve el agua bajo la vegetación, así que la superficie real es mayor.",
+    noticeBody: "Muestra lo medido — alturas de estaciones y agua detectada por radar — no un pronóstico ni un mapa oficial de riesgo. Entre estaciones el valor se interpola, y el radar no ve el agua bajo la vegetación.",
     officialLink: "Ver el alerta oficial del INA →",
     sliderLabel: "Fecha",
+    layerLabel: "Capa", layerStage: "Río día a día", layerRadar: "Agua por radar",
+    stageNote: "Altura del río en cada estación, comparada con lo normal para esa fecha, interpolada a lo largo del río. Se actualiza todos los días. La línea se corta en Yacyretá: el embalse y el río aguas abajo están separados.",
+    radarNote: "Cada cuadro es un compuesto de 12 días, no un instante. La franja que ve el satélite es más angosta que este tramo de río.",
+    pctLow: "bajo", pctHigh: "muy alto",
+    frontLabel: (km) => `frente de la crecida cerca del km ${km}`,
     keyChannel: "cauce permanente", keyFlood: "agua de la crecida",
     keyGauge: "estación", keyDept: "departamento",
     windowNote: "Cada cuadro es un compuesto de 12 días, no un instante. La franja que ve el satélite es más angosta que este tramo de río, así que para cubrirlo entero hace falta un ciclo completo.",
@@ -96,14 +106,19 @@ const T = {
   en: {
     htmlLang: "en", locale: "en-GB",
     title: "Flood map",
-    subtitle: "Corrientes to Villa Constitución, with gauges and departments",
+    subtitle: "From the Brazil border to Villa Constitución: 1,440 km of river, day by day",
     langGroup: "Language", viewsNav: "Views", mapLabel: "Map of the Paraná",
     viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
     viewFlood: "Flooded area", viewMap: "Map",
     noticeStrong: "This is not an alert system.",
-    noticeBody: "It shows water detected by radar, not a forecast and not an official risk map. Radar cannot see water under vegetation, so the real flooded area is larger.",
+    noticeBody: "It shows what was measured — gauge heights and water detected by radar — not a forecast and not an official risk map. Between gauges the value is interpolated, and radar cannot see water under vegetation.",
     officialLink: "See INA's official alert →",
     sliderLabel: "Date",
+    layerLabel: "Layer", layerStage: "River, day by day", layerRadar: "Water by radar",
+    stageNote: "River height at each gauge against what is normal for the date, interpolated along the river. Updates daily. The line breaks at Yacyretá: the reservoir and the river below it are separate.",
+    radarNote: "Each frame is a 12-day composite, not an instant. The satellite's swath is narrower than this run of river.",
+    pctLow: "low", pctHigh: "very high",
+    frontLabel: (km) => `flood front near km ${km}`,
     keyChannel: "permanent channel", keyFlood: "flood water",
     keyGauge: "gauge", keyDept: "department",
     windowNote: "Each frame is a 12-day composite, not an instant. The satellite's swath is narrower than this run of river, so covering it whole takes a full repeat cycle.",
@@ -122,6 +137,46 @@ const T = {
 let lang = "es";
 let map, overlays = [], frames = [], index = 0, timer = null;
 let gaugeLayer = null, deptLayer = null, levels = {};
+let mode = "stage";              // the daily river is the default view
+let stage = null, stageLayer = null, stageIndex = 0;
+
+// The same six bands as the wave view, so the same river does not read as
+// two different things on two pages.
+function bandFor(pct) {
+  if (pct === null || pct === undefined) return "#b9b7b2";
+  if (pct < 10) return "#9fb3bd";
+  if (pct < 25) return "#bfc9c4";
+  if (pct < 75) return "#d8cfbb";
+  if (pct < 90) return "#e8b96a";
+  if (pct < 95) return "#dd8b36";
+  return "#b4441f";
+}
+
+// Percentile at a point on the river, interpolated along river distance
+// between the two gauges either side -- and never across a dam.
+function pctAtKm(km, day, dams) {
+  const a = stage.anchors;
+  let before = null, after = null;
+  for (const anchor of a) {
+    const v = anchor.pct[day];
+    if (v === null || v === undefined) continue;
+    if (anchor.river_km <= km) before = anchor;
+    if (anchor.river_km >= km && after === null) after = anchor;
+  }
+  if (!before && !after) return null;
+  if (!before) return after.pct[day];
+  if (!after) return before.pct[day];
+  if (before === after) return before.pct[day];
+  for (const d of dams) {
+    // A gauge on the far side of a dam says nothing about this side.
+    if (before.river_km < d && d <= km) return after.pct[day];
+    if (km < d && d <= after.river_km) return before.pct[day];
+  }
+  const span = after.river_km - before.river_km;
+  if (span <= 0) return before.pct[day];
+  const f = (km - before.river_km) / span;
+  return before.pct[day] + f * (after.pct[day] - before.pct[day]);
+}
 
 function fmt(v, d) {
   if (v === null || v === undefined) return "–";
@@ -158,7 +213,7 @@ function setLang(next) {
   }
   document.getElementById("play").setAttribute(
     "aria-label", timer ? t.pause : t.play);
-  if (frames.length) showFrame(index);
+  redraw();
   if (gaugeLayer) gaugeLayer.eachLayer((l) => l.getPopup() && l.setPopupContent(l.options.buildPopup()));
 }
 
@@ -168,7 +223,40 @@ function statusColour(status) {
     : status === "below" ? "#2f7d52" : "#9a9892";
 }
 
+function drawStage(dayIndex) {
+  if (!stage) return;
+  stageIndex = Math.max(0, Math.min(dayIndex, stage.days.length - 1));
+  const dams = (stage.dams || []).map((d) => d.river_km);
+  if (!stageLayer) {
+    stageLayer = L.layerGroup().addTo(map);
+    stage.segments.forEach((seg) => {
+      const line = L.polyline(seg.points, { weight: 5, opacity: .95, lineCap: "round" });
+      line.options.km = seg.km;
+      stageLayer.addLayer(line);
+    });
+  }
+  stageLayer.eachLayer((line) => {
+    const pct = pctAtKm(line.options.km, stageIndex, dams);
+    line.setStyle({ color: bandFor(pct) });
+    line.bindTooltip(
+      `km ${fmt(line.options.km, 0)} — p${pct === null ? "?" : fmt(pct, 0)}`,
+      { sticky: true });
+  });
+  const day = stage.days[stageIndex];
+  document.getElementById("slider").value = String(stageIndex);
+  document.getElementById("windowLabel").textContent = dayLabel(day);
+  // Where the water stops being extreme is where the front has got to.
+  let front = null;
+  for (const a of stage.anchors) {
+    const v = a.pct[stageIndex];
+    if (v !== null && v !== undefined && v >= 90) front = a.river_km;
+  }
+  document.getElementById("totalLabel").textContent =
+    front === null ? "" : T[lang].frontLabel(fmt(front, 0));
+}
+
 function showFrame(i) {
+  if (mode === "stage") { drawStage(i); return; }
   index = (i + frames.length) % frames.length;
   overlays.forEach((o, k) => o.setOpacity(k === index ? 0.85 : 0));
   const f = frames[index];
@@ -179,6 +267,52 @@ function showFrame(i) {
     f.total_km2 ? T[lang].totalLabel(fmt(f.total_km2, 0)) : "";
 }
 
+function redraw() {
+  if (mode === "stage") { if (stage) drawStage(stageIndex); }
+  else if (frames.length) showFrame(index);
+}
+
+// The two layers are different lengths - 179 daily values against 15
+// twelve-day composites - so the slider position does not carry across a
+// switch. What the reader is looking at is a date, so that is what is kept:
+// switching layer lands on the nearest date the other layer has.
+function shownDate() {
+  if (mode === "stage") return stage ? stage.days[stageIndex] : null;
+  return frames.length ? frames[index].end : null;
+}
+
+function nearest(days, target) {
+  if (!target) return days.length - 1;
+  const want = Date.parse(target);
+  let best = 0, gap = Infinity;
+  days.forEach((d, i) => {
+    const diff = Math.abs(Date.parse(d) - want);
+    if (diff < gap) { gap = diff; best = i; }
+  });
+  return best;
+}
+
+function setMode(next) {
+  const was = shownDate();
+  mode = next;
+  if (timer) togglePlay();
+  for (const b of document.querySelectorAll(".layerswitch button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.layer === mode));
+  }
+  const slider = document.getElementById("slider");
+  if (mode === "stage") {
+    overlays.forEach((o) => o.setOpacity(0));
+    slider.max = String(Math.max((stage ? stage.days.length : 1) - 1, 0));
+    drawStage(stage ? nearest(stage.days, was) : 0);
+  } else {
+    if (stageLayer) { map.removeLayer(stageLayer); stageLayer = null; }
+    slider.max = String(Math.max(frames.length - 1, 0));
+    showFrame(frames.length ? nearest(frames.map((f) => f.end), was) : 0);
+  }
+  document.getElementById("modeNote").textContent =
+    mode === "stage" ? T[lang].stageNote : T[lang].radarNote;
+}
+
 function togglePlay() {
   const btn = document.getElementById("play");
   if (timer) {
@@ -186,7 +320,14 @@ function togglePlay() {
     btn.classList.remove("playing");
     btn.setAttribute("aria-label", T[lang].play);
   } else {
-    timer = setInterval(() => showFrame(index + 1), 900);
+    const step = mode === "stage" ? 70 : 900;
+    timer = setInterval(() => {
+      if (mode === "stage") {
+        drawStage((stageIndex + 1) % stage.days.length);
+      } else {
+        showFrame(index + 1);
+      }
+    }, step);
     btn.classList.add("playing");
     btn.setAttribute("aria-label", T[lang].pause);
   }
@@ -256,11 +397,18 @@ function start(index_json, gaugesGeo, deptGeo, today) {
     if (timer) togglePlay();
     showFrame(Number(slider.value));
   });
+  if (stage) deptLayer && deptLayer.bringToBack();
   document.getElementById("play").addEventListener("click", togglePlay);
 
+  for (const b of document.querySelectorAll(".layerswitch button")) {
+    b.addEventListener("click", () => setMode(b.dataset.layer));
+  }
   document.getElementById("player").hidden = false;
   document.getElementById("legend").hidden = false;
-  showFrame(frames.length - 1);   // open on the most recent window
+  document.getElementById("layerswitch").hidden = false;
+  index = frames.length - 1;
+  stageIndex = stage ? stage.days.length - 1 : 0;
+  setMode("stage");               // the daily river is what shows movement
 }
 
 for (const b of document.querySelectorAll(".langs button")) {
@@ -277,7 +425,9 @@ Promise.all([
   grab("data/gauges.geojson"),
   grab("data/departamentos.geojson"),
   grab("data/river_today.json"),
-]).then(([idx, gaugesGeo, deptGeo, today]) => {
+  grab("data/river_stage.json"),
+]).then(([idx, gaugesGeo, deptGeo, today, stageData]) => {
+  stage = stageData && stageData.days && stageData.days.length ? stageData : null;
   if (!idx || !idx.frames || !idx.frames.length) {
     throw new Error("no map frames");
   }
