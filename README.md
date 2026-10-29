@@ -73,6 +73,7 @@ crecida load              # load the JSON cache into DuckDB
 crecida validate          # run the data tests
 crecida export            # validate, then write site/data
 crecida daily             # all of the above, in order: what CI runs
+crecida freshness         # fail if what is published has gone stale
 crecida guards            # check for stale, stuck or re-zeroed gauges
 crecida catalogue         # page the whole a5 catalogue to data/
 ```
@@ -306,11 +307,25 @@ registers, which is why Andresito rose 7,353 m³/s in a week.
 Rainfall is a basin **average**: 12 mm over an area the size of France is a very
 different thing from 12 mm on one town, and the page says so.
 
-**This needs an Earth Engine credential, which a GitHub Actions run does not have**,
-so the series is derived locally and committed, like the chain and the travel
-times. Unlike those two it genuinely goes stale, so the page shows the date it was
-last refreshed and marks it when it falls behind. Refreshing it daily in CI would
-mean putting a Google service-account key in the repository's secrets.
+**This needs an Earth Engine credential.** Locally that is the OAuth token from
+`earthengine authenticate`. A scheduled run cannot have one, so it looks for a
+service-account key in `EE_SERVICE_ACCOUNT_KEY`; without that secret the rainfall
+step is skipped and the committed series stands, going stale until someone runs
+`crecida rainfall` by hand. The page shows when it was last refreshed and marks it
+once it falls behind.
+
+## Knowing when it stops working
+
+The export gate is deliberately lenient about staleness: if INA is down, the
+honest thing is to keep showing the last good reading *with its date*, not to take
+the site down. The cost is that a stalled feed looks exactly like a working one to
+anyone not reading dates.
+
+So `crecida freshness` runs as the **last** step of the daily job, after the
+deploy. The site is already updated with whatever it has, and a stall turns the
+run red — which is what actually reaches a person, since GitHub emails on a failed
+scheduled run. It fails if the river data is more than 3 days old, or the rainfall
+more than 10.
 
 ## Status
 
