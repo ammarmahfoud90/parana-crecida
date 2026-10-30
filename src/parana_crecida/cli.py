@@ -1367,6 +1367,41 @@ def frequency(db: Path, out: Path, report: Path | None) -> None:
     rep.write(report)
 
 
+@main.command()
+@click.option("--project", default=None, help="Earth Engine project.")
+@click.option("--cycles", default=15, show_default=True)
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=Path("data/exposure.json"), show_default=True,
+)
+@report_option
+def exposure(project: str | None, cycles: int, out: Path, report: Path | None) -> None:
+    """Count who lives where the water now is.
+
+    Modelled residential population on ground the radar found under water
+    and the JRC does not map as permanent channel. Not a count of people
+    flooded - it is who lives where the water is - and a floor, because
+    radar cannot see water under trees.
+    """
+    from . import exposure as ex
+    from .rainfall import initialize
+
+    rep = Report("exposure")
+    initialize(project=project)
+    payload = ex.build(cycles=cycles)
+    ex.write(out, payload)
+
+    latest, peak = payload.get("latest"), payload.get("peak")
+    if latest:
+        rep.say(f"latest {latest['day']}: {latest['people']:,} people, "
+                f"{latest['built_km2']} km2 of built surface")
+    if peak:
+        rep.say(f"peak   {peak['day']}: {peak['people']:,} people")
+    rep.say(f"{len(payload['series'])} composites across "
+            f"{len(payload['stretches'])} stretches -> {out}")
+    rep.write(report)
+
+
 # -- daily -----------------------------------------------------------------
 
 

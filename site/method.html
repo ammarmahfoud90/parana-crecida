@@ -151,6 +151,11 @@
     </section>
 
     <section>
+      <h2 data-t="ensoHeading"></h2>
+      <p data-t="ensoBody"></p>
+    </section>
+
+    <section>
       <h2 data-t="breakHeading"></h2>
       <p data-t="breakBody"></p>
     </section>
@@ -261,6 +266,8 @@ const T = {
     driversBody: "Tres cosas que ayudan a entender de dónde viene el agua: lo que sueltan las represas de arriba, el índice ENSO —El Niño y La Niña cambian el régimen de lluvia de toda la cuenca— y la lluvia estimada por satélite sobre cada subcuenca, con IMERG.",
     driversLimits: "Nada de esto es un pronóstico, y la lluvia satelital no es lluvia medida: es una estimación con su propio error, útil para comparar una subcuenca con otra y una semana con otra, no para decir cuántos milímetros cayeron en un lugar.",
 
+    ensoHeading: "El Niño, y por qué no está en la página de aguas arriba",
+    ensoBody: "El índice ENSO estaba junto a los caudales de las represas, como si dijera algo sobre esta semana. No lo dice. Es un promedio trimestral de temperatura del Pacífico: explica por qué toda la cuenca está húmeda esta temporada, no por qué el río subió un metro en Goya. Puesto al lado de lecturas diarias, se leía como si fuera una de ellas. Sigue en los datos y en los CSV, como contexto de temporada.",
     breakHeading: "Cuándo deja de funcionar, y cómo se nota",
     breakBody: "Si el INA deja de publicar, lo honesto es seguir mostrando el último dato bueno con su fecha, no bajar el sitio. Pero eso solo dejaría a todos sin enterarse, así que después de publicar corre una comprobación aparte: si lo que está en línea quedó viejo —las alturas, la lluvia, la superficie, o la línea diaria del río— la corrida automática se pone en rojo aunque el sitio se vea perfecto. Varias fallas de este proyecto fueron exactamente así: todo en verde y la página mal.",
 
@@ -358,6 +365,8 @@ const T = {
     driversBody: "Three things that help explain where the water is coming from: what the dams upstream are releasing, the ENSO index — El Niño and La Niña shift the rainfall regime across the whole basin — and satellite-estimated rainfall over each sub-basin, from IMERG.",
     driversLimits: "None of it is a forecast, and satellite rainfall is not measured rainfall: it is an estimate with its own error, useful for comparing one sub-basin with another and one week with another, not for saying how many millimetres fell in a given place.",
 
+    ensoHeading: "El Niño, and why it is not on the upstream page",
+    ensoBody: "The ENSO index used to sit beside the dam flows, as though it said something about this week. It does not. It is a three-month average of Pacific temperature: it explains why a whole basin is wet this season, not why the river rose a metre at Goya. Next to daily readings it read as if it were one of them. It remains in the data and in the CSVs, as seasonal context.",
     breakHeading: "When it stops working, and how you'd know",
     breakBody: "If INA stops publishing, the honest thing is to keep showing the last good reading with its date rather than take the site down. But on its own that would leave nobody any the wiser, so a separate check runs after publishing: if what is online has gone stale — the heights, the rainfall, the flooded area, or the daily river line — the automated run goes red even though the site looks perfect. Several of this project's failures were exactly that: all green, and the page wrong.",
 

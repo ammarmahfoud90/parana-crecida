@@ -140,9 +140,14 @@ def render(
     import ee
     import requests
 
-    stretches = fl.load_corridors()
+    # Only stretches that publish a number. A picture with no figure
+    # attached invites a reader to estimate one off the screen, which is
+    # exactly what the gorge and the Delta were marked uncalibrated to
+    # prevent. They keep their satellite background; they lose the radar
+    # layer that looks like a measurement and is not one.
+    stretches = [s for s in fl.load_corridors() if s.calibrated]
     if not stretches:
-        raise ValueError("no corridors defined")
+        raise ValueError("no calibrated corridors defined")
 
     today = today or date.today()
     last = today - timedelta(days=fl.LAG_DAYS)

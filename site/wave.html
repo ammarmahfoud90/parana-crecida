@@ -1,3 +1,21 @@
+function renderAhead() {
+  const t = T[lang];
+  const section = document.getElementById("front");
+  const none = document.getElementById("aheadNone");
+  if (!track) { section.hidden = true; none.hidden = true; return; }
+
+  if (!track.anchor) {
+    section.hidden = true;
+    none.textContent = t[REASONS[track.reason] || "aheadNoneData"];
+    none.hidden = false;
+    return;
+  }
+  none.hidden = true;
+  document.getElementById("anchorLine").textContent = t.anchorLine(
+    track.anchor.name, dayLabel(track.anchor.peak_day), !track.anchor.confirmed);
+  section.hidden = false;
+}
+
 <!doctype html>
 <html lang="es" data-theme="auto">
 <head>
@@ -73,23 +91,10 @@
     <span class="key"><span class="dot"></span> <span data-t="legendCrest"></span></span>
   </div>
 
-  <section id="ahead" hidden>
-    <h2 class="section" style="margin-top:28px" data-t="aheadHeading"></h2>
+  <section id="front" hidden>
+    <h2 class="section" data-t="frontHeading"></h2>
     <p class="anchorline" id="anchorLine"></p>
-    <div class="tablewrap">
-      <table class="legs arrivals">
-        <thead>
-          <tr>
-            <th data-t="colGauge"></th>
-            <th data-t="colDue"></th>
-            <th data-t="colWindow"></th>
-            <th data-t="colNow"></th>
-          </tr>
-        </thead>
-        <tbody id="arrivals"></tbody>
-      </table>
-    </div>
-    <p class="skillnote" id="skillNote"></p>
+    <p class="skillnote" data-t="frontWhyNoDates"></p>
   </section>
 
   <p class="cap" id="aheadNone" hidden
@@ -158,7 +163,8 @@ const T = {
     legendLow: "Bajo para la época",
     legendHigh: "Muy alto",
     legendCrest: "Pico detectado",
-    aheadHeading: "Cuándo llegaría el pico, según el registro",
+    frontHeading: "Dónde está el frente de la crecida",
+    frontWhyNoDates: "Acá no hay fechas de llegada. Se construyeron y se midieron: sobre el registro desde 1998, el pico real cayó dentro de la ventana proyectada el 23% de las veces, con un error mediano de 9 días sobre viajes de pocos días a dos semanas. Un error del tamaño de la cosa que se quiere predecir no es un pronóstico. Los tiempos de viaje medidos siguen abajo, que es lo que los datos sí sostienen.",
     anchorLine: (name, day, provisional) =>
       provisional
         ? `El río dejó de subir en ${name} el ${day}, pero todavía no bajó lo suficiente como para dar el pico por pasado. Si ése resulta ser el pico, el registro dice que llegaría así:`
@@ -207,7 +213,8 @@ const T = {
     legendLow: "Low for the season",
     legendHigh: "Very high",
     legendCrest: "Detected crest",
-    aheadHeading: "When the crest would arrive, going by the record",
+    frontHeading: "Where the flood front is",
+    frontWhyNoDates: "There are no arrival dates here. They were built and then measured: over the record since 1998 the real crest fell inside the projected window 23% of the time, with a median error of 9 days on journeys of a few days to a fortnight. An error the size of the thing being predicted is not a forecast. The measured travel times are below, which is what the data does support.",
     anchorLine: (name, day, provisional) =>
       provisional
         ? `The river stopped rising at ${name} on ${day}, but has not yet fallen far enough to call the crest past. If that turns out to be the crest, the record says it would arrive like this:`

@@ -46,14 +46,6 @@
     <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
   </div>
 
-  <div class="enso" id="enso" hidden>
-    <span class="phase" id="ensoVal">–</span>
-    <span class="cap" id="ensoPhase"></span>
-    <p class="cap" style="margin:6px 0 0" id="ensoNote"></p>
-    <div class="bars" id="ensoBars"></div>
-    <div class="axis"><span id="ensoFrom"></span><span id="ensoTo"></span></div>
-  </div>
-
   <h2 class="section" data-t="flowsHeading"></h2>
   <div class="drivers" id="drivers"></div>
 
@@ -312,7 +304,12 @@ function driverCard(gauge) {
   return card;
 }
 
+// ENSO moved off this page. A quarterly index explains why a whole basin
+// is wet this season; it says nothing about what the river is doing this
+// week, and sitting beside gauge readings it read as though it did. The
+// reasoning is on the method page and the numbers are in the data files.
 function renderEnso(enso) {
+  if (!document.getElementById("ensoVal")) return;
   const t = T[lang];
   if (!enso) return;
   const box = document.getElementById("enso");

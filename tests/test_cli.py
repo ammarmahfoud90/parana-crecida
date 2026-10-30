@@ -181,6 +181,7 @@ def test_only_implemented_commands_are_registered():
         "load",
         "mapframes",
         "validate",
+        "exposure",
         "export",
         "frequency",
         "daily",
