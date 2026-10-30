@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T21:11:13-03:00",
+ "generated_at": "2026-10-29T21:44:09-03:00",
  "window": {
   "start": "2026-05-02",
   "end": "2026-10-29",
@@ -17884,6 +17884,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.705,
+    "small": {
+     "n": 19,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 1.0
+    },
+    "large": {
+     "n": 19,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 1.0
+    }
+   },
    "celerity": null
   },
   {
@@ -17900,6 +17915,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.84,
+    "small": {
+     "n": 8,
+     "median_days": 2.0,
+     "p25_days": 1.75,
+     "p75_days": 2.25
+    },
+    "large": {
+     "n": 9,
+     "median_days": 2.0,
+     "p25_days": 2.0,
+     "p75_days": 3.0
+    }
+   },
    "celerity": null
   },
   {
@@ -17916,6 +17946,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.711,
+    "small": {
+     "n": 12,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    },
+    "large": {
+     "n": 13,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 3.0
+    }
+   },
    "celerity": null
   },
   {
@@ -17932,6 +17977,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": false,
+   "sizes": {
+    "split_magnitude": 0.759,
+    "small": {
+     "n": 13,
+     "median_days": 3.0,
+     "p25_days": 3.0,
+     "p75_days": 4.0
+    },
+    "large": {
+     "n": 14,
+     "median_days": 3.0,
+     "p25_days": 2.0,
+     "p75_days": 3.0
+    }
+   },
    "celerity": 43.8
   },
   {
@@ -17948,6 +18008,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.631,
+    "small": {
+     "n": 9,
+     "median_days": 2.0,
+     "p25_days": 1.0,
+     "p75_days": 4.0
+    },
+    "large": {
+     "n": 10,
+     "median_days": 2.5,
+     "p25_days": 2.0,
+     "p75_days": 3.75
+    }
+   },
    "celerity": null
   },
   {
@@ -17964,6 +18039,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.633,
+    "small": {
+     "n": 5,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 1.0
+    },
+    "large": {
+     "n": 5,
+     "median_days": 2.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    }
+   },
    "celerity": null
   },
   {
@@ -17980,6 +18070,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.643,
+    "small": {
+     "n": 7,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 1.5
+    },
+    "large": {
+     "n": 7,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 1.5
+    }
+   },
    "celerity": null
   },
   {
@@ -17996,6 +18101,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.74,
+    "small": {
+     "n": 9,
+     "median_days": 2.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    },
+    "large": {
+     "n": 9,
+     "median_days": 2.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    }
+   },
    "celerity": null
   },
   {
@@ -18012,6 +18132,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.644,
+    "small": {
+     "n": 19,
+     "median_days": 2.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    },
+    "large": {
+     "n": 20,
+     "median_days": 1.0,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    }
+   },
    "celerity": null
   },
   {
@@ -18028,6 +18163,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.695,
+    "small": {
+     "n": 6,
+     "median_days": 2.5,
+     "p25_days": 2.0,
+     "p75_days": 3.75
+    },
+    "large": {
+     "n": 6,
+     "median_days": 1.5,
+     "p25_days": 1.0,
+     "p75_days": 2.0
+    }
+   },
    "celerity": null
   },
   {
@@ -18044,6 +18194,21 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": {
+    "split_magnitude": 0.526,
+    "small": {
+     "n": 4,
+     "median_days": 2.0,
+     "p25_days": 1.75,
+     "p75_days": 2.0
+    },
+    "large": {
+     "n": 4,
+     "median_days": 2.0,
+     "p25_days": 1.75,
+     "p75_days": 2.0
+    }
+   },
    "celerity": null
   },
   {
@@ -18060,6 +18225,7 @@
    "confident": true,
    "agree": true,
    "resolution_limited": true,
+   "sizes": null,
    "celerity": null
   }
  ]
