@@ -1,4 +1,4 @@
-export - 2026-10-30T15:13:41-03:00
+export - 2026-10-30T18:49:33-03:00
 
   [ok  ] rows_present: 17212 observation rows
   [ok  ] no_null_fields: 0 rows with a null field
@@ -13,10 +13,9 @@ export - 2026-10-30T15:13:41-03:00
   [ok  ] latest_within_record: every latest reading sits within its gauge's own record
   [ok  ] thresholds_loaded: 16 gauges have official alert or evacuation levels
 
-15 exposure composites -> site/data/exposure.json
-398 area-against-stage observations -> site/data/area_stage.json
+8 stretches of water surface -> site/data/floodwater.json
 8454 rows -> site/data/csv/river_daily.csv
-88 rows -> site/data/csv/flooded_area.csv
+248 rows -> site/data/csv/flooded_area.csv
 12 rows -> site/data/csv/travel_times.csv
 12 arrival projections -> site/data/track.json
 22 anchors on the river line -> site/data/river_stage.json
