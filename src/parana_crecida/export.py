@@ -41,6 +41,7 @@ RIVER_STAGE = "river_stage.json"
 TRACK = "track.json"
 CSV_DIR = "csv"
 AREA_STAGE = "area_stage.json"
+EXPOSURE = "exposure.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -632,6 +633,51 @@ def export_area_stage(
     return ExportResult(
         path=path,
         gauges=payload["n"],
+        with_official_thresholds=0,
+        last_data_day=None,
+    )
+
+
+def export_exposure(
+    result: ValidationResult,
+    *,
+    source_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+) -> ExportResult | None:
+    """Publish who lives where the water is.
+
+    Frozen input: it needs Earth Engine and the population grid, so it is
+    built locally and committed. Absent, the page shows no exposure.
+
+    The first version of this counted 97,498 people under water near
+    Posadas on a single June day - the thresholded VV mask had read a city
+    of smooth tarmac as a lake. The change-detection mask cannot: a street
+    is dark in August and dark in June, so it never drops, so it is never
+    flooded. That is the clearest argument for the method there is.
+    """
+    from . import exposure as ex
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    payload = ex.load(source_path or ex.DEFAULT_TABLE)
+    if not payload or not payload.get("series"):
+        log.info("no exposure record; the section stays hidden")
+        return None
+    path = out_dir / EXPOSURE
+    write_json(path, payload)
+    latest = payload.get("latest") or {}
+    log.info(
+        "exported exposure: %s people latest, %d composites -> %s",
+        f"{latest.get('people', 0):,}", len(payload["series"]), path,
+    )
+    return ExportResult(
+        path=path,
+        gauges=len(payload["series"]),
         with_official_thresholds=0,
         last_data_day=None,
     )

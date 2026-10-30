@@ -47,6 +47,7 @@ from .export import (
     export_drivers,
     export_flooded,
     export_area_stage,
+    export_exposure,
     export_csv,
     export_river_stage,
     export_track,
@@ -1211,11 +1212,14 @@ def export(
             ahead = export_track(store, result, out_dir=out, today=today)
             tables = export_csv(store, result, out_dir=out, today=today)
             cloud = export_area_stage(result, out_dir=out)
+            people = export_exposure(result, out_dir=out)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    if people is not None:
+        rep.say(f"{people.gauges} exposure composites -> {people.path}")
     if cloud is not None:
         rep.say(f"{cloud.gauges} area-against-stage observations -> {cloud.path}")
     for name, rows in tables.items():

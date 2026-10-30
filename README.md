@@ -879,6 +879,85 @@ composite can resolve, not about the river - and a single flooded-area
 figure quoted for a given stage, anywhere, is good to roughly a factor
 rather than to the square kilometre.
 
+## What a hydrologist changed
+
+The site was reviewed as a flood hydrologist and remote-sensing analyst
+would review it, and four things came out of that.
+
+### Percentiles out, return periods in
+
+A day-of-year percentile saturates, and it saturates exactly when the site
+matters: twelve of twenty-two gauges read p100 during this flood, at which
+point the measure cannot tell a bad year from the worst on record.
+
+Log-Pearson III, fitted by L-moments to each gauge's annual maxima on a
+water year starting 1 July. L-moments rather than the method of moments
+because the ordinary skew coefficient is bent by the single largest year,
+and this record contains 1983.
+
+The two measures disagree and the disagreement is the finding: Corrientes
+reads p100 - the highest ever recorded for a 29th of October - and about a
+**1-in-10-year** height. This flood is remarkable for the season and
+moderate in size. The site could only say the first half of that before.
+
+Limitations stated rather than buried: it is stage and not discharge, so
+the channel shifts under it; several gauges have datum breaks and the fit
+runs across them because the break dates are not recorded anywhere this
+project can read; and a return period is not a schedule.
+
+### Three things removed
+
+- **Arrival dates.** 23% of crests landed inside the published window,
+  median error 9 days on journeys of a few days to a fortnight. An error
+  the size of the thing being predicted is not a forecast.
+- **Radar overlays on uncalibrated stretches.** A picture with no figure
+  invites the reader to estimate one.
+- **The ENSO panel.** A quarterly Pacific average sitting beside daily
+  gauge readings read as though it were one of them.
+
+### The radar method was the problem, not the river
+
+The site had published that La Paz to Parana could not be measured - a
+small signal under large scatter, correlating +0.01 with its own gauge.
+That was wrong, and the trial that replaced the method proved it:
+
+| stretch | thresholded VV | VH change detection |
+|---|---|---|
+| corrientes_goya | +0.43 | **+0.71** |
+| la_paz_parana | **+0.01** | **+0.47** |
+
+Three changes, each for a measured reason. **VH instead of VV**, because
+wind roughens water and lifts its backscatter toward land - the documented
+source of the scatter, and the reason a plausibility filter had to throw
+away whole passes. **Change against each pixel's own dry-season value
+instead of an absolute threshold**, because backscatter is not comparable
+between reaches, which is why nine thresholds had to be tuned one at a
+time and why the gorge defeated all of them. **Height above nearest
+drainage instead of slope**, because ground twenty-five metres above the
+nearest channel cannot hold standing water whatever its backscatter, and a
+radar shadow on a valley wall is exactly that.
+
+The number now means something different and the page says so: flood water
+only, ground that is dry when the river is low and is not now, with the
+channel excluded by construction rather than subtracted afterwards.
+
+### Who the water reached
+
+The point of the whole exercise. Modelled residential population on ground
+the radar finds under water and that is dry at low flow.
+
+The first attempt, on the old mask, returned **97,498 people under water
+near Posadas on a single June day** - a city of smooth tarmac read as a
+lake by a VV threshold. That one number is the clearest argument for
+change detection there is: a street is dark in August and dark in June, so
+it never drops, so it is never flooded.
+
+It is not a count of people flooded. It is who lives where the water now
+is - someone on a raised bank inside a flooded hectare is in it and dry -
+and it is a floor, because radar cannot see water under trees, and
+modelled, because GHSL spreads census totals over a built-surface grid and
+this floodplain is mostly scattered rural settlement.
+
 ## Status
 
 Built:
