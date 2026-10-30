@@ -10,7 +10,7 @@ Right now the committed series is refreshed only when someone runs:
 crecida rainfall --project prueba-463913
 ```
 
-To have the daily job do it instead, give it a **service account** — a Google
+To have the daily job do it instead, give it a **service account**, a Google
 identity that belongs to the project rather than to you, with its own key.
 
 The code is already in place. The workflow step is skipped while the secret is
@@ -27,9 +27,9 @@ granted separately in step 2.
 the account's email (`parana-crecida-ci@prueba-463913.iam.gserviceaccount.com`)
 and add **both**:
 
-- **Service Usage Consumer** — without it: *"Caller does not have required
+- **Service Usage Consumer**. Without it: *"Caller does not have required
   permission to use project"*
-- **Earth Engine Resource Writer** — without it: *"Permission
+- **Earth Engine Resource Writer**. Without it: *"Permission
   'earthengine.computations.create' denied"*
 
 Each is needed, and Earth Engine only reports them one at a time, so granting
@@ -50,7 +50,7 @@ act as that account.
 
 Either through GitHub's UI (*Settings → Secrets and variables → Actions → New
 repository secret*), or from a terminal, which avoids the key ever touching a
-clipboard — point the second command at wherever the JSON downloaded:
+clipboard. Point the second command at wherever the JSON downloaded:
 
 **Use GitHub's web UI for the key.** *Settings → Secrets and variables → Actions
 → New repository secret*, name `EE_SERVICE_ACCOUNT_KEY`, and paste the whole
@@ -89,8 +89,8 @@ nothing after it, the secret is empty; a real one is masked as `***`.
 
 - **The key does not expire.** Unlike your own `earthengine authenticate` token,
   it keeps working until you delete it. If the repository is public, the secret
-  itself is not exposed — GitHub does not give secrets to workflows triggered by
-  pull requests from forks — but it is still a standing credential on your Google
+  itself is not exposed, because GitHub does not give secrets to workflows
+  triggered by pull requests from forks, but it is still a standing credential on your Google
   account, and that is the real cost of this convenience.
 - **Scope it narrowly.** The account needs no IAM roles in the project. Earth
   Engine registration is what grants it access, and that is all it should have.

@@ -9,13 +9,14 @@ turns it into one number per twelve-day repeat cycle, for each stretch of the
 Argentine Paraná and for the river as a whole.
 
 **The mask is validated, and the score is published.** Checked against Sentinel-2
-optical water during an actual flood, the method this project shipped with scored
-an IoU of 0.43 — about half right. Re-tuned against optical water rather than
-against the channel at low flow, a single threshold for the whole river reaches
-0.57 (recall 0.73, precision 0.71). Published flood-mapping work reaches 0.7–0.9,
-so this is a working instrument and not a finished one. A water mask with no score
-attached is a picture, not a measurement; see `src/parana_crecida/floodwater.py`
-and `scripts/validate_mask.py`.
+optical water during an actual flood, across every stretch with a clear scene, the
+method this project shipped with scored an IoU of 0.59. Re-tuned against optical
+water rather than against the channel at low flow, a single threshold for the whole
+river reaches 0.69 (recall 0.80, precision 0.82). Per stretch it runs from 0.90 at
+the top of the river to 0.48 below Corrientes, so the per-stretch table is the one
+to read: `data/mask_skill.json`, rebuilt by `scripts/validate_mask.py`. Published
+flood-mapping work reaches 0.7–0.9, so this is a working instrument and not a
+finished one.
 
 The gauge record is the ground truth behind it, and a product of its own: INA's
 daily stage for the main-stem gauges, day-of-year percentiles, Log-Pearson III
@@ -31,7 +32,7 @@ numbers are totals. Radar cannot see water under trees, so every figure is a flo
 
 | Package | What it is |
 |---|---|
-| `packages/ina-a5` | A client for the INA a5 API. Generic — knows nothing about the Paraná. |
+| `packages/ina-a5` | A client for the INA a5 API. Generic, and knows nothing about the Paraná. |
 | `src/parana_crecida` | The tracker. |
 
 `ina-a5` exists because the ingestion code in
@@ -54,7 +55,7 @@ The three things it fixes, which are the whole reason to extract it:
    original climatology build shared one across a thread pool.
 
 It also converts timestamps to Buenos Aires time instead of truncating the string,
-and drops today's partial day by default — a day still filling up averages to a
+and drops today's partial day by default, because a day still filling up averages to a
 level the river never had, which at a wave front reads as a spurious rise.
 
 The on-disk cache format is unchanged from rios-argentina (`cache/{series_id}.json`
@@ -70,7 +71,7 @@ python -m venv .venv --system-site-packages
 ```
 
 On Linux or macOS use `.venv/bin/python`. Install `ina-a5` first or in the same
-command — the tracker depends on it and it is not on PyPI.
+command, because the tracker depends on it and it is not on PyPI.
 
 Python 3.12 or newer. An `A5_TOKEN` environment variable is supported but has never
 been required for the public endpoints.
@@ -170,11 +171,11 @@ Gauges are tiered by how much they can carry, because the lower river is genuine
 harder and pretending otherwise would put confident arrival times on gauges that
 cannot support them. `crecida gauges` prints the whole roster.
 
-- **Tier 1 — Corrientes to Villa Constitución.** Thirteen main-stem gauges,
+- **Tier 1, Corrientes to Villa Constitución.** Thirteen main-stem gauges,
   correctly snapped, records of 120–143 years at Corrientes, Goya, La Paz, Paraná,
   Diamante and Rosario. Celerity is fitted here and arrival times are published as
   forecasts.
-- **Tier 2 — below Villa Constitución, to San Fernando.** Tracked and charted, with
+- **Tier 2, below Villa Constitución to San Fernando.** Tracked and charted, with
   wide uncertainty and no celerity fit until validated. Zárate, Campana and Escobar
   are on the Paraná de las Palmas branch, not the main stem; Campana, Escobar,
   Baradero, Tigre, San Fernando and Olivos are unrouted (no reach in radius, or
@@ -182,8 +183,8 @@ cannot support them. `crecida gauges` prints the whole roster.
   HydroRIVERS; and stage there is tide- and backwater-affected, so a "crest" is
   partly not a river signal. The estuary gauges are the downstream boundary, not
   routing nodes.
-- **Tier 3 — context.** Puerto Iguazú down to Santa Ana, between Itaipú and
-  Yacyretá; Posadas to Paso de la Patria, below Yacyretá — all dam-operated. Plus
+- **Tier 3, context.** Puerto Iguazú down to Santa Ana, between Itaipú and
+  Yacyretá; Posadas to Paso de la Patria, below Yacyretá. All of them dam-operated. Plus
   the Paraguay, Bermejo and Iguazú inflows. Lead indicators, never routing nodes.
 
 Six gauges are flagged `bad_snap`: `snap_v2.py` put Barranqueras, Santa Fe, San
@@ -198,8 +199,8 @@ Fernando in river order, with the latest level, the change since the previous
 reading, and the official alert and evacuation lines where INA publishes them.
 
 Spanish and English, switchable, remembered per reader. Nothing in the pipeline is
-translated — the JSON carries proper nouns and stable keys, and the page turns
-those into text — so adding a third language touches one file. Gauge names carry
+translated. The JSON carries proper nouns and stable keys and the page turns
+those into text, so adding a third language touches one file. Gauge names carry
 their real spelling on the page (*Paraná*, *Iguazú*, *Zárate*) while the CLI prints
 ASCII, because a Windows console is cp1252 and an accent there is a crash.
 
@@ -218,16 +219,16 @@ Three pieces sit behind it.
 **The chain** (`data/parana_chain.json`). Travel time is meaningless without
 distance, and distance along a river is not distance on a map. A walk down the
 HydroRIVERS topology from Puerto Iguazú gives 19 gauges over 1,712 km. It checks
-out against the real river — Corrientes to Rosario at 731 km against a published
-730, Corrientes to Paraná at 569 against 570 — which is accurate enough for crest
+out against the real river (Corrientes to Rosario at 731 km against a published
+730, Corrientes to Paraná at 569 against 570), accurate enough for crest
 speed and not accurate enough to quote to the kilometre.
 
 The chain is derived once and committed. One that silently reordered itself
 between runs would quietly change every travel time on the site, so `--rederive`
 is explicit and its output is something you diff. Only gauges whose snap we trust
 may take a position: a bad snap can land on the walk and look entirely reasonable,
-and Confluencia — snapped to Puerto Iguazú's reach, 660 km above the junction it
-is named after — would otherwise have entered the chain at km 0. The validator
+and Confluencia, snapped to Puerto Iguazú's reach 660 km above the junction it
+is named after, would otherwise have entered the chain at km 0. The validator
 caught it on the first run.
 
 **Crest detection** (`events.py`). Smoothing is centred. A trailing filter shifts
@@ -251,7 +252,7 @@ they agree on all twelve routing legs.
 
 Both estimators are held inside a plausible celerity band. Without it, matching
 pairs a crest with the next flood two months later, and correlation locks onto the
-annual cycle — every gauge on this river is high in summer, so a 365-day lag
+annual cycle. Every gauge on this river is high in summer, so a 365-day lag
 correlates beautifully and means nothing.
 
 Short legs publish no km/day. San Lorenzo to Rosario is 21 km, which a crest
@@ -285,7 +286,7 @@ not compared to anything.
 
 **ENSO**, from NOAA CPC's Oceanic Niño Index. Monthly, slow, and basin-scale: it
 explains why the whole basin is wet this season, not the timing of any one crest.
-The page labels the *reading*, not the episode — NOAA's episode definition needs
+The page labels the *reading*, not the episode, because NOAA's episode definition needs
 five consecutive overlapping seasons, which a single number cannot establish.
 
 Adding the drivers also resolved two gauges Stage 1 could not map. INA's report
@@ -299,7 +300,7 @@ discharge, so **16 of the 47 gauges in scope now carry official levels**.
 `crecida climatology` trims rios-argentina's day-of-year percentile curves where
 they exist and builds them from the cached record where they do not. The dam and
 inflow series were never in that file, and without a curve the view cannot say
-whether 12,300 m3/s is unusual — which is the only interesting question. A gauge
+whether 12,300 m3/s is unusual, which is the only interesting question. A gauge
 whose record is too short is left without one rather than given a thin curve: no
 reference reads as unknown everywhere downstream, which is the honest answer.
 
@@ -315,7 +316,7 @@ the two basins that meet at Puerto Iguazú:
 
 Neither is hand-drawn. Both are built by walking HydroSHEDS' basin topology
 upstream from the sub-basin at their outlet, and the walk is checked against
-HydroSHEDS' own published upstream area — 834,184 km² and 67,537 km², reproduced to
+HydroSHEDS' own published upstream area of 834,184 km² and 67,537 km², reproduced to
 within a rounding error. A test asserts it. They are disjoint siblings draining to
 the same junction, so they do not double-count.
 
@@ -344,7 +345,7 @@ anyone not reading dates.
 
 So `crecida freshness` runs as the **last** step of the daily job, after the
 deploy. The site is already updated with whatever it has, and a stall turns the
-run red — which is what actually reaches a person, since GitHub emails on a failed
+run red, which is what actually reaches a person, since GitHub emails on a failed
 scheduled run. It fails if the river data is more than 3 days old, or the rainfall
 more than 10.
 
@@ -380,7 +381,7 @@ that looks like success. Over this corridor:
 
 Four decibels apart with overlapping tails, and water is only about 5% of the
 corridor's area. There is no second mode to find, so Otsu splits *land* in two and
-returns about −12 dB — which labelled **4,445 km² as water during the worst drought
+returns about −12 dB, which labelled **4,445 km² as water during the worst drought
 in 77 years**, more than the flood it was compared against.
 
 The threshold is fixed at **−16 dB**, chosen because it reproduces an independent
@@ -392,7 +393,7 @@ publishing a wrong number.
 ### Only full passes count
 
 A Sentinel-1 pass crosses part of the corridor; the rest has no data, and
-unobserved ground reduces to zero water — which reads as the river shrinking.
+unobserved ground reduces to zero water, which reads as the river shrinking.
 Coverage per date here is either about 99.7% or about 23–40%, with nothing in
 between, so partial passes are dropped. Full coverage comes round every 12 days,
 and that is the real sampling rate.
@@ -400,8 +401,8 @@ and that is the real sampling rate.
 ### What it shows
 
 Through May to mid-October the area sits between 490 and 824 km² while the stage
-wanders between 2.3 and 5.3 m. Then on 25 October, with Corrientes at 7.36 m —
-above its evacuation level — it reaches **1,651 km²**, three times the low-water
+wanders between 2.3 and 5.3 m. Then on 25 October, with Corrientes at 7.36 m and
+above its evacuation level, it reaches **1,651 km²**, three times the low-water
 baseline.
 
 The correlation between area and stage across all passes is only r = 0.57, and
@@ -1035,7 +1036,7 @@ Built:
 - Arrival projections from the flood front, with a backtest that scores them
   and publishes the score beside them.
 
-Not built yet — see `.claude/plans` for the full plan:
+Not built yet. See `.claude/plans` for the full plan:
 
 - An area for the Delta, which would need a method that separates tide and
   wind from flood, not a better threshold.

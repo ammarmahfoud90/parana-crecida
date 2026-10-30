@@ -635,7 +635,7 @@ main:focus:not(:focus-visible) { outline: none; }
 .alsolist li { background: var(--panel); padding: 11px 14px;
   font-size: .9rem; line-height: 1.55; color: var(--ink-soft); }
 .alsolist a { color: var(--accent); font-weight: 600; }
-.alsolist a::after { content: " —"; color: var(--ink-faint); font-weight: 400; }
+.alsolist a::after { content: ":"; color: var(--ink-faint); font-weight: 400; }
 
 
 /* -- the product page ---------------------------------------------------- */
@@ -752,3 +752,7 @@ h2.section.major {
 .prose p, .prose li { max-width: 68ch; }
 .prose .tablewrap, .prose table, .prose figure, .prose dl,
 .prose .notice { max-width: none; }
+
+/* The data list: each file's description on its own line under the name,
+   where it used to hang off the filename behind a dash. */
+.files .what { display: block; margin-top: 2px; color: var(--ink-soft); }

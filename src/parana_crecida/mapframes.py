@@ -207,8 +207,9 @@ def render(
                 "end": f.end.isoformat(),
                 "image": f"media/map/{f.path.name}",
                 "km2": {k: round(v, 1) for k, v in f.km2.items()},
-                # Only calibrated stretches count toward the total: the two
-                # gorge reaches publish a picture, not a number.
+                # The total covers the stretches drawn, and those are the
+                # stretches that were scored. Anything withheld is absent
+                # from the frame, so it cannot slip into the sum.
                 "total_km2": (
                     round(sum(v for k, v in f.km2.items() if k in calibrated), 1)
                     if f.km2 else None

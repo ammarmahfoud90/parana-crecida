@@ -37,7 +37,7 @@ honour `Retry-After` (ignoring absurd values); other 4xx fail at once; 401 and 4
 raise `A5AuthError` rather than calling `SystemExit`.
 
 **One session per client.** `requests.Session` is not thread-safe. Use
-`client.clone()` to give each worker thread its own. Keep concurrency low — the
+`client.clone()` to give each worker thread its own. Keep concurrency low, because the
 server belongs to a public agency.
 
 **Timezones are explicit.** Timestamps are parsed and converted to a named zone
@@ -48,16 +48,16 @@ dropped by default.
 
 - **The catalogue silently caps at 5000 features** unless you page with
   `limit`/`offset`. The real catalogue holds about 9.5k series.
-- **Catalogue pages overlap** — `offset` is sometimes ignored, so "a short page
+- **Catalogue pages overlap.** `offset` is sometimes ignored, so "a short page
   means the end" is not a sufficient stop condition. Paging stops on *no new ids*.
 - **Long history requests look capped**, though no limit is documented. A round row
   count (1000, 5000, 10000, 20000) or a first row far later than requested is
   treated as truncation and re-fetched in five-year chunks.
-- **One gauge appears as several series** — instantaneous level (2), daily mean
+- **One gauge appears as several series.** Instantaneous level (2), daily mean
   (39), 4-hourly (101), and flow (4, 40). Series of different families are never
   merged.
 - **The catalogue's time filter may be ignored**, so `live_series` filters locally.
-- **`proc_id` is not available** — only a free-text procedure name.
+- **`proc_id` is not available.** There is only a free-text procedure name.
 
 ## Modules
 
@@ -66,7 +66,7 @@ dropped by default.
 | `client` | `A5Client`, `RetryPolicy` |
 | `catalogue` | `fetch_catalogue`, `iter_features`, `parse_feature`, `live_series` |
 | `observations` | `fetch_daily`, `fetch_history`, `rows_to_daily` |
-| `cache` | `SeriesCache` — read, merge, top-up windows, trim |
+| `cache` | `SeriesCache`: read, merge, top-up windows, trim |
 | `quality` | `run_guards` and the individual stale / flatline / spike / range / datum-step checks |
 | `models` | `Series`, `DailyValue`, the variable-id map |
 | `errors` | `A5Error` and subclasses |

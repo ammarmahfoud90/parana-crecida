@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>El Paraná desde el espacio — Crecida del Paraná</title>
+<title>El Paraná desde el espacio · Crecida del Paraná</title>
 <meta name="description" content="Cuánta superficie cubre el río Paraná, medida por radar Sentinel-1 pasada por pasada.">
 <meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
@@ -79,8 +79,8 @@
     <figcaption id="loopCaption"></figcaption>
   </figure>
 
-  <!-- How good the instrument is. Published because a water mask with no
-       score attached is a picture, not a measurement. -->
+  <!-- How good the instrument is. Published because a reader has no way
+       to weigh an area figure without knowing how often the mask is right. -->
   <h2 class="section major" style="margin-top:34px" data-t="skillHeading"></h2>
   <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" id="skillLead"></p>
   <div class="skillwrap">
@@ -171,7 +171,7 @@ const T = {
     reachValue: (km, n) => `${km} km de río, ${n} tramos`,
 
     chartHeading: "Un año de río, pasada por pasada",
-    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1 — una vuelta completa del satélite, que es lo que tarda en ver el río entero. La línea llena es toda el agua; la punteada deja afuera el cauce permanente, así que es el agua que normalmente no está ahí.",
+    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1. Una vuelta completa del satélite es lo que tarda en ver el río entero. La línea llena es toda el agua. La punteada deja afuera el cauce permanente, así que mide sólo lo que el río desbordó.",
     chartTitle: "Superficie de agua del río Paraná por pasada del satélite",
     chartDesc: (first, last, lo, hi) =>
       `Serie de superficie de agua entre ${first} y ${last}. El mínimo es ${lo} km² ` +
@@ -182,12 +182,12 @@ const T = {
     loopHeading: "El río entero, un año",
     loopCaption: (km, n, first, last) =>
       `${km} km de Paraná, de Puerto Iguazú a Villa Constitución, en ${n} pasadas ` +
-      `del satélite entre ${first} y ${last}. El azul es el cauce permanente —agua ` +
+      `del satélite entre ${first} y ${last}. El azul es el cauce permanente: agua ` +
       `que el JRC mapea como siempre presente, o que seguía ahí en la bajante de ` +
-      `2021—, una constante y no una medición; el naranja es el agua que el radar ` +
-      `encontró más allá de ese cauce, que es lo que se mide.`,
+      `2021. Es una constante, no una medición. El naranja es el agua que el radar ` +
+      `encontró más allá de ese cauce.`,
     loopCaptionFlat: "El río entero, una pasada del satélite cada doce días. El azul es el cauce permanente; el naranja es el agua medida más allá de él.",
-    loopAlt: "Animación del río Paraná desde Puerto Iguazú hasta Villa Constitución, un cuadro cada doce días a lo largo de un año. El cauce permanente en azul y el agua detectada por radar en naranja, que crece a lo largo del río al avanzar la crecida.",
+    loopAlt: "Animación del río Paraná desde Puerto Iguazú hasta Villa Constitución, un cuadro cada doce días a lo largo de un año. El cauce permanente en azul y el agua detectada por radar en naranja. El naranja crece a lo largo del río a medida que avanza la crecida.",
     playLoop: "Reproducir la animación", pauseLoop: "Pausar la animación",
 
     skillHeading: "Qué tan bien funciona la medición",
@@ -200,7 +200,7 @@ const T = {
     skillCaption: "Comparación de dos métodos de detección de agua por radar",
     skillMethod: "Tramo", skillRecall: "Hallada", skillPrecision: "Acertada", skillIou: "IoU",
     skillWas: "IoU antes", skillWhole: "Todo el río medido",
-    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos, y es el número que publica un paper. La literatura de mapeo de inundaciones llega a 0,7–0,9: los tramos de arriba están ahí adentro, los de abajo no. Un tramo que no llega a 0,45 —o que nunca se pudo medir contra el óptico— no publica cifra.",
+    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos, y es el número que publica un paper. La literatura de mapeo de inundaciones llega a 0,7–0,9: los tramos de arriba están ahí adentro, los de abajo no. Un tramo que no llega a 0,45 no publica cifra. Tampoco uno que nunca se pudo medir contra el óptico.",
 
     limitsHeading: "Lo que esta medición no puede hacer",
     limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Es el cuarto del agua que falta, y ningún umbral lo recupera.",
@@ -257,7 +257,7 @@ const T = {
     reachValue: (km, n) => `${km} km of river, ${n} stretches`,
 
     chartHeading: "A year of river, pass by pass",
-    chartLead: "Each point is a twelve-day Sentinel-1 composite — one full repeat cycle, which is how long the satellite takes to see the whole river. The solid line is all water; the dashed one leaves out the permanent channel, so it is the water that is not normally there.",
+    chartLead: "Each point is a twelve-day Sentinel-1 composite. One full repeat cycle is how long the satellite takes to see the whole river. The solid line is all water. The dashed one leaves out the permanent channel, so it counts only what the river has spilled over.",
     chartTitle: "Water surface of the Paraná by satellite pass",
     chartDesc: (first, last, lo, hi) =>
       `Water surface from ${first} to ${last}. The lowest pass is ${lo} km² and ` +
@@ -269,11 +269,11 @@ const T = {
     loopCaption: (km, n, first, last) =>
       `${km} km of the Paraná, from Puerto Iguazú to Villa Constitución, over ${n} ` +
       `satellite passes between ${first} and ${last}. The blue is the permanent ` +
-      `channel — water the JRC maps as always present, or still there through ` +
-      `the 2021 bajante — a constant and not a measurement; the orange is the ` +
-      `water the radar found beyond it, which is what is being measured.`,
+      `channel: water the JRC maps as always present, or still there through the ` +
+      `2021 bajante. It is a constant, not a measurement. The orange is the water ` +
+      `the radar found beyond it.`,
     loopCaptionFlat: "The whole river, one satellite pass every twelve days. The blue is the permanent channel; the orange is the water measured beyond it.",
-    loopAlt: "Animation of the Paraná from Puerto Iguazú to Villa Constitución, one frame every twelve days across a year. The permanent channel in blue and radar-detected water in orange, spreading along the river as the flood advances.",
+    loopAlt: "Animation of the Paraná from Puerto Iguazú to Villa Constitución, one frame every twelve days across a year. The permanent channel in blue and radar-detected water in orange. The orange spreads along the river as the flood advances.",
     playLoop: "Play the animation", pauseLoop: "Pause the animation",
 
     skillHeading: "How well the measurement works",
@@ -286,7 +286,7 @@ const T = {
     skillCaption: "Comparison of two radar water-detection methods",
     skillMethod: "Stretch", skillRecall: "Found", skillPrecision: "Right", skillIou: "IoU",
     skillWas: "IoU before", skillWhole: "The whole measured river",
-    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together, and is the number a paper quotes. Published flood-mapping work reaches 0.7–0.9: the upper stretches sit inside that, the lower ones do not. A stretch that does not clear 0.45 — or that could never be measured against optical at all — publishes no figure.",
+    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together, and is the number a paper quotes. Published flood-mapping work reaches 0.7–0.9: the upper stretches sit inside that, the lower ones do not. A stretch that does not clear 0.45 publishes no figure. Nor does one that could never be measured against optical at all.",
 
     limitsHeading: "What this measurement cannot do",
     limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. That is the missing quarter of the water, and no threshold recovers it.",
