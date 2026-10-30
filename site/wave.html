@@ -113,6 +113,15 @@
   </div>
   <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="legsNote"></p>
 
+  
+  <section class="provenance" aria-labelledby="provHeading">
+    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
+    <dl>
+      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+    </dl>
+  </section>
   </main>
 
   <footer>
@@ -129,7 +138,12 @@ const T = {
     htmlLang: "es", locale: "es-AR",
     title: "La onda de crecida",
     subtitle: "Cómo baja el pico por el Paraná, de Puerto Iguazú al Delta",
-    langGroup: "Idioma", viewsNav: "Vistas",
+    langGroup: "Idioma",
+    provHeading: "De dónde sale cada número",
+    provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
+    provMeasured: "Las alturas diarias del INA en cada estación de la cadena.",
+    provCalculated: "Las crestas detectadas, los tiempos de viaje entre estaciones medidos sobre todo el registro, y las llegadas proyectadas. La precisión de esas llegadas está medida y publicada al lado: el pico real cayó dentro de la ventana en el 23% de los casos.",
+    provMissing: "Los tramos sin suficientes crecidas emparejadas no muestran tiempo de viaje, y la proyección se corta ahí en vez de saltearlos.", viewsNav: "Vistas",
     skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda",
     viewDrivers: "Aguas arriba",
     viewFlood: "Superficie",
@@ -173,7 +187,12 @@ const T = {
     htmlLang: "en", locale: "en-GB",
     title: "The flood wave",
     subtitle: "How the crest moves down the Paraná, from Puerto Iguazú to the Delta",
-    langGroup: "Language", viewsNav: "Views",
+    langGroup: "Language",
+    provHeading: "Where each number comes from",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
+    provMeasured: "INA's daily levels at each gauge on the chain.",
+    provCalculated: "The detected crests, the travel times between gauges measured over the whole record, and the projected arrivals. The accuracy of those arrivals is measured and published beside them: the real crest fell inside the window 23% of the time.",
+    provMissing: "Legs without enough matched floods show no travel time, and the projection stops there rather than skipping them.", viewsNav: "Views",
     skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave",
     viewDrivers: "Upstream",
     viewFlood: "Flooded area",

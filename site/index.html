@@ -41,6 +41,12 @@
 
   <div id="error" class="err" role="alert" hidden></div>
 
+  <section class="verdict" id="verdict" hidden aria-labelledby="verdictState">
+    <p class="state" id="verdictState"></p>
+    <p class="detail" id="verdictDetail"></p>
+    <ul class="evidence" id="verdictEvidence"></ul>
+  </section>
+
   <div class="meta" id="meta" hidden>
     <span><span data-t="dataTo"></span> <b id="lastDay"></b> <span id="fresh"></span></span>
     <span><span data-t="thresholdsFrom"></span> <b id="thrDate"></b></span>
@@ -57,6 +63,15 @@
   <h2 class="section" data-t="listHeading"></h2>
   <ul class="gauges" id="list"></ul>
 
+  
+  <section class="provenance" aria-labelledby="provHeading">
+    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
+    <dl>
+      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+    </dl>
+  </section>
   </main>
 
   <footer>
@@ -75,9 +90,32 @@ const T = {
   es: {
     htmlLang: "es",
     locale: "es-AR",
+    stateExtreme: "El Paraná está en una crecida extraordinaria.",
+    stateHigh: "El Paraná está alto para la época del año.",
+    stateNormal: "El Paraná está dentro de lo normal para la época del año.",
+    stateUnknown: "No hay datos suficientes para decir cómo está el río.",
+    verdictDetail: (high, counted, top, from_, to) =>
+      `${high} de ${counted} estaciones del cauce principal superan el percentil 95 para esta fecha` +
+      (top ? `, y ${top} están en el máximo registrado para el día del año` : "") +
+      (from_ ? `. El tramo alto más largo va de ${from_} a ${to}.` : "."),
+    evidenceFront: (gauge, day, provisional) =>
+      provisional
+        ? `El río dejó de subir en ${gauge} el ${day}`
+        : `El pico pasó por ${gauge} el ${day}`,
+    evidenceWater: (ratio, stretch) =>
+      `El agua cubre ${ratio} veces la bajante de 2021 entre ${stretch}`,
+    evidenceAsOf: (day) => `Medido hasta el ${day}`,
+    evidenceSeeWave: "ver la onda",
+    evidenceSeeFlood: "ver la superficie",
+    evidenceSeeGauges: "ver las estaciones",
     title: "Crecida del Paraná",
     subtitle: "El río hoy, de Puerto Iguazú a San Fernando",
     langGroup: "Idioma",
+    provHeading: "De dónde sale cada número",
+    provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
+    provMeasured: "Las alturas diarias de cada estación y los niveles oficiales de alerta y evacuación, ambos del INA.",
+    provCalculated: "El percentil para el día del año de cada estación, contra su propio registro; la variación de 7 días; y el titular de arriba, que se arma con esas cuentas y no está escrito a mano.",
+    provMissing: "Las estaciones sin nivel oficial publicado aparecen sin línea de alerta. No se estima ninguno.",
     noticeStrong: "Esto no es un sistema de alerta.",
     noticeBody: "Los niveles de alerta y evacuación, los avisos y los pronósticos oficiales los publica el Instituto Nacional del Agua.",
     officialLink: "Ver el alerta oficial del INA →",
@@ -117,9 +155,32 @@ const T = {
   en: {
     htmlLang: "en",
     locale: "en-GB",
+    stateExtreme: "The Paraná is in an extraordinary flood.",
+    stateHigh: "The Paraná is high for the time of year.",
+    stateNormal: "The Paraná is within its normal range for the time of year.",
+    stateUnknown: "There is not enough data to say how the river is behaving.",
+    verdictDetail: (high, counted, top, from_, to) =>
+      `${high} of ${counted} main-stem gauges are above the 95th percentile for this date` +
+      (top ? `, and ${top} are at the highest ever recorded for the day of year` : "") +
+      (from_ ? `. The longest unbroken high reach runs from ${from_} to ${to}.` : "."),
+    evidenceFront: (gauge, day, provisional) =>
+      provisional
+        ? `The river stopped rising at ${gauge} on ${day}`
+        : `The crest passed ${gauge} on ${day}`,
+    evidenceWater: (ratio, stretch) =>
+      `Water covers ${ratio} times the 2021 low water between ${stretch}`,
+    evidenceAsOf: (day) => `Measured to ${day}`,
+    evidenceSeeWave: "see the wave",
+    evidenceSeeFlood: "see the area",
+    evidenceSeeGauges: "see the gauges",
     title: "Paraná flood tracker",
     subtitle: "The river today, from Puerto Iguazú to San Fernando",
     langGroup: "Language",
+    provHeading: "Where each number comes from",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
+    provMeasured: "The daily level at each gauge and the official alert and evacuation levels, both from INA.",
+    provCalculated: "Each gauge's percentile for the day of year, against its own record; the 7-day change; and the finding at the top, which is assembled from those counts rather than written by hand.",
+    provMissing: "Gauges with no official level published are shown without an alert line. None is estimated.",
     noticeStrong: "This is not an alert system.",
     noticeBody: "Alert and evacuation levels, warnings and official forecasts are published by Argentina's Instituto Nacional del Agua.",
     officialLink: "See INA's official alert →",
@@ -208,6 +269,13 @@ function signed(value, unit) {
   const text = num(Math.abs(value), unit);
   const sign = value > 0 ? "+" : value < 0 ? "−" : "±";
   return sign + text;
+}
+
+function shortDate(iso) {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "short",
+  }).format(new Date(iso + "T12:00:00"));
 }
 
 function longDate(iso) {
@@ -328,9 +396,64 @@ function gaugeItem(g) {
   return li;
 }
 
+// The lead. A reader arrives asking whether the river is behaving, not
+// wanting a table of thirty-seven readings, and every part of the sentence
+// carries the number it came from so the claim can be checked rather than
+// taken.
+function renderVerdict(v) {
+  const t = T[lang];
+  // This page formats with longDate and num; the shorter helpers the wave
+  // and map pages use do not exist here.
+  const day = (iso) => shortDate(iso);
+  const ratio = (x) => new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: 1, maximumFractionDigits: 1,
+  }).format(x);
+  const section = document.getElementById("verdict");
+  if (!v || v.state === "unknown") { section.hidden = true; return; }
+
+  const word = {
+    extreme: t.stateExtreme, high: t.stateHigh, normal: t.stateNormal,
+  }[v.state] || t.stateUnknown;
+  const state = document.getElementById("verdictState");
+  state.textContent = word;
+  state.className = "state " + v.state;
+
+  document.getElementById("verdictDetail").textContent = t.verdictDetail(
+    v.high, v.counted, v.at_top,
+    v.reach && v.reach.from, v.reach && v.reach.to);
+
+  const items = [];
+  if (v.front) {
+    items.push([
+      t.evidenceFront(v.front.gauge, day(v.front.day), !v.front.confirmed),
+      "wave.html", t.evidenceSeeWave]);
+  }
+  if (v.water) {
+    items.push([
+      t.evidenceWater(ratio(v.water.ratio), v.water.stretch),
+      "flood.html", t.evidenceSeeFlood]);
+  }
+  if (v.as_of) items.push([t.evidenceAsOf(day(v.as_of)), null, null]);
+
+  document.getElementById("verdictEvidence").replaceChildren(
+    ...items.map(([text, href, label]) => {
+      const li = document.createElement("li");
+      li.append(text);
+      if (href) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = label;
+        li.append(" ", a);
+      }
+      return li;
+    }));
+  section.hidden = false;
+}
+
 function render(data) {
   const t = T[lang];
   const gauges = data.gauges || [];
+  renderVerdict(data.verdict);
 
   document.getElementById("lastDay").textContent = longDate(data.last_data_day);
   const fresh = document.getElementById("fresh");

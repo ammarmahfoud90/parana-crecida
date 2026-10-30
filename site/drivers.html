@@ -65,6 +65,15 @@
   <div class="printed" id="printed"></div>
   <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="printedNote"></p>
 
+  
+  <section class="provenance" aria-labelledby="provHeading">
+    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
+    <dl>
+      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+    </dl>
+  </section>
   </main>
 
   <footer>
@@ -81,7 +90,12 @@ const T = {
     htmlLang: "es", locale: "es-AR",
     title: "Aguas arriba",
     subtitle: "Lo que empuja al Paraná: las represas, el aporte del Iguazú y El Niño",
-    langGroup: "Idioma", viewsNav: "Vistas",
+    langGroup: "Idioma",
+    provHeading: "De dónde sale cada número",
+    provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
+    provMeasured: "Los caudales y alturas del INA, y el índice ENSO de la NOAA.",
+    provCalculated: "El percentil de cada estación para el día del año.",
+    provMissing: "La lluvia por subcuenca es una estimación satelital de la NASA (IMERG), no lluvia medida en el suelo: sirve para comparar una subcuenca con otra, no para decir cuántos milímetros cayeron en un lugar.", viewsNav: "Vistas",
     skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
     viewFlood: "Superficie",
     viewMap: "Mapa", viewMethod: "Método",
@@ -123,7 +137,12 @@ const T = {
     htmlLang: "en", locale: "en-GB",
     title: "Upstream",
     subtitle: "What is pushing the Paraná: the dams, the Iguazú inflow and El Niño",
-    langGroup: "Language", viewsNav: "Views",
+    langGroup: "Language",
+    provHeading: "Where each number comes from",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
+    provMeasured: "INA's flows and levels, and NOAA's ENSO index.",
+    provCalculated: "Each station's percentile for the day of year.",
+    provMissing: "Rainfall by sub-basin is a NASA satellite estimate (IMERG), not rain measured on the ground: useful for comparing one sub-basin with another, not for saying how many millimetres fell in a place.", viewsNav: "Views",
     skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
     viewFlood: "Flooded area",
     viewMap: "Map", viewMethod: "Method",

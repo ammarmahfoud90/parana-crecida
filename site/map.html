@@ -67,6 +67,15 @@
 
   <p class="cap" id="modeNote" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px"></p>
 
+  
+  <section class="provenance" aria-labelledby="provHeading">
+    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
+    <dl>
+      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+    </dl>
+  </section>
   </main>
 
   <footer>
@@ -84,7 +93,12 @@ const T = {
     htmlLang: "es", locale: "es-AR",
     title: "Mapa de la crecida",
     subtitle: "Del límite con Brasil a Villa Constitución: 1.440 km de río, día a día",
-    langGroup: "Idioma", viewsNav: "Vistas", mapLabel: "Mapa del río Paraná",
+    langGroup: "Idioma",
+    provHeading: "De dónde sale cada número",
+    provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
+    provMeasured: "Las alturas del INA en cada estación, y el agua detectada por el radar Sentinel-1.",
+    provCalculated: "El color del río entre estaciones, interpolado a lo largo del cauce; y la superficie de agua por tramo.",
+    provMissing: "Abajo de Villa Constitución no se pinta el río: ninguna estación de ahí para abajo puede anclar un percentil. Del Delta y del cañón se muestra la imagen y ninguna cifra.", viewsNav: "Vistas", mapLabel: "Mapa del río Paraná",
     skipLink: "Saltar al contenido", viewToday: "El río hoy", viewWave: "La onda", viewDrivers: "Aguas arriba",
     viewFlood: "Superficie", viewMap: "Mapa", viewMethod: "Método",
     noticeStrong: "Esto no es un sistema de alerta.",
@@ -113,7 +127,12 @@ const T = {
     htmlLang: "en", locale: "en-GB",
     title: "Flood map",
     subtitle: "From the Brazil border to Villa Constitución: 1,440 km of river, day by day",
-    langGroup: "Language", viewsNav: "Views", mapLabel: "Map of the Paraná",
+    langGroup: "Language",
+    provHeading: "Where each number comes from",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
+    provMeasured: "INA's levels at each gauge, and water detected by the Sentinel-1 radar.",
+    provCalculated: "The river's colour between gauges, interpolated along the channel; and the water area per stretch.",
+    provMissing: "Below Villa Constitución the river is not painted: no gauge below it can anchor a percentile. For the Delta and the gorge the picture is shown and no figure.", viewsNav: "Views", mapLabel: "Map of the Paraná",
     skipLink: "Skip to content", viewToday: "The river today", viewWave: "The wave", viewDrivers: "Upstream",
     viewFlood: "Flooded area", viewMap: "Map", viewMethod: "Method",
     noticeStrong: "This is not an alert system.",

@@ -124,11 +124,29 @@ def write_json(path: Path, payload: dict[str, object]) -> None:
     os.replace(tmp, path)
 
 
+def _maybe_json(path: Path) -> dict | None:
+    """Read a sibling export if it is there, else None.
+
+    The verdict quotes the wave and the satellite, and both are written by
+    exports that can legitimately be absent - a fresh checkout, or a run
+    without an Earth Engine credential. A missing one costs a clause, not
+    the page.
+    """
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        log.warning("could not read %s for the verdict", path)
+        return None
+
+
 def export_river_today(
     store: Store,
     thresholds: dict[str, Threshold],
     result: ValidationResult,
     *,
+    climatology_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
     now: datetime | None = None,
     today: date | None = None,
@@ -147,6 +165,20 @@ def export_river_today(
         )
 
     payload = build_river_today(store, thresholds, result, now=now, today=today)
+
+    # The finding, alongside the readings it came from. It travels in this
+    # file rather than its own so the page that leads with it does not have
+    # to wait on a second request to know what to say.
+    from . import verdict as vd
+    from .normalize import Climatology
+
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    payload["verdict"] = vd.payload(
+        vd.build(store, clim, today=today),
+        track=_maybe_json(out_dir / TRACK),
+        flooded=_maybe_json(out_dir / FLOODED),
+    )
+
     path = out_dir / RIVER_TODAY
     write_json(path, payload)
     log.info("exported %d gauges to %s", len(payload["gauges"]), path)  # type: ignore[arg-type]
