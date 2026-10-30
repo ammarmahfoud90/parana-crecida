@@ -1,4 +1,4 @@
-export - 2026-10-30T13:11:12-03:00
+export - 2026-10-30T15:13:41-03:00
 
   [ok  ] rows_present: 17212 observation rows
   [ok  ] no_null_fields: 0 rows with a null field
@@ -11,7 +11,7 @@ export - 2026-10-30T13:11:12-03:00
   [ok  ] required_gauges_present: all 13 tier-1 gauges have data
   [ok  ] data_is_fresh: newest reading is 2026-10-29 (1 days old)
   [ok  ] latest_within_record: every latest reading sits within its gauge's own record
-  [ok  ] thresholds_loaded: 15 gauges have official alert or evacuation levels
+  [ok  ] thresholds_loaded: 16 gauges have official alert or evacuation levels
 
 15 exposure composites -> site/data/exposure.json
 398 area-against-stage observations -> site/data/area_stage.json
@@ -24,6 +24,6 @@ export - 2026-10-30T13:11:12-03:00
 7 driver gauges -> site/data/drivers.json
 24 chain gauges -> site/data/wave.json
 37 gauges -> site/data/river_today.json
-15 carry official alert/evacuation lines
+16 carry official alert/evacuation lines
 newest reading: 2026-10-29
 warnings: no_isolated_outliers

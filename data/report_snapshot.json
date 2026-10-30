@@ -104,6 +104,16 @@
    "outlook": "aguas medias/medias altas"
   },
   {
+   "station": "San Fernando",
+   "river": "Lujan",
+   "unit": "m",
+   "value": 1.11,
+   "trend": "rising",
+   "alert": 3.0,
+   "evacuation": 3.5,
+   "outlook": "aguas medias"
+  },
+  {
    "station": "Puerto Pilcomayo",
    "river": "Paraguay",
    "unit": "m",
@@ -141,7 +151,7 @@
    "trend": "falling",
    "alert": 11.5,
    "evacuation": 12.5,
-   "outlook": "aguas medias altas"
+   "outlook": "aguas media altas"
   },
   {
    "station": "Paso de los Libres",
@@ -151,7 +161,7 @@
    "trend": "rising",
    "alert": 7.5,
    "evacuation": 8.5,
-   "outlook": "aguas medias altas"
+   "outlook": "aguas media altas"
   },
   {
    "station": "Concordia",
@@ -161,7 +171,7 @@
    "trend": "rising",
    "alert": 11.0,
    "evacuation": 12.5,
-   "outlook": "aguas medias altas"
+   "outlook": "aguas media altas"
   },
   {
    "station": "Concepción del Uruguay",
@@ -171,7 +181,7 @@
    "trend": "falling",
    "alert": 5.3,
    "evacuation": 6.3,
-   "outlook": "aguas medias altas"
+   "outlook": "aguas media altas"
   },
   {
    "station": "Boca Gualeguaychú",
@@ -181,7 +191,7 @@
    "trend": "falling",
    "alert": 2.9,
    "evacuation": 3.1,
-   "outlook": "aguas medias altas"
+   "outlook": "aguas media altas"
   },
   {
    "station": "Guaíra Porto",
@@ -205,7 +215,7 @@
   },
   {
    "station": "Andresito",
-   "river": "Iguazú",
+   "river": "Iguazu",
    "unit": "m3/s",
    "value": 8469.0,
    "trend": "rising",
@@ -221,7 +231,7 @@
    "trend": "falling",
    "alert": 25000.0,
    "evacuation": 30000.0,
-   "outlook": "aguas medias altas/altas"
+   "outlook": "aguas altas"
   },
   {
    "station": "Yacyretá afluente",
