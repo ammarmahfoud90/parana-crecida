@@ -115,7 +115,22 @@ jobs:
             echo "nothing changed"
           else
             git commit -m "datos $(date -u +%Y-%m-%d)"
-            git push
+            # Someone else may have pushed while this run was fetching and
+            # exporting, which takes minutes. A plain push then fails on a
+            # race that costs nothing to resolve: this commit only ever
+            # touches generated files, so rebasing onto whatever landed and
+            # trying again is always the right answer. Without this the
+            # whole deploy fails and the site is left on yesterday's data
+            # because two commits arrived in the same five minutes.
+            for attempt in 1 2 3; do
+              if git push; then
+                echo "pushed on attempt $attempt"
+                break
+              fi
+              echo "push rejected, rebasing and retrying"
+              git pull --rebase --autostash origin main || exit 1
+              sleep $((attempt * 5))
+            done
           fi
 
       - uses: actions/configure-pages@v5
