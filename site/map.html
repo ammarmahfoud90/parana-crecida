@@ -115,7 +115,7 @@ const T = {
     baseGroup: "Fondo del mapa",
     baseStreet: "Calles", baseSatellite: "Satélite",
     satelliteNote: (start, end) =>
-      `Fondo: Sentinel-2 entre ${start} y ${end}, sin nubes y en falso color. El rojo es el infrarrojo de onda corta, el verde el infrarrojo cercano y el azul el azul visible: la vegetación sale verde brillante, el agua azul oscuro, la tierra arada rosa y los pueblos grises. Por eso un campo inundado se distingue de uno seco, cosa que en color natural no pasa.`,
+      `Fondo: Sentinel-2 entre ${start} y ${end}, sin nubes y en falso color. El rojo es el infrarrojo de onda corta, el verde el infrarrojo cercano y el azul el rojo visible: la vegetación sale verde brillante, el agua azul oscuro, la tierra arada rosa y los pueblos grises. El azul va en el rojo visible porque el Paraná lleva tanto sedimento que el agua es lo más brillante de todo en esa banda. Por eso un campo inundado se distingue de uno seco, cosa que en color natural no pasa.`,
     stageNote: "Altura del río en cada estación, comparada con lo normal para esa fecha, interpolada a lo largo del río. Se actualiza todos los días. La línea se corta en Yacyretá —el embalse y el río aguas abajo están separados— y termina en Villa Constitución, la última estación que puede pintarla: más abajo manda la marea.",
     radarNote: "Cada cuadro es un compuesto de 12 días, no un instante. La franja que ve el satélite es más angosta que este tramo de río. Esta capa baja hasta el Delta, más allá de donde llega la línea diaria, pero del Delta y del cañón de arriba de Posadas sólo se muestra la imagen: ahí no se publica superficie.",
     pctLow: "bajo", pctHigh: "muy alto",
@@ -153,7 +153,7 @@ const T = {
     baseGroup: "Map background",
     baseStreet: "Streets", baseSatellite: "Satellite",
     satelliteNote: (start, end) =>
-      `Background: Sentinel-2 between ${start} and ${end}, cloud-masked and in false colour. Red is shortwave infrared, green is near infrared, blue is visible blue: vegetation reads bright green, water deep navy, ploughed ground pink and towns grey. That is why a flooded field looks different from a dry one here, which in natural colour it does not.`,
+      `Background: Sentinel-2 between ${start} and ${end}, cloud-masked and in false colour. Red is shortwave infrared, green is near infrared, blue is the visible red band: vegetation reads bright green, water deep navy, ploughed ground pink and towns grey. The blue channel carries visible red because the Paraná is muddy enough that water is the brightest thing in that band. That is why a flooded field looks different from a dry one here, which in natural colour it does not.`,
     stageNote: "River height at each gauge against what is normal for the date, interpolated along the river. Updates daily. The line breaks at Yacyretá — the reservoir and the river below it are separate — and ends at Villa Constitución, the last gauge that can paint it: below that the tide takes over.",
     radarNote: "Each frame is a 12-day composite, not an instant. The satellite's swath is narrower than this run of river. This layer reaches the Delta, further than the daily line goes, but for the Delta and the gorge above Posadas only the picture is shown: no area is published there.",
     pctLow: "low", pctHigh: "very high",

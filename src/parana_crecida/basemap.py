@@ -11,11 +11,11 @@ near infrared, blue takes the visible blue:
 
 - vegetation reflects strongly in the near infrared and weakly in SWIR,
   so it lands bright green
-- water absorbs both infrared bands and keeps a little blue, so it reads
-  deep navy rather than black, which is what separates a channel from a
-  shadow
-- bare and ploughed ground reflects most strongly in SWIR, so it comes out
-  pink
+- water absorbs both infrared bands and, on a river this muddy, keeps a
+  good deal of visible red, so it reads deep navy rather than black -
+  which is what separates a channel from a shadow
+- ploughed ground reflects strongly in SWIR and moderately in red, so it
+  comes out pink
 - towns reflect moderately across all three and stay grey
 
 That is why a flooded field is distinguishable from a dry one here and not
@@ -66,13 +66,26 @@ FRAME_PX = 2048
 #: costs about an eighth of that.
 WEBP_QUALITY = 80
 
-#: Red: SWIR1. Green: near infrared. Blue: visible blue.
-BANDS = ("B11", "B8", "B2")
+#: Red: SWIR2. Green: near infrared. Blue: the visible red band.
+#:
+#: The blue channel is the surprise, and it is the Parana's doing. The
+#: obvious choice is the blue band, and it cannot work here: measured over
+#: this corridor, bare ground reflects *less* blue than water does (344
+#: against 420), so no linear stretch can make soil pink and water navy at
+#: the same time. The visible red band can, because the Parana carries so
+#: much sediment that water is the brightest of the three in it - 695,
+#: against 568 for ploughed ground and 348 for vegetation. A clear river
+#: would not behave this way.
+BANDS = ("B12", "B8", "B4")
+
 #: Reflectance is scaled by 10,000 in the surface-reflectance product.
-#: These stretch the three bands so water stays dark without crushing the
-#: bare ground to white.
-VIS_MIN = (150, 200, 250)
-VIS_MAX = (3600, 3800, 1800)
+#: Set from the medians actually measured over the corridor rather than by
+#: eye - water 110/269/695, vegetation 604/2224/356, bare 1456/1583/631 -
+#: so that water lands near rgb(0, 6, 126), vegetation near rgb(71, 191,
+#: 30) and ploughed ground near rgb(192, 131, 108). Bright dry fields clip
+#: the red channel on purpose: that is where the pink comes from.
+VIS_MIN = (100, 200, 250)
+VIS_MAX = (1900, 2900, 1150)
 
 
 @dataclass(frozen=True, slots=True)
