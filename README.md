@@ -699,6 +699,97 @@ the bajante check and was caught. The Delta passed it and would have shipped a
 number that falls as the river rises. The test that caught it - does the
 measured area actually track the gauge - now runs over every stretch.
 
+## Four improvements, and what each was worth
+
+### The Brazilian gauges: tested, and closed
+
+ANA's service was the one dependency the plan flagged as untested, because
+Brazilian gauges above Itaipu are the only available source of *lead time* -
+the one thing that could lift the arrival projections above 23%.
+
+It is closed. The catalogue works: `ListaEstacoesTelemetricas` returns 5,415
+active telemetric stations with coordinates, 123 of them in the upper Parana
+box above Itaipu, including PORTO MEIRA at Foz do Iguacu, which is
+effectively co-located with our own Puerto Iguazu gauge. But every data
+endpoint - `DadosHidrometeorologicos`, `DadosHidrometeorologicosGerais`,
+`HidroSerieHistorica` - answers *"Sem dados para esta estacao no periodo
+solicitado"* for every station and every period tried, across 2020, 2023,
+2024 and 2026. `HidroInventario` returns `<Vazio>` for every query. The
+modern REST gateway needs registered credentials.
+
+So the data exists and is not served on the open path. Getting it means
+registering for ANA's HidroWebService, which is a decision rather than a
+task. Recorded here so nobody tests it blind again.
+
+### Crest speed by wave size: measured, and it does not help
+
+Celerity rises with stage, so a single median per leg should be fitting two
+populations at once. The travel-time table now splits each leg at its own
+median wave magnitude - the day-of-year anomaly, which does not saturate the
+way a percentile does when half the crests in a flood read 100.
+
+The split barely separates anything. Most legs return the *same* median for
+large and small waves:
+
+| leg | all | small | large |
+|---|---|---|---|
+| Corrientes - Empedrado | 1.0 | 1.0 | 1.0 |
+| Goya - Esquina | 3.0 | 3.0 | 3.0 |
+| Parana - Diamante | 2.0 | 2.0 | 1.0 |
+| La Paz - Santa Elena | 1.0 | 1.0 | 2.0 |
+
+The two that differ disagree about the sign. The reason is the resolution
+the method page already documents: lags are whole days, most legs are 1 to 3
+days, and a 20% celerity difference on a two-day leg is 0.4 days.
+
+Wired into the projection and backtested over the same 933 projections, it
+changes nothing: inside-window 23% to 25%, median error 9 days either way,
+within-three-days 24% to 23%. About one standard error, in both directions.
+
+**So the code path was reverted and the measurement kept.** The bands are
+published in `travel_times.json` because the negative result is worth having
+written down; the projection still uses the pooled figure, because this
+project does not ship a branch it cannot show works.
+
+### CSV, because JSON is not really publishing it
+
+The pages read JSON because a browser does. Anyone checking the work, or
+using it in their own basin, wants columns. `crecida export` now writes
+three files next to the JSON, and the method page links them:
+
+- `river_daily.csv` - every gauge, every day, level and percentile (8,454 rows)
+- `flooded_area.csv` - every stretch at every pass, uncalibrated ones absent
+- `travel_times.csv` - every leg, with spread and how many floods it was
+  measured over
+
+The stage file covers the published window, not the full record: 1884 to now
+is 950,000 rows and belongs in the DuckDB store, not behind a link on a page.
+
+### The Paraguay, and a correction
+
+A page about where the water comes from was showing only the Parana's own
+side of the confluence. The Parana at Corrientes is the sum of two rivers,
+and which one is high is the first thing a reader should be able to see.
+
+Three gauges were already in the store and on no page: Puerto Pilcomayo
+(Paraguay discharge), Puerto Formosa (Paraguay stage) and Bermejo. They are
+now on view 3, in the order the water arrives.
+
+They also correct something stated earlier in this project's own notes. The
+Paraguay is **not** driving this flood:
+
+| | percentile for the day of year |
+|---|---|
+| Andresito (Iguazu inflow) | 100 |
+| Yacyreta efluente | 100 |
+| Corrientes, main stem | 100 |
+| Bermejo | 88 |
+| Puerto Formosa (Paraguay) | 86 |
+| Puerto Pilcomayo (Paraguay) | **56** |
+
+This is a Parana flood. Until these gauges were on the page there was no way
+for a reader to tell, which is the whole argument for putting them there.
+
 ## Status
 
 Built:
@@ -729,8 +820,8 @@ Not built yet — see `.claude/plans` for the full plan:
   that handles radar shadow in a valley rather than a tuned threshold.
 - A projection of how *high* the crest will be, which needs a routing model
   rather than a travel time.
-- Stratifying crest speed by wave size. It rises with stage, and one median for a
-  whole stretch hides that.
+- Lead time from Brazil, which needs credentials for ANA's HidroWebService
+  rather than code.
 
 Events are defined relative to each gauge's own seasonal normal (the day-of-year
 p90/p95 curves from rios-argentina's `climatology_final.json`) as well as against
