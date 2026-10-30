@@ -40,6 +40,7 @@ FLOODED = "flooded.json"
 RIVER_STAGE = "river_stage.json"
 TRACK = "track.json"
 CSV_DIR = "csv"
+AREA_STAGE = "area_stage.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -571,6 +572,46 @@ def _stage_correlation(
     matrix = np.corrcoef([p[0] for p in pairs], [p[1] for p in pairs])
     value = float(matrix[0, 1])
     return None if value != value else round(value, 2)
+
+
+def export_area_stage(
+    result: ValidationResult,
+    *,
+    source_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+) -> ExportResult | None:
+    """Publish how well a river level predicts flooded area.
+
+    Frozen input: it needs Earth Engine and ten years of satellite passes,
+    so it is built by ``scripts/area_stage_history.py`` and committed, the
+    way the travel times and the backtest are. Absent, the page simply does
+    not show the section.
+    """
+    from . import areastage
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    payload = areastage.build(areastage.load(source_path or areastage.DEFAULT_SOURCE))
+    if not payload:
+        log.info("no area-against-stage record; the section stays hidden")
+        return None
+    path = out_dir / AREA_STAGE
+    write_json(path, payload)
+    log.info(
+        "exported %d area-against-stage observations (r=%s) to %s",
+        payload["n"], payload["r"], path,
+    )
+    return ExportResult(
+        path=path,
+        gauges=payload["n"],
+        with_official_thresholds=0,
+        last_data_day=None,
+    )
 
 
 def export_flooded(

@@ -830,6 +830,55 @@ the area, including for the stretches that publish no area, because it is
 the evidence for those refusals. The Delta's -0.44 is the number that
 decided it, and a reader should be able to see the number that decided it.
 
+## What a river level actually tells you about flooded area
+
+Every flood map publishes an area. None of them publishes how much that
+figure would move if you measured the same river, at the same level, a
+month later. This one does, and the answer is the most distinctive thing
+here.
+
+`scripts/area_stage_history.py` samples the whole Sentinel-1 era - one
+12-day composite every 36 days since 2016, for each stretch with both a
+calibrated threshold and an official alert level - and pairs each with the
+stage that day. 398 observations where the published six-month series had
+15. Stage is kept as metres above that gauge's own INA alert level,
+because every gauge has its own zero and metres above alert mean the same
+thing at Goya and at Parana.
+
+| metres vs alert | n | water / bajante | spread |
+|---|---|---|---|
+| -6 to -4 | 79 | 1.42 | +/-45% |
+| -4 to -3 | 94 | 1.28 | +/-58% |
+| -3 to -2 | 93 | 1.52 | +/-46% |
+| -2 to -1 | 72 | 1.92 | +/-54% |
+| -1 to 0 | 42 | 2.00 | +/-52% |
+| above alert | 14 | 1.84 | +/-75% |
+
+The trend is real: about 1.35 times the bajante at low water, about 1.96
+approaching alert. **And two readings at the same level differ by about
+55%.** The river level accounts for 6% of the variance in the measured
+area. The scatter is the size of the trend.
+
+### The analysis this replaced
+
+On the six-month series the relationship looked sharp: a knee within half
+a metre of the alert level, the slope above it seventy times the slope
+below, p below 0.0001. It rested on **two observations above an alert
+level**. With 398 the fit collapses - the knee runs to the edge of the
+search, the slopes stop making physical sense, and the four stretches
+contradict each other.
+
+Hysteresis was tested too, since water draining slowly would put the
+falling limb above the rising one at the same stage. The middle bands do
+look that way (1.79 against 1.29, 2.41 against 1.69) and overall it is
+nothing: p = 0.50.
+
+So the page states the weak version, because the weak version is what 398
+observations support. It is a statement about what a 12-day radar
+composite can resolve, not about the river - and a single flooded-area
+figure quoted for a given stage, anywhere, is good to roughly a factor
+rather than to the square kilometre.
+
 ## Status
 
 Built:

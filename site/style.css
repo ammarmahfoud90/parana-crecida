@@ -563,3 +563,31 @@ main:focus { outline: none; }
 @media (max-width: 560px) {
   .provenance dl > div { grid-template-columns: 1fr; gap: 4px; }
 }
+
+
+/* -- the cloud ----------------------------------------------------------- */
+
+.cloudLead { margin: 0 0 12px; color: var(--ink-soft); line-height: 1.6; max-width: 70ch; }
+#cloudChart { display: block; min-width: 560px; width: 100%; height: auto; }
+#cloudChart .grid { stroke: var(--line); stroke-width: 1; }
+#cloudChart .ax { font: 11px ui-sans-serif, system-ui, sans-serif; fill: var(--ink-faint); }
+#cloudChart .ax.ref { fill: var(--ink-soft); font-size: 10px; }
+#cloudChart .ref { stroke-dasharray: 5 4; stroke-width: 1.5; }
+#cloudChart .ref.alert { stroke: var(--alert); }
+#cloudChart .ref.base { stroke: var(--ink-faint); }
+/* The spread is the point of the chart, so it is drawn as an area rather
+   than as whiskers a reader has to interpret. */
+#cloudChart .spread { fill: var(--accent); opacity: .13; }
+#cloudChart .mean { stroke: var(--accent); stroke-width: 2.5; }
+#cloudChart .pt { fill: var(--ink); opacity: .32; }
+
+.cloudkeys {
+  display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 0;
+  font-size: .8rem; color: var(--ink-soft);
+}
+.cloudkeys span { display: inline-flex; align-items: center; gap: 6px; }
+.cloudkeys i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+.cloudkeys i.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); opacity: .45; }
+.cloudkeys i.band { background: var(--accent); opacity: .22; }
+.cloudkeys i.meanline { height: 0; border-top: 3px solid var(--accent); }
+#cloud .cap { margin: 12px 0 0; color: var(--ink-soft); font-size: .86rem; line-height: 1.6; max-width: 70ch; }

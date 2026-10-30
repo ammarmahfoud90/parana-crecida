@@ -52,6 +52,23 @@
     <p class="cap" style="margin:6px 0 0" id="extraNote"></p>
   </div>
 
+  <section id="cloud" hidden>
+    <h2 class="section" data-t="cloudHeading"></h2>
+    <p class="cloudLead" id="cloudLead"></p>
+    <div class="chartbox">
+      <svg id="cloudChart" role="img" aria-labelledby="cloudTitle cloudDesc">
+        <title id="cloudTitle"></title>
+        <desc id="cloudDesc"></desc>
+      </svg>
+    </div>
+    <div class="cloudkeys">
+      <span><i class="dot"></i><span data-t="cloudKeyDot"></span></span>
+      <span><i class="band"></i><span data-t="cloudKeyBand"></span></span>
+      <span><i class="meanline"></i><span data-t="cloudKeyMean"></span></span>
+    </div>
+    <p class="cap" id="cloudNote"></p>
+  </section>
+
   <h2 class="section" data-t="loopHeading"></h2>
   <figure class="loop">
     <div class="loopwrap">
@@ -118,6 +135,18 @@ const T = {
     noticeBody: "El radar no ve el agua bajo la vegetación, así que el monte y los humedales inundados cuentan como tierra firme. La superficie real es mayor que la de acá.",
     officialLink: "Ver el alerta oficial del INA →",
     stretchLabel: "Tramo:", lastPassLabel: "Última pasada completa:",
+    cloudHeading: "Cuánto dice la altura del río sobre la superficie inundada",
+    cloudLead: (n, years, spread, trend) =>
+      `Cada punto es una pasada del satélite desde ${years}: ${n} en total. La nube es el resultado. La superficie sube con el río —unas ${trend} veces entre aguas bajas y el nivel de alerta— pero dos mediciones a la misma altura difieren alrededor de un ${spread}%. La dispersión es del tamaño de la tendencia.`,
+    cloudTitle: "Dispersión de la superficie de agua contra la altura del río, en 398 pasadas del satélite desde 2016.",
+    cloudDesc: "Los puntos se extienden verticalmente tanto como asciende la tendencia: a una misma altura del río, la superficie medida varía alrededor de la mitad.",
+    cloudNote: (r2, above) =>
+      `La altura del río explica el ${r2}% de la variación de la superficie medida. Sólo ${above} de las observaciones caen por encima del nivel de alerta, así que de esa parte del gráfico se puede decir poco. Esto describe lo que un compuesto de radar de 12 días puede resolver, no cómo se comporta el río: una cifra única de superficie para una altura dada es buena a grandes rasgos, no al kilómetro cuadrado.`,
+    cloudKeyDot: "una pasada", cloudKeyBand: "dispersión típica a esa altura",
+    cloudKeyMean: "promedio por franja",
+    cloudAxisX: "metros respecto del nivel de alerta",
+    cloudAxisY: "veces la bajante de 2021",
+    cloudAlert: "nivel de alerta", cloudBajante: "bajante",
     loopHeading: "La crecida, pasada por pasada",
     loopAlt: "Animación del río Paraná entre Corrientes y Goya. El cauce permanente en azul y el agua de la crecida en naranja, en veinte pasadas del satélite entre mayo y octubre de 2026.",
     loopCaption: "Veinte pasadas de Sentinel-1, del 3 de mayo al 25 de octubre de 2026. Cada cuadro es una observación real: el satélite pasa cada 12 días, así que entre cuadro y cuadro no hay dato.",
@@ -155,6 +184,18 @@ const T = {
     noticeBody: "Radar cannot see water under vegetation, so flooded forest and wetland count as dry land. The real flooded area is larger than the figure here.",
     officialLink: "See INA's official alert →",
     stretchLabel: "Stretch:", lastPassLabel: "Last full pass:",
+    cloudHeading: "How much the river level tells you about flooded area",
+    cloudLead: (n, years, spread, trend) =>
+      `Each dot is one satellite pass since ${years}: ${n} of them. The cloud is the result. Area does rise with the river — about ${trend} times between low water and the alert level — but two measurements at the same river level differ by around ${spread}%. The scatter is the size of the trend.`,
+    cloudTitle: "Scatter of water area against river level, over 398 satellite passes since 2016.",
+    cloudDesc: "The points spread vertically about as far as the trend climbs: at one river level, the measured area varies by roughly half.",
+    cloudNote: (r2, above) =>
+      `River level accounts for ${r2}% of the variation in the measured area. Only ${above} observations fall above the alert level, so that part of the chart says little. This describes what a 12-day radar composite can resolve, not how the river behaves: a single area figure for a given stage is good to roughly a factor, not to the square kilometre.`,
+    cloudKeyDot: "one pass", cloudKeyBand: "typical spread at that level",
+    cloudKeyMean: "average per band",
+    cloudAxisX: "metres relative to the alert level",
+    cloudAxisY: "times the 2021 low water",
+    cloudAlert: "alert level", cloudBajante: "low water",
     loopHeading: "The flood, pass by pass",
     loopAlt: "Animation of the Parana between Corrientes and Goya. The permanent channel in blue and flood water in orange, over twenty satellite passes from May to October 2026.",
     loopCaption: "Twenty Sentinel-1 passes, 3 May to 25 October 2026. Each frame is a real observation: the satellite comes round every 12 days, so between frames there is no measurement.",
@@ -215,6 +256,7 @@ function setLang(next) {
   document.getElementById("chartTitle").textContent = t.chartTitle;
   document.getElementById("chartDesc").textContent = t.chartDesc;
   if (payload) render(payload);
+  else drawCloud();
 }
 
 function el(name, attrs, text) {
@@ -315,6 +357,85 @@ function drawChart(stretch) {
   });
 }
 
+// The cloud. Every flood map publishes an area; this is the one chart
+// that says how much that number would move if you measured the same
+// river, at the same level, a month later.
+let cloudData = null;
+
+function drawCloud() {
+  const d = cloudData;
+  if (!d || !d.observations || !d.observations.length) return;
+  const t = T[lang];
+  const svg = document.getElementById("cloudChart");
+  const keep = document.getElementById("cloudDesc");
+  while (svg.lastChild && svg.lastChild !== keep) svg.removeChild(svg.lastChild);
+
+  const W = 720, H = 380, L = 56, R = 16, TOP = 16, B = 52;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  document.getElementById("cloudTitle").textContent = t.cloudTitle;
+  keep.textContent = t.cloudDesc;
+
+  const xs = d.observations.map((o) => o.x);
+  const ys = d.observations.map((o) => o.y);
+  const x0 = Math.min(-6, Math.floor(Math.min(...xs)));
+  const x1 = Math.max(2, Math.ceil(Math.max(...xs)));
+  const y1 = Math.min(6, Math.ceil(Math.max(...ys)));
+  const X = (v) => L + (v - x0) / (x1 - x0) * (W - L - R);
+  const Y = (v) => H - B - (v / y1) * (H - B - TOP);
+
+  const make = (name, attrs) => {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    svg.appendChild(el);
+    return el;
+  };
+
+  for (let v = 0; v <= y1; v++) {
+    make("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), class: "grid" });
+    make("text", { x: L - 8, y: Y(v) + 4, class: "ax", "text-anchor": "end" })
+      .textContent = v + "×";
+  }
+  for (let v = Math.ceil(x0); v <= x1; v++) {
+    make("text", { x: X(v), y: H - B + 18, class: "ax", "text-anchor": "middle" })
+      .textContent = (v > 0 ? "+" : "") + v;
+  }
+
+  // The two lines a reader measures everything against.
+  make("line", { x1: X(0), x2: X(0), y1: TOP, y2: H - B, class: "ref alert" });
+  make("text", { x: X(0) + 5, y: TOP + 12, class: "ax ref" }).textContent = t.cloudAlert;
+  make("line", { x1: L, x2: W - R, y1: Y(1), y2: Y(1), class: "ref base" });
+  make("text", { x: W - R - 4, y: Y(1) - 5, class: "ax ref", "text-anchor": "end" })
+    .textContent = t.cloudBajante;
+
+  // Spread first, so the dots sit on top of it.
+  for (const b of d.bands) {
+    const left = X(Math.max(b.from_m, x0)), right = X(Math.min(b.to_m, x1));
+    const hi = Y(b.mean + b.sd), lo = Y(Math.max(b.mean - b.sd, 0));
+    make("rect", { x: left, y: hi, width: right - left, height: Math.max(lo - hi, 1),
+                   class: "spread" });
+  }
+  for (const o of d.observations) {
+    make("circle", { cx: X(o.x), cy: Y(Math.min(o.y, y1)), r: 2.6, class: "pt" });
+  }
+  for (const b of d.bands) {
+    const left = X(Math.max(b.from_m, x0)), right = X(Math.min(b.to_m, x1));
+    make("line", { x1: left, x2: right, y1: Y(b.mean), y2: Y(b.mean), class: "mean" });
+  }
+
+  make("text", { x: (L + W - R) / 2, y: H - 10, class: "ax", "text-anchor": "middle" })
+    .textContent = t.cloudAxisX;
+  make("text", { x: 14, y: (TOP + H - B) / 2, class: "ax",
+                 transform: `rotate(-90 14 ${(TOP + H - B) / 2})`,
+                 "text-anchor": "middle" }).textContent = t.cloudAxisY;
+
+  const years = (d.built_on || "").slice(0, 4);
+  document.getElementById("cloudLead").textContent = t.cloudLead(
+    d.n, 2016, d.typical_spread_pct, fmt(d.trend, 1));
+  document.getElementById("cloudNote").textContent = t.cloudNote(
+    Math.round((d.r2 || 0) * 100), d.above_alert);
+  document.getElementById("cloud").hidden = false;
+}
+
 function render(data) {
   const t = T[lang];
   // Not stretches[0]. The corridors are ordered upstream first, so when
@@ -343,6 +464,7 @@ function render(data) {
     document.getElementById("headline").hidden = false;
   }
 
+  drawCloud();
   drawChart(stretch);
   // On a narrow screen the chart scrolls, and the newest pass -- the one
   // that matters -- is the one that ends up off the right edge. Open at
@@ -401,6 +523,11 @@ for (const b of document.querySelectorAll(".langs button")) {
 }
 
 setLang(pickLang());
+
+fetch("data/area_stage.json", { cache: "no-cache" })
+  .then((r) => (r.ok ? r.json() : null))
+  .then((d) => { cloudData = d; if (d) drawCloud(); })
+  .catch(() => { /* the page stands without it */ });
 
 fetch("data/flooded.json", { cache: "no-cache" })
   .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
