@@ -1,21 +1,3 @@
-function renderAhead() {
-  const t = T[lang];
-  const section = document.getElementById("front");
-  const none = document.getElementById("aheadNone");
-  if (!track) { section.hidden = true; none.hidden = true; return; }
-
-  if (!track.anchor) {
-    section.hidden = true;
-    none.textContent = t[REASONS[track.reason] || "aheadNoneData"];
-    none.hidden = false;
-    return;
-  }
-  none.hidden = true;
-  document.getElementById("anchorLine").textContent = t.anchorLine(
-    track.anchor.name, dayLabel(track.anchor.peak_day), !track.anchor.confirmed);
-  section.hidden = false;
-}
-
 <!doctype html>
 <html lang="es" data-theme="auto">
 <head>
@@ -91,9 +73,10 @@ function renderAhead() {
     <span class="key"><span class="dot"></span> <span data-t="legendCrest"></span></span>
   </div>
 
-  <section id="front" hidden>
-    <h2 class="section" data-t="frontHeading"></h2>
+  <section id="ahead" hidden>
+    <h2 class="section" style="margin-top:28px" data-t="frontHeading"></h2>
     <p class="anchorline" id="anchorLine"></p>
+
     <p class="skillnote" data-t="frontWhyNoDates"></p>
   </section>
 
@@ -164,7 +147,7 @@ const T = {
     legendHigh: "Muy alto",
     legendCrest: "Pico detectado",
     frontHeading: "Dónde está el frente de la crecida",
-    frontWhyNoDates: "Acá no hay fechas de llegada. Se construyeron y se midieron: sobre el registro desde 1998, el pico real cayó dentro de la ventana proyectada el 23% de las veces, con un error mediano de 9 días sobre viajes de pocos días a dos semanas. Un error del tamaño de la cosa que se quiere predecir no es un pronóstico. Los tiempos de viaje medidos siguen abajo, que es lo que los datos sí sostienen.",
+    frontWhyNoDates: "Acá no hay fechas de llegada. Se construyeron y se midieron: sobre el registro desde 1998, el pico real cayó dentro de la ventana proyectada el 23% de las veces, con un error mediano de 9 días sobre viajes de pocos días a dos semanas. Un error del tamaño de la cosa que se quiere predecir no es un pronóstico. Los tiempos de viaje medidos están abajo, que es lo que los datos sí sostienen.",
     anchorLine: (name, day, provisional) =>
       provisional
         ? `El río dejó de subir en ${name} el ${day}, pero todavía no bajó lo suficiente como para dar el pico por pasado. Si ése resulta ser el pico, el registro dice que llegaría así:`
@@ -465,37 +448,6 @@ function renderAhead() {
   document.getElementById("anchorLine").textContent = t.anchorLine(
     track.anchor.name, dayLabel(track.anchor.peak_day), !track.anchor.confirmed);
 
-  const body = document.getElementById("arrivals");
-  body.replaceChildren(...track.projections.map((p) => {
-    const tr = document.createElement("tr");
-    const timing = t["timing" + p.timing.charAt(0).toUpperCase() + p.timing.slice(1)] || "";
-    const cells = [
-      p.name,
-      dayLabel(p.expected),
-      `${dayLabel(p.earliest)} – ${dayLabel(p.latest)}`,
-      p.percentile_now === null ? "—" : t.pctNow(p.percentile_now),
-    ];
-    cells.forEach((text, i) => {
-      const td = document.createElement("td");
-      td.textContent = text;
-      if (i === 1 && timing) {
-        const tag = document.createElement("span");
-        tag.className = "timing " + p.timing;
-        tag.textContent = timing;
-        td.append(" ", tag);
-      }
-      tr.appendChild(td);
-    });
-    return tr;
-  }));
-
-  const s = track.skill || {};
-  const flat = (s.crest_flatness || {}).median_days;
-  document.getElementById("skillNote").textContent =
-    (s.scored && flat)
-      ? t.skillNote(s.inside_window, s.scored, s.inside_window_pct,
-                    s.median_error_days, s.baseline_median_error_days, flat)
-      : "";
   section.hidden = false;
 }
 
