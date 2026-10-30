@@ -20,11 +20,12 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from ina_a5.observations import DEFAULT_TZ
 
+from . import gauges as roster
 from .store import GaugeToday, Store
 from .thresholds import INA_ALERT_URL, Threshold, classify
 from .validate import ValidationResult, freshness_note
@@ -38,6 +39,7 @@ DRIVERS = "drivers.json"
 FLOODED = "flooded.json"
 RIVER_STAGE = "river_stage.json"
 TRACK = "track.json"
+CSV_DIR = "csv"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -369,6 +371,137 @@ def export_track(
         with_official_thresholds=0,
         last_data_day=store.last_data_day(),
     )
+
+
+def _write_csv(path: Path, header: list[str], rows) -> int:
+    """Write a CSV atomically, the way the JSON writers do."""
+    import csv
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    count = 0
+    with tmp.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(header)
+        for row in rows:
+            writer.writerow(row)
+            count += 1
+    os.replace(tmp, path)
+    return count
+
+
+def export_csv(
+    store: Store,
+    result: ValidationResult,
+    *,
+    climatology_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+    window_days: int = 180,
+    today: date | None = None,
+) -> dict[str, int]:
+    """The same measurements as the site, in the format people analyse in.
+
+    The pages read JSON because a browser does. Anyone who wants to check
+    the work, or use it in their own basin, wants columns - and asking a
+    hydrologist to parse nested JSON to get a stage series is a way of not
+    really publishing it.
+
+    Three files, each the whole of one thing:
+
+    - ``river_daily.csv`` - every gauge, every day, level and percentile.
+    - ``flooded_area.csv`` - every stretch, every satellite pass.
+    - ``travel_times.csv`` - every leg, with the spread and how many floods
+      it was measured over.
+
+    The stage file covers the published window rather than the full record.
+    The record runs to 1884 and is 950,000 rows; that belongs in the
+    repository's DuckDB store, not in a file a page links to.
+    """
+    from . import chain as ch
+    from .lag import DEFAULT_TABLE as LAG_TABLE
+    from .lag import load_table as load_lags
+    from .flooded import DEFAULT_TABLE as FLOOD_TABLE
+    from .flooded import load_table as load_flood
+    from .normalize import Climatology
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    today = today or datetime.now(DEFAULT_TZ).date()
+    start = today - timedelta(days=window_days)
+    clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    nodes = {n.series_id: n for n in ch.load_chain()}
+    out = out_dir / CSV_DIR
+    written: dict[str, int] = {}
+
+    def river_rows():
+        for gauge in roster.GAUGES:
+            node = nodes.get(gauge.series_id)
+            for value in store.series(gauge.series_id, since=start):
+                pct = clim.percentile_of(gauge.series_id, value.day, value.value)
+                yield [
+                    value.day.isoformat(),
+                    gauge.series_id,
+                    gauge.name,
+                    gauge.branch,
+                    "" if node is None else round(node.river_km, 1),
+                    round(value.value, 2),
+                    "" if pct is None else round(pct, 1),
+                    " ".join(sorted(gauge.flags)),
+                ]
+
+    written["river_daily.csv"] = _write_csv(
+        out / "river_daily.csv",
+        ["day", "series_id", "gauge", "branch", "river_km", "level_m",
+         "percentile_for_day_of_year", "flags"],
+        river_rows(),
+    )
+
+    flood = load_flood(FLOOD_TABLE)
+
+    def flood_rows():
+        for stretch in flood.get("stretches", []):
+            # An uncalibrated stretch publishes no number here either. The
+            # file would otherwise be the one place the gorge and the Delta
+            # still quote an area.
+            if stretch.get("calibrated") is False:
+                continue
+            for day, km2 in zip(stretch.get("days", []), stretch.get("km2", [])):
+                yield [
+                    day, stretch["key"], stretch["from_name"], stretch["to_name"],
+                    round(km2, 1), stretch.get("baseline_km2"),
+                    stretch.get("permanent_water_km2"), stretch.get("threshold_db"),
+                ]
+
+    written["flooded_area.csv"] = _write_csv(
+        out / "flooded_area.csv",
+        ["day", "stretch", "from_gauge", "to_gauge", "water_km2",
+         "bajante_2021_km2", "jrc_permanent_km2", "threshold_db"],
+        flood_rows(),
+    )
+
+    def lag_rows():
+        for row in load_lags(LAG_TABLE):
+            yield [
+                row["from_name"], row["to_name"], row["km"],
+                row.get("median_days"), row.get("p25_days"), row.get("p75_days"),
+                row.get("correlation_days"), row.get("n"),
+                row.get("resolution_limited"),
+            ]
+
+    written["travel_times.csv"] = _write_csv(
+        out / "travel_times.csv",
+        ["from_gauge", "to_gauge", "km", "median_days", "p25_days", "p75_days",
+         "cross_correlation_days", "floods_matched", "resolution_limited"],
+        lag_rows(),
+    )
+
+    log.info("csv: %s", ", ".join(f"{k} {v} rows" for k, v in written.items()))
+    return written
 
 
 def export_flooded(

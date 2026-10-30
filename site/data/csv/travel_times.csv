@@ -1,0 +1,13 @@
+from_gauge,to_gauge,km,median_days,p25_days,p75_days,cross_correlation_days,floods_matched,resolution_limited
+Corrientes,Empedrado,57.4,1.0,1.0,1.0,1.0,38,True
+Empedrado,Bella Vista,68.8,2.0,2.0,3.0,1.0,17,True
+Bella Vista,Goya,83.5,1.0,1.0,2.0,1.0,25,True
+Goya,Esquina,131.3,3.0,2.5,4.0,2.0,27,False
+Esquina,La Paz,85.1,2.0,2.0,4.0,1.0,19,True
+La Paz,Santa Elena,26.6,1.0,1.0,2.0,1.0,10,True
+Santa Elena,Hernandarias,37.4,1.0,1.0,1.75,1.0,14,True
+Hernandarias,Parana,79.4,2.0,1.0,2.0,1.0,18,True
+Parana,Diamante,58.6,2.0,1.0,2.0,1.0,39,True
+Diamante,San Lorenzo,81.2,2.0,1.0,3.0,2.0,12,True
+San Lorenzo,Rosario,21.4,2.0,1.75,2.0,1.0,8,True
+Rosario,Villa Constitucion,50.0,2.0,1.0,2.5,1.0,7,True

@@ -154,6 +154,20 @@
     </section>
 
     <section>
+      <h2 data-t="dataHeading"></h2>
+      <p data-t="dataBody"></p>
+      <ul class="files">
+        <li><a href="data/csv/river_daily.csv" download><code>river_daily.csv</code></a>
+          <span data-t="dataRiver"></span></li>
+        <li><a href="data/csv/flooded_area.csv" download><code>flooded_area.csv</code></a>
+          <span data-t="dataFlood"></span></li>
+        <li><a href="data/csv/travel_times.csv" download><code>travel_times.csv</code></a>
+          <span data-t="dataLags"></span></li>
+      </ul>
+      <p data-t="dataLicence"></p>
+    </section>
+
+    <section>
       <h2 data-t="notHeading"></h2>
       <ul id="notList"></ul>
     </section>
@@ -247,6 +261,12 @@ const T = {
     breakHeading: "Cuándo deja de funcionar, y cómo se nota",
     breakBody: "Si el INA deja de publicar, lo honesto es seguir mostrando el último dato bueno con su fecha, no bajar el sitio. Pero eso solo dejaría a todos sin enterarse, así que después de publicar corre una comprobación aparte: si lo que está en línea quedó viejo —las alturas, la lluvia, la superficie, o la línea diaria del río— la corrida automática se pone en rojo aunque el sitio se vea perfecto. Varias fallas de este proyecto fueron exactamente así: todo en verde y la página mal.",
 
+    dataHeading: "Los datos, en CSV",
+    dataBody: "Las páginas leen JSON porque un navegador lee JSON. Quien quiera revisar el trabajo, o usarlo en su propia cuenca, quiere columnas. Pedirle a un hidrólogo que desarme JSON anidado para sacar una serie de alturas es una forma de no publicarla del todo.",
+    dataRiver: "— altura y percentil de cada estación, día por día, los últimos 180 días.",
+    dataFlood: "— superficie de agua por tramo en cada pasada del satélite. Los tramos sin calibrar no figuran: tampoco acá publican una cifra.",
+    dataLags: "— tiempo de viaje por tramo, con el rango y sobre cuántas crecidas se midió.",
+    dataLicence: "El registro completo llega a 1884 y son 950.000 filas: eso vive en el repositorio, no en un archivo que enlaza una página. Las fuentes originales son del INA, la ESA, el JRC y la NASA, cada una con su licencia; lo que se agrega acá es el procesamiento.",
     notHeading: "Lo que este sitio no hace",
     notList: [
       "No pronostica. No hay un modelo hidrológico detrás: las llegadas proyectadas son tiempos de viaje medidos en crecidas anteriores, publicados junto con su error.",
@@ -337,6 +357,12 @@ const T = {
     breakHeading: "When it stops working, and how you'd know",
     breakBody: "If INA stops publishing, the honest thing is to keep showing the last good reading with its date rather than take the site down. But on its own that would leave nobody any the wiser, so a separate check runs after publishing: if what is online has gone stale — the heights, the rainfall, the flooded area, or the daily river line — the automated run goes red even though the site looks perfect. Several of this project's failures were exactly that: all green, and the page wrong.",
 
+    dataHeading: "The data, as CSV",
+    dataBody: "The pages read JSON because a browser does. Anyone who wants to check the work, or use it in their own basin, wants columns. Asking a hydrologist to unpick nested JSON to get a stage series is a way of not really publishing it.",
+    dataRiver: "— level and percentile for every gauge, day by day, over the last 180 days.",
+    dataFlood: "— water area per stretch at each satellite pass. Uncalibrated stretches are absent: they publish no figure here either.",
+    dataLags: "— travel time per leg, with the spread and how many floods it was measured over.",
+    dataLicence: "The full record reaches 1884 and runs to 950,000 rows: that lives in the repository, not in a file a page links to. The underlying sources are INA, ESA, the JRC and NASA, each with its own licence; what is added here is the processing.",
     notHeading: "What this site does not do",
     notList: [
       "It does not forecast. There is no hydrological model behind it: the projected arrivals are travel times measured on past floods, published alongside their error.",

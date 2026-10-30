@@ -488,3 +488,14 @@ figure.loop canvas {
 /* The target takes focus so the next Tab continues from there, but it is
    not a control and should not draw a ring. */
 main:focus { outline: none; }
+
+
+/* The CSV list on the method page. */
+.prose ul.files { list-style: none; padding-left: 0; }
+.prose ul.files li { margin-bottom: 9px; }
+.prose ul.files code {
+  font-size: .86rem; background: var(--track);
+  padding: 2px 7px; border-radius: 5px;
+}
+.prose ul.files a { color: var(--accent); text-decoration: none; }
+.prose ul.files a:hover { text-decoration: underline; }

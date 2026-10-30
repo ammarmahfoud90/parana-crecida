@@ -301,3 +301,33 @@ def test_the_slider_announces_a_date_not_an_index():
     assert text.count('setAttribute("aria-valuetext"') >= 2, (
         "both the daily layer and the radar layer must set it"
     )
+
+
+def test_the_csv_files_the_method_page_links_are_published():
+    """A link to data nobody can download is not an open dataset."""
+    text = (SITE / "method.html").read_text(encoding="utf-8")
+    import re
+
+    linked = re.findall(r'href="(data/csv/[^"]+)"', text)
+    assert linked, "the method page links no CSV"
+    for target in linked:
+        assert (SITE / target).exists(), f"linked but missing: {target}"
+
+
+def test_the_published_csv_withholds_what_the_json_withholds():
+    """The gorge and the Delta claim no area here either.
+
+    A CSV is the one place a withheld measurement could quietly come back,
+    because it is written from a different code path to the pages.
+    """
+    import csv
+
+    path = SITE / "data/csv/flooded_area.csv"
+    if not path.exists():
+        pytest.skip("no CSV exported yet")
+    with path.open(encoding="utf-8") as handle:
+        keys = {row["stretch"] for row in csv.DictReader(handle)}
+    for withheld in (
+        "puerto_iguazu_libertador", "libertador_posadas", "villa_constitucion_ibicuy"
+    ):
+        assert withheld not in keys, f"{withheld} publishes an area in the CSV"

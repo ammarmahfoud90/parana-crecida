@@ -1,0 +1,89 @@
+day,stretch,from_gauge,to_gauge,water_km2,bajante_2021_km2,jrc_permanent_km2,threshold_db
+2026-05-13,posadas_ita_ibate,Posadas,Ita Ibate,1970.4,784.0,815.5,-14.5
+2026-05-25,posadas_ita_ibate,Posadas,Ita Ibate,2033.0,784.0,815.5,-14.5
+2026-06-06,posadas_ita_ibate,Posadas,Ita Ibate,1755.7,784.0,815.5,-14.5
+2026-06-18,posadas_ita_ibate,Posadas,Ita Ibate,1923.1,784.0,815.5,-14.5
+2026-07-12,posadas_ita_ibate,Posadas,Ita Ibate,1957.3,784.0,815.5,-14.5
+2026-07-24,posadas_ita_ibate,Posadas,Ita Ibate,1947.4,784.0,815.5,-14.5
+2026-08-05,posadas_ita_ibate,Posadas,Ita Ibate,1964.9,784.0,815.5,-14.5
+2026-08-17,posadas_ita_ibate,Posadas,Ita Ibate,1904.1,784.0,815.5,-14.5
+2026-08-29,posadas_ita_ibate,Posadas,Ita Ibate,2017.7,784.0,815.5,-14.5
+2026-09-10,posadas_ita_ibate,Posadas,Ita Ibate,2066.9,784.0,815.5,-14.5
+2026-09-22,posadas_ita_ibate,Posadas,Ita Ibate,1964.8,784.0,815.5,-14.5
+2026-10-04,posadas_ita_ibate,Posadas,Ita Ibate,2137.1,784.0,815.5,-14.5
+2026-10-16,posadas_ita_ibate,Posadas,Ita Ibate,1917.7,784.0,815.5,-14.5
+2026-10-28,posadas_ita_ibate,Posadas,Ita Ibate,2401.1,784.0,815.5,-14.5
+2026-05-13,ita_ibate_corrientes,Ita Ibate,Corrientes,820.8,586.6,547.9,-15.5
+2026-05-25,ita_ibate_corrientes,Ita Ibate,Corrientes,856.4,586.6,547.9,-15.5
+2026-06-06,ita_ibate_corrientes,Ita Ibate,Corrientes,771.7,586.6,547.9,-15.5
+2026-06-18,ita_ibate_corrientes,Ita Ibate,Corrientes,813.6,586.6,547.9,-15.5
+2026-07-12,ita_ibate_corrientes,Ita Ibate,Corrientes,897.5,586.6,547.9,-15.5
+2026-07-24,ita_ibate_corrientes,Ita Ibate,Corrientes,771.9,586.6,547.9,-15.5
+2026-08-05,ita_ibate_corrientes,Ita Ibate,Corrientes,782.8,586.6,547.9,-15.5
+2026-08-17,ita_ibate_corrientes,Ita Ibate,Corrientes,880.0,586.6,547.9,-15.5
+2026-08-29,ita_ibate_corrientes,Ita Ibate,Corrientes,791.7,586.6,547.9,-15.5
+2026-09-10,ita_ibate_corrientes,Ita Ibate,Corrientes,695.5,586.6,547.9,-15.5
+2026-09-22,ita_ibate_corrientes,Ita Ibate,Corrientes,853.3,586.6,547.9,-15.5
+2026-10-04,ita_ibate_corrientes,Ita Ibate,Corrientes,820.4,586.6,547.9,-15.5
+2026-10-16,ita_ibate_corrientes,Ita Ibate,Corrientes,687.9,586.6,547.9,-15.5
+2026-10-28,ita_ibate_corrientes,Ita Ibate,Corrientes,1354.5,586.6,547.9,-15.5
+2026-05-13,corrientes_goya,Corrientes,Goya,847.9,536.3,520.8,-16.0
+2026-05-25,corrientes_goya,Corrientes,Goya,823.6,536.3,520.8,-16.0
+2026-06-06,corrientes_goya,Corrientes,Goya,816.5,536.3,520.8,-16.0
+2026-06-18,corrientes_goya,Corrientes,Goya,811.8,536.3,520.8,-16.0
+2026-06-30,corrientes_goya,Corrientes,Goya,790.4,536.3,520.8,-16.0
+2026-07-12,corrientes_goya,Corrientes,Goya,874.3,536.3,520.8,-16.0
+2026-07-24,corrientes_goya,Corrientes,Goya,688.2,536.3,520.8,-16.0
+2026-08-05,corrientes_goya,Corrientes,Goya,598.9,536.3,520.8,-16.0
+2026-08-17,corrientes_goya,Corrientes,Goya,768.1,536.3,520.8,-16.0
+2026-08-29,corrientes_goya,Corrientes,Goya,735.9,536.3,520.8,-16.0
+2026-09-10,corrientes_goya,Corrientes,Goya,623.5,536.3,520.8,-16.0
+2026-09-22,corrientes_goya,Corrientes,Goya,798.4,536.3,520.8,-16.0
+2026-10-04,corrientes_goya,Corrientes,Goya,575.5,536.3,520.8,-16.0
+2026-10-16,corrientes_goya,Corrientes,Goya,517.2,536.3,520.8,-16.0
+2026-10-28,corrientes_goya,Corrientes,Goya,1644.7,536.3,520.8,-16.0
+2026-05-13,goya_la_paz,Goya,La Paz,808.0,495.6,535.6,-16.5
+2026-05-25,goya_la_paz,Goya,La Paz,859.6,495.6,535.6,-16.5
+2026-06-06,goya_la_paz,Goya,La Paz,826.6,495.6,535.6,-16.5
+2026-06-18,goya_la_paz,Goya,La Paz,741.3,495.6,535.6,-16.5
+2026-06-30,goya_la_paz,Goya,La Paz,805.0,495.6,535.6,-16.5
+2026-07-12,goya_la_paz,Goya,La Paz,955.6,495.6,535.6,-16.5
+2026-07-24,goya_la_paz,Goya,La Paz,849.3,495.6,535.6,-16.5
+2026-08-05,goya_la_paz,Goya,La Paz,896.6,495.6,535.6,-16.5
+2026-08-17,goya_la_paz,Goya,La Paz,806.8,495.6,535.6,-16.5
+2026-08-29,goya_la_paz,Goya,La Paz,792.4,495.6,535.6,-16.5
+2026-09-10,goya_la_paz,Goya,La Paz,832.0,495.6,535.6,-16.5
+2026-09-22,goya_la_paz,Goya,La Paz,785.1,495.6,535.6,-16.5
+2026-10-04,goya_la_paz,Goya,La Paz,808.8,495.6,535.6,-16.5
+2026-10-16,goya_la_paz,Goya,La Paz,800.8,495.6,535.6,-16.5
+2026-10-28,goya_la_paz,Goya,La Paz,1208.6,495.6,535.6,-16.5
+2026-05-13,la_paz_parana,La Paz,Parana,739.1,562.4,555.7,-16.0
+2026-05-25,la_paz_parana,La Paz,Parana,1019.2,562.4,555.7,-16.0
+2026-06-06,la_paz_parana,La Paz,Parana,814.1,562.4,555.7,-16.0
+2026-06-18,la_paz_parana,La Paz,Parana,648.2,562.4,555.7,-16.0
+2026-06-30,la_paz_parana,La Paz,Parana,712.3,562.4,555.7,-16.0
+2026-07-12,la_paz_parana,La Paz,Parana,959.6,562.4,555.7,-16.0
+2026-07-24,la_paz_parana,La Paz,Parana,717.8,562.4,555.7,-16.0
+2026-08-05,la_paz_parana,La Paz,Parana,719.9,562.4,555.7,-16.0
+2026-08-17,la_paz_parana,La Paz,Parana,784.0,562.4,555.7,-16.0
+2026-08-29,la_paz_parana,La Paz,Parana,768.1,562.4,555.7,-16.0
+2026-09-10,la_paz_parana,La Paz,Parana,978.9,562.4,555.7,-16.0
+2026-09-22,la_paz_parana,La Paz,Parana,992.8,562.4,555.7,-16.0
+2026-10-04,la_paz_parana,La Paz,Parana,1001.5,562.4,555.7,-16.0
+2026-10-16,la_paz_parana,La Paz,Parana,697.2,562.4,555.7,-16.0
+2026-10-28,la_paz_parana,La Paz,Parana,805.1,562.4,555.7,-16.0
+2026-05-13,parana_villa_constitucion,Parana,Villa Constitucion,632.5,737.8,714.6,-16.5
+2026-05-25,parana_villa_constitucion,Parana,Villa Constitucion,914.3,737.8,714.6,-16.5
+2026-06-06,parana_villa_constitucion,Parana,Villa Constitucion,777.1,737.8,714.6,-16.5
+2026-06-18,parana_villa_constitucion,Parana,Villa Constitucion,735.2,737.8,714.6,-16.5
+2026-06-30,parana_villa_constitucion,Parana,Villa Constitucion,820.5,737.8,714.6,-16.5
+2026-07-12,parana_villa_constitucion,Parana,Villa Constitucion,974.7,737.8,714.6,-16.5
+2026-07-24,parana_villa_constitucion,Parana,Villa Constitucion,952.8,737.8,714.6,-16.5
+2026-08-05,parana_villa_constitucion,Parana,Villa Constitucion,994.0,737.8,714.6,-16.5
+2026-08-17,parana_villa_constitucion,Parana,Villa Constitucion,1160.8,737.8,714.6,-16.5
+2026-08-29,parana_villa_constitucion,Parana,Villa Constitucion,1102.8,737.8,714.6,-16.5
+2026-09-10,parana_villa_constitucion,Parana,Villa Constitucion,1109.3,737.8,714.6,-16.5
+2026-09-22,parana_villa_constitucion,Parana,Villa Constitucion,1140.2,737.8,714.6,-16.5
+2026-10-04,parana_villa_constitucion,Parana,Villa Constitucion,1293.0,737.8,714.6,-16.5
+2026-10-16,parana_villa_constitucion,Parana,Villa Constitucion,1097.9,737.8,714.6,-16.5
+2026-10-28,parana_villa_constitucion,Parana,Villa Constitucion,1128.2,737.8,714.6,-16.5

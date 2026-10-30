@@ -46,6 +46,7 @@ from .export import (
     ExportBlocked,
     export_drivers,
     export_flooded,
+    export_csv,
     export_river_stage,
     export_track,
     export_river_today,
@@ -1207,11 +1208,14 @@ def export(
             water = export_flooded(store, result, out_dir=out, today=today)
             river = export_river_stage(store, result, out_dir=out, today=today)
             ahead = export_track(store, result, out_dir=out, today=today)
+            tables = export_csv(store, result, out_dir=out, today=today)
         except ExportBlocked as exc:
             rep.say(f"EXPORT BLOCKED: {exc}")
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    for name, rows in tables.items():
+        rep.say(f"{rows} rows -> {out / 'csv' / name}")
     rep.say(f"{ahead.gauges} arrival projections -> {ahead.path}")
     rep.say(f"{river.gauges} anchors on the river line -> {river.path}")
     rep.say(f"{water.gauges} river stretches -> {water.path}")
