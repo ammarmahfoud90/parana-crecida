@@ -169,6 +169,7 @@ def test_only_implemented_commands_are_registered():
         "gauges",
         "animation",
         "backtest",
+        "basemap",
         "catalogue",
         "chain",
         "climatology",

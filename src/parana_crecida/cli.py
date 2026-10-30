@@ -1291,6 +1291,44 @@ def backtest(
     rep.write(report)
 
 
+@main.command()
+@click.option("--project", default=None, help="Earth Engine project.")
+@click.option("--window-days", default=90, show_default=True)
+@click.option("--px", default=2048, show_default=True)
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=Path("site/media/basemap"), show_default=True,
+)
+@report_option
+def basemap(
+    project: str | None, window_days: int, px: int, out: Path, report: Path | None
+) -> None:
+    """Render the river from orbit, as a false-colour image per stretch.
+
+    Sentinel-2, cloud-masked and composited: SWIR in red, near infrared in
+    green, visible blue in blue. Vegetation reads bright green, water deep
+    navy, bare ground pink. A flooded field looks different from a dry one,
+    which on a natural-colour image it does not.
+
+    Needs Earth Engine, so it runs here rather than in the scheduled job,
+    and the images are committed.
+    """
+    from . import basemap as bm
+    from .rainfall import initialize
+
+    rep = Report("basemap")
+    initialize(project=project)
+    payload = bm.render(out_dir=out, window_days=window_days, px=px)
+
+    rep.say(f"window {payload['window']['start']} to {payload['window']['end']}")
+    rep.say(f"bands: red {payload['bands']['red']}, "
+            f"green {payload['bands']['green']}, blue {payload['bands']['blue']}")
+    for tile in payload["tiles"]:
+        rep.say(f"  {tile['key']:28s} {tile['scenes']:3d} scenes")
+    rep.say(f"{len(payload['tiles'])} stretches rendered")
+    rep.write(report)
+
+
 # -- daily -----------------------------------------------------------------
 
 

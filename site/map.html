@@ -44,6 +44,11 @@
 
   <div id="map" role="application" data-t-aria="mapLabel"></div>
 
+  <div class="baseswitch" role="group" data-t-aria="baseGroup">
+    <button type="button" data-base="street" aria-pressed="true" data-t="baseStreet"></button>
+    <button type="button" data-base="satellite" aria-pressed="false" data-t="baseSatellite"></button>
+  </div>
+
   <div class="layerswitch" id="layerswitch" hidden role="group" data-t-aria="layerLabel">
     <button type="button" data-layer="stage" aria-pressed="true" data-t="layerStage"></button>
     <button type="button" data-layer="radar" aria-pressed="false" data-t="layerRadar"></button>
@@ -65,6 +70,7 @@
     <span><i class="sw dept"></i><span data-t="keyDept"></span></span>
   </div>
 
+  <p class="cap" id="baseNote" hidden></p>
   <p class="cap" id="modeNote" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px"></p>
 
   
@@ -106,6 +112,10 @@ const T = {
     officialLink: "Ver el alerta oficial del INA →",
     sliderLabel: "Fecha",
     layerLabel: "Capa", layerStage: "Río día a día", layerRadar: "Agua por radar",
+    baseGroup: "Fondo del mapa",
+    baseStreet: "Calles", baseSatellite: "Satélite",
+    satelliteNote: (start, end) =>
+      `Fondo: Sentinel-2 entre ${start} y ${end}, sin nubes y en falso color. El rojo es el infrarrojo de onda corta, el verde el infrarrojo cercano y el azul el azul visible: la vegetación sale verde brillante, el agua azul oscuro, la tierra arada rosa y los pueblos grises. Por eso un campo inundado se distingue de uno seco, cosa que en color natural no pasa.`,
     stageNote: "Altura del río en cada estación, comparada con lo normal para esa fecha, interpolada a lo largo del río. Se actualiza todos los días. La línea se corta en Yacyretá —el embalse y el río aguas abajo están separados— y termina en Villa Constitución, la última estación que puede pintarla: más abajo manda la marea.",
     radarNote: "Cada cuadro es un compuesto de 12 días, no un instante. La franja que ve el satélite es más angosta que este tramo de río. Esta capa baja hasta el Delta, más allá de donde llega la línea diaria, pero del Delta y del cañón de arriba de Posadas sólo se muestra la imagen: ahí no se publica superficie.",
     pctLow: "bajo", pctHigh: "muy alto",
@@ -140,6 +150,10 @@ const T = {
     officialLink: "See INA's official alert →",
     sliderLabel: "Date",
     layerLabel: "Layer", layerStage: "River, day by day", layerRadar: "Water by radar",
+    baseGroup: "Map background",
+    baseStreet: "Streets", baseSatellite: "Satellite",
+    satelliteNote: (start, end) =>
+      `Background: Sentinel-2 between ${start} and ${end}, cloud-masked and in false colour. Red is shortwave infrared, green is near infrared, blue is visible blue: vegetation reads bright green, water deep navy, ploughed ground pink and towns grey. That is why a flooded field looks different from a dry one here, which in natural colour it does not.`,
     stageNote: "River height at each gauge against what is normal for the date, interpolated along the river. Updates daily. The line breaks at Yacyretá — the reservoir and the river below it are separate — and ends at Villa Constitución, the last gauge that can paint it: below that the tide takes over.",
     radarNote: "Each frame is a 12-day composite, not an instant. The satellite's swath is narrower than this run of river. This layer reaches the Delta, further than the daily line goes, but for the Delta and the gorge above Posadas only the picture is shown: no area is published there.",
     pctLow: "low", pctHigh: "very high",
@@ -321,10 +335,50 @@ function nearest(days, target) {
   return best;
 }
 
+// The satellite sits in its own pane between the street tiles and
+// everything this site draws, so the flood colouring and the radar water
+// still land on top of it rather than underneath.
+let base = "street";
+let satellite = [];
+let satelliteIndex = null;
+
+function buildSatellite(index) {
+  satelliteIndex = index;
+  if (!index || !index.tiles || !index.tiles.length) return;
+  map.createPane("satellite");
+  map.getPane("satellite").style.zIndex = 250;
+  satellite = index.tiles.map((tile) =>
+    L.imageOverlay(tile.image, tile.bounds, {
+      opacity: 0, interactive: false, pane: "satellite",
+      alt: "",
+    }).addTo(map));
+  setBase(base);
+}
+
+function setBase(next) {
+  base = next;
+  for (const b of document.querySelectorAll(".baseswitch button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.base === base));
+  }
+  const on = base === "satellite";
+  satellite.forEach((layer) => layer.setOpacity(on ? 1 : 0));
+  const note = document.getElementById("baseNote");
+  if (note) {
+    const w = satelliteIndex && satelliteIndex.window;
+    note.textContent = on && w
+      ? T[lang].satelliteNote(dayLabel(w.start), dayLabel(w.end))
+      : "";
+    note.hidden = !note.textContent;
+  }
+}
+
 function setMode(next) {
   const was = shownDate();
   mode = next;
   if (timer) togglePlay();
+  for (const b of document.querySelectorAll(".baseswitch button")) {
+    b.addEventListener("click", () => setBase(b.dataset.base));
+  }
   for (const b of document.querySelectorAll(".layerswitch button")) {
     b.setAttribute("aria-pressed", String(b.dataset.layer === mode));
   }
@@ -337,6 +391,11 @@ function setMode(next) {
     if (stageLayer) { map.removeLayer(stageLayer); stageLayer = null; }
     slider.max = String(Math.max(frames.length - 1, 0));
     showFrame(frames.length ? nearest(frames.map((f) => f.end), was) : 0);
+  }
+  const baseNote = document.getElementById("baseNote");
+  if (baseNote && base === "satellite" && satelliteIndex && satelliteIndex.window) {
+    baseNote.textContent = T[lang].satelliteNote(
+      dayLabel(satelliteIndex.window.start), dayLabel(satelliteIndex.window.end));
   }
   document.getElementById("modeNote").textContent =
     mode === "stage" ? T[lang].stageNote : T[lang].radarNote;
@@ -459,13 +518,17 @@ Promise.all([
   grab("data/departamentos.geojson"),
   grab("data/river_today.json"),
   grab("data/river_stage.json"),
-]).then(([idx, gaugesGeo, deptGeo, today, stageData]) => {
+  grab("data/basemap.json"),
+]).then(([idx, gaugesGeo, deptGeo, today, stageData, baseIdx]) => {
   stage = stageData && stageData.days && stageData.days.length ? stageData : null;
   if (!idx || !idx.frames || !idx.frames.length) {
     throw new Error("no map frames");
   }
   for (const g of (today && today.gauges) || []) levels[g.series_id] = g;
   start(idx, gaugesGeo, deptGeo, today);
+  // After start, which is where the map is created: the satellite needs a
+  // pane, and a pane needs a map.
+  if (baseIdx) buildSatellite(baseIdx);
 }).catch((err) => {
   const box = document.getElementById("error");
   box.textContent = "No se pudo cargar el mapa / could not load the map: " + err.message;
