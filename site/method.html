@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Método y límites — Crecida del Paraná</title>
 <meta name="description" content="Cómo se mide cada cosa en este sitio, con qué datos, y qué no se puede concluir de ellos.">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,15 +25,13 @@
   </header>
 
   <nav class="views" data-t-aria="viewsNav">
-    <a href="index.html" data-t="viewToday"></a>
-    <a href="wave.html" data-t="viewWave"></a>
-    <a href="drivers.html" data-t="viewDrivers"></a>
-    <a href="flood.html" data-t="viewFlood"></a>
+    <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
+    <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" aria-current="page" data-t="viewMethod"></a>
   </nav>
 
-  <main id="content" tabindex="-1">
+  <main id="content" class="prose" tabindex="-1">
 
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
@@ -112,11 +112,12 @@
             <tr>
               <th data-t="colStretch"></th>
               <th class="num" data-t="colKm"></th>
-              <th class="num" data-t="colThreshold"></th>
-              <th class="num" data-t="colBajante"></th>
-              <th class="num" data-t="colJrc"></th>
-              <th class="num" data-t="colResidual"></th>
-              <th class="num" data-t="colTracks"></th>
+              <th class="num" data-t="colScenes"></th>
+              <th class="num" data-t="colRecall"></th>
+              <th class="num" data-t="colPrecision"></th>
+              <th class="num" data-t="colIou"></th>
+              <th class="num" data-t="colWas"></th>
+              <th class="num" data-t="colPublishes"></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -124,6 +125,7 @@
       </div>
       <p data-t="radarTracks"></p>
       <p data-t="radarGorge"></p>
+      <p data-t="radarPublishes"></p>
       <p data-t="radarFilters"></p>
       <p data-t="radarComposite"></p>
       <p class="warn" data-t="radarFloor"></p>
@@ -193,6 +195,16 @@
 <script>
 const T = {
   es: {
+    no: "no",
+    yes: "sí",
+    radarPublishes: "La última columna es la regla: un tramo publica cifra solo si se lo midió contra agua óptica y llegó a 0,45. El que nunca se pudo medir no publica, por más razonable que se vea. Eso deja afuera al Delta, donde no hubo escena óptica limpia en la fecha de validación.",
+    colPublishes: "publica",
+    colWas: "IoU antes",
+    colIou: "IoU",
+    colPrecision: "acertada",
+    colRecall: "hallada",
+    colScenes: "escenas",
+    viewSpace: "Desde el espacio",
     htmlLang: "es", locale: "es-AR",
     title: "Método y límites",
     subtitle: "Cómo se mide cada cosa acá, y qué no se puede concluir de ella",
@@ -243,20 +255,20 @@ const T = {
     officialBody: "Los niveles de alerta y evacuación no son nuestros: están publicados por el INA en su informe diario y acá se transcriben tal cual. Donde una estación no tiene nivel publicado, el campo queda vacío y la estación se muestra sin línea de alerta. No se interpola, no se estima y no se completa con el de la estación de al lado.",
 
     radarHeading: "El agua medida por radar",
-    radarBody: "La superficie cubierta por el agua se mide con Sentinel-1, un radar que atraviesa las nubes —que es justo lo que hace falta en el Litoral cuando llueve. El agua quieta y abierta se ve oscura porque refleja el pulso lejos del satélite; la tierra, rugosa, lo devuelve. Se usa polarización VV, filtro de moteado de 50 m, sobre un corredor de 20 km a cada lado del cauce.",
-    radarCalib: "El umbral que separa agua de tierra no se elige por gusto ni se calcula automáticamente: se calibra tramo por tramo contra el agua permanente que el JRC mapea de forma independiente, usando la bajante de 2021 —la más baja en 77 años— como referencia de «río en su cauce y nada más». El umbral no se traslada de un tramo a otro.",
-    colStretch: "Tramo", colThreshold: "umbral", colBajante: "bajante 2021", colJrc: "JRC", colResidual: "dif.", colTracks: "sigue al río",
-    radarTracks: "La última columna es la otra mitad de la prueba, y la que importa más. Calibrar pregunta si el umbral reproduce al JRC en bajante; no pregunta si la serie que sale después sigue a la crecida. Es la correlación entre la superficie medida y la altura en la estación de aguas abajo. Los tramos que funcionan dan entre +0,43 y +0,68. El Delta da −0,44: el agua baja cuando el río sube, y por eso no publica cifra. Y La Paz a Paraná da +0,01 pese a ser el que mejor calibró, con un 1,2% de diferencia contra el JRC: ahí la superficie a 2,86 m y a 2,82 m difiere un 57%, y la respuesta real del tramo es la más chica del río. Publica su número, pero ese número no dice si la crecida crece ahí.",
-    radarGorge: "Los dos tramos de arriba de Posadas no llegan a calibrar. Ahí el Paraná corre encajonado en basalto, y aunque ampliando la búsqueda aparecen umbrales que coinciden con el JRC —cerca de -20 y -21 dB—, difieren 6,5 dB entre tramos vecinos. Eso es un umbral compensando la sombra del radar contra las paredes del valle, no midiendo agua. Esos dos tramos se dibujan en el mapa pero no publican superficie, y quedan fuera de todos los totales.",
-    radarFilters: "Dos filtros descartan pasadas. Una pasada que cubre menos del 95% del corredor deja terreno sin observar, y el terreno sin observar cuenta como cero agua: se leería como que el río se achicó. Y una pasada que encuentra menos del 70% del cauce permanente también se descarta: pasa cuando el viento encrespa la superficie y el agua deja de verse oscura. El segundo filtro apareció por una prueba que falló, no por mirar los mapas: una pasada daba 218 km² donde el cauce permanente solo ya son 556.",
-    radarComposite: "El mapa anima compuestos de 12 días; los gráficos usan pasadas sueltas. La franja que ve el satélite es más angosta que este tramo de río, así que una pasada sola casi nunca cubre todo. Un compuesto de un ciclo completo sí, siempre. Cada vista dice cuál de las dos cosas está mostrando: un compuesto es una ventana, no un instante.",
+    radarBody: "La superficie cubierta por el agua se mide con Sentinel-1, un radar que atraviesa las nubes —que es justo lo que hace falta en el Litoral cuando llueve. El agua quieta y abierta se ve oscura porque refleja el pulso lejos del satélite; la tierra, rugosa, lo devuelve. Se usa polarización VH por debajo de −25 dB, filtro de moteado de 50 m, y se descarta todo terreno que esté a más de 10 m por encima del drenaje más cercano, porque ahí no puede quedar agua quieta por más oscuro que se vea.",
+    radarCalib: "Antes se medía con un umbral por tramo, calibrado contra el agua permanente del JRC en la bajante de 2021: nueve números distintos, elegidos contra el cauce a río bajo, que es justo lo que no se quiere medir. La máscara nunca se había comparado contra una inundación real. Comparada —contra agua óptica de Sentinel-2 en una fecha de crecida— da un IoU de 0,59 en el río entero. Un solo umbral de VH, ajustado contra agua y no contra el cauce, da 0,69. La tabla va tramo por tramo, porque un número único esconde que el método anda en 0,9 arriba y en 0,5 abajo.",
+    colStretch: "Tramo",
+    radarTracks: "«Hallada» es cuánta del agua que ve el óptico encuentra el radar; «acertada» es cuánto de lo que el radar llama agua realmente lo es; el IoU junta las dos y es el número que publica un paper. La literatura de mapeo de inundaciones llega a 0,7–0,9. La mitad de arriba del río está ahí adentro; la de abajo no, y es donde la llanura es más ancha y el agua se mete bajo el monte.",
+    radarGorge: "Los dos tramos de arriba de Posadas quedaron afuera de todos los totales que este proyecto publicó, porque ningún umbral de VV les cerraba: dos tramos vecinos pedían valores a 6,5 dB de distancia, y eso se leyó como sombra de radar contra las paredes del valle. Medidos contra agua óptica son los dos mejores del río, 0,83 y 0,90. La sombra era real; el umbral era la herramienta equivocada para tratarla, y la altura sobre el drenaje la resuelve de frente. Lo que no pasaba la prueba vieja era la prueba vieja.",
+    radarFilters: "Antes dos filtros descartaban pasadas: una que cubriera menos del 95% del corredor, y una que encontrara menos del 70% del cauce permanente —lo segundo pasa cuando el viento encrespa la superficie y el agua deja de verse oscura en VV. Ya no hacen falta. Todo se mide sobre compuestos de doce días, que cubren el corredor entero siempre, y VH es mucho menos sensible al viento que VV. El filtro del viento existía por un problema de banda, y lo resolvió cambiar de banda.",
+    radarComposite: "Todo lo que se publica son compuestos de doce días: los gráficos, el mapa y la animación. La franja que ve el satélite es más angosta que este tramo de río, así que una pasada sola casi nunca lo cubre entero; una vuelta completa sí, siempre. Un compuesto es una ventana, no un instante, y la fecha que figura es la del cierre de esa ventana.",
     radarFloor: "Y el límite de fondo: el radar no ve el agua bajo la vegetación. Un monte inundado devuelve el pulso y cuenta como tierra firme. Toda superficie publicada acá es un piso, no un total — en las islas y los bañados, bastante por debajo de lo real.",
 
     deltaHeading: "El Delta, y por qué casi todo se detiene ahí",
     deltaBody: "Abajo de Villa Constitución el Paraná deja de ser un río y pasa a ser un delta: se abre en brazos sobre una franja de islas de decenas de kilómetros de ancho, y el Río de la Plata empieza a mandar. Se intentó extender todo hasta ahí. Casi nada sobrevivió, y lo que no sobrevivió se midió en vez de suponerse.",
     deltaTide: "Dónde deja de ser el Paraná: comparando cada estación del Delta contra Villa Constitución, el río todavía explica el 96–98% de lo que pasa en San Nicolás y Ramallo, el 83–89% en San Pedro y Baradero, y el 73% en Ibicuy. En Zárate, Campana y Escobar cae al 8–27%, y en Tigre, San Fernando y Olivos al 1–2%. En esas tres últimas la correlación día a día es negativa (−0,15 a −0,28): cuando el río sube, esas estaciones tienden a moverse al revés, porque las mueve el viento y la marea, no el Paraná.",
     deltaTopology: "Por qué la línea del río no baja más: la red hidrográfica que ordena todo este sitio es un árbol, cada tramo tiene un solo tramo aguas abajo. Un delta hace lo contrario, un brazo se parte en dos. El brazo occidental que pasa por San Nicolás, Ramallo y San Pedro directamente no existe en esa red: a la altura de San Nicolás la línea principal corre 46 km al este. Por eso esas estaciones quedaron pegadas a arroyos locales de 2.000 km² de cuenca cuando el Paraná ahí lleva 2.535.000, y por eso siguen marcadas como mal ubicadas. El color del río se corta en Villa Constitución, que es la última estación que puede pintarlo.",
-    deltaArea: "Y la superficie del Delta no se publica. Calibra bien en bajante —en 2021 da 277 km² contra 302 del JRC, un 8,2%— y se desarma en crecida: en seis meses de una crecida histórica la serie salta entre 430 y 1.326 km² sin tendencia, y su correlación con la altura en Ibicuy es −0,39. El agua baja cuando el río sube. Los seis tramos calibrados de arriba dan entre +0,43 y +0,72 en la misma prueba. Una correlación negativa no es una medición floja: es la medición de otra cosa —estado de marea y viento sobre agua abierta, promediados en una ventana de 12 días. El Delta muestra la imagen del radar y no publica ninguna cifra.",
+    deltaArea: "El Delta no publica superficie. En la fecha de validación no hubo ninguna escena óptica limpia sobre el tramo, así que la máscara nunca se pudo medir ahí: no es que se sepa que está mal, es que no se sabe que esté bien, y esa es la regla. Hay además un antecedente que apunta en la misma dirección: con el método anterior, la superficie del Delta se correlacionaba en −0,39 con la altura en Ibicuy —el agua bajaba cuando el río subía— mientras los tramos de arriba daban entre +0,43 y +0,72. Una correlación negativa no es una medición floja: es la medición de otra cosa, marea y viento sobre agua abierta, promediados en doce días. El Delta muestra la imagen del radar y ninguna cifra.",
     lineHeading: "La línea diaria del río",
     lineBody: "El color del río en el mapa es el percentil del día en cada punto, interpolado entre las 22 estaciones del tramo. La interpolación va por distancia sobre el río, no en línea recta sobre el mapa: dos puntos a 20 km en un meandro están mucho más cerca por el agua que dos puntos a 20 km cruzando la curva.",
     lineDam: "La línea se corta en Yacyretá. Arriba de la presa hay un embalse y abajo un río regulado; son cosas hidráulicamente distintas, y un degradado suave cruzando el paredón sería claramente falso mientras se vería perfectamente prolijo.",
@@ -274,7 +286,7 @@ const T = {
     dataHeading: "Los datos, en CSV",
     dataBody: "Las páginas leen JSON porque un navegador lee JSON. Quien quiera revisar el trabajo, o usarlo en su propia cuenca, quiere columnas. Pedirle a un hidrólogo que desarme JSON anidado para sacar una serie de alturas es una forma de no publicarla del todo.",
     dataRiver: "— altura y percentil de cada estación, día por día, los últimos 180 días.",
-    dataFlood: "— superficie de agua por tramo en cada pasada del satélite. Los tramos sin calibrar no figuran: tampoco acá publican una cifra.",
+    dataFlood: "— superficie de agua por tramo en cada pasada del satélite, con el agua fuera del cauce permanente y el puntaje de validación del tramo en cada fila. Un tramo sin puntaje no figura: acá tampoco publica cifra.",
     dataLags: "— tiempo de viaje por tramo, con el rango y sobre cuántas crecidas se midió.",
     dataLicence: "El registro completo llega a 1884 y son 950.000 filas: eso vive en el repositorio, no en un archivo que enlaza una página. Las fuentes originales son del INA, la ESA, el JRC y la NASA, cada una con su licencia; lo que se agrega acá es el procesamiento.",
     notHeading: "Lo que este sitio no hace",
@@ -292,6 +304,16 @@ const T = {
   },
 
   en: {
+    no: "no",
+    yes: "yes",
+    radarPublishes: "The last column is the rule: a stretch publishes a figure only if it was scored against optical water and reached 0.45. One that could never be scored does not publish, however plausible it looks. That leaves out the Delta, where there was no clear optical scene on the validation date.",
+    colPublishes: "publishes",
+    colWas: "IoU before",
+    colIou: "IoU",
+    colPrecision: "right",
+    colRecall: "found",
+    colScenes: "scenes",
+    viewSpace: "From space",
     htmlLang: "en", locale: "en-GB",
     title: "Method and limits",
     subtitle: "How each thing here is measured, and what cannot be concluded from it",
@@ -342,20 +364,20 @@ const T = {
     officialBody: "The alert and evacuation levels are not ours: INA publishes them in its daily report and they are transcribed here as they stand. Where a gauge has no published level the field is left empty and the gauge is shown without an alert line. Nothing is interpolated, estimated, or filled in from the gauge next door.",
 
     radarHeading: "Water measured by radar",
-    radarBody: "Flooded area is measured with Sentinel-1, a radar that sees through cloud — which is exactly what the Litoral needs when it rains. Calm open water looks dark because it reflects the pulse away from the satellite; rough land sends it back. VV polarisation, a 50 m speckle filter, over a corridor 20 km either side of the channel.",
-    radarCalib: "The threshold separating water from land is neither chosen by eye nor computed automatically: it is calibrated stretch by stretch against the permanent water the JRC maps independently, using the 2021 bajante — the lowest Paraná in 77 years — as the reference for “the river in its channel and nothing more”. The threshold does not transfer between stretches.",
-    colStretch: "Stretch", colThreshold: "threshold", colBajante: "2021 bajante", colJrc: "JRC", colResidual: "diff.", colTracks: "tracks river",
-    radarTracks: "The last column is the other half of the test, and the half that matters more. Calibration asks whether the threshold reproduces JRC over low water; it does not ask whether the series that follows carries a flood. This is the correlation between the measured area and the stage at the downstream gauge. The stretches that work run +0.43 to +0.68. The Delta gives −0.44: the water falls as the river rises, which is why it publishes no figure. And La Paz to Paraná gives +0.01 despite calibrating best of all at 1.2% from JRC — there the area at 2.86 m and at 2.82 m differs by 57%, and the stretch's true response is the smallest on the river. It publishes its number, but that number does not tell you whether the flood is growing there.",
-    radarGorge: "The two stretches above Posadas never calibrate. There the Paraná runs boxed into basalt, and although widening the search does find thresholds that match JRC — around -20 and -21 dB — they differ by 6.5 dB between neighbouring reaches. That is a threshold compensating for radar shadow against the valley walls, not one measuring water. Those two stretches are drawn on the map but publish no area, and are excluded from every total.",
-    radarFilters: "Two filters discard passes. A pass covering less than 95% of the corridor leaves ground unobserved, and unobserved ground counts as zero water: it would read as the river shrinking. And a pass finding less than 70% of the permanent channel is also discarded — that happens when wind roughens the surface and water stops looking dark. The second filter came from a failing test, not from looking at maps: one pass reported 218 km² where the permanent channel alone is 556.",
-    radarComposite: "The map animates 12-day composites; the charts use single passes. The satellite's swath is narrower than this run of river, so a single pass almost never covers all of it. A composite over a full repeat cycle always does. Each view says which of the two it is showing: a composite is a window, not an instant.",
+    radarBody: "Flooded area is measured with Sentinel-1, a radar that sees through cloud — which is exactly what the Litoral needs when it rains. Calm open water looks dark because it reflects the pulse away from the satellite; rough land sends it back. VH polarisation below −25 dB, a 50 m speckle filter, and any ground more than 10 m above its nearest drainage is thrown out, because standing water cannot sit there however dark it looks.",
+    radarCalib: "This used to be measured with one threshold per stretch, calibrated against JRC permanent water in the 2021 bajante: nine different numbers, each chosen against the channel at low flow, which is the one thing the mask is not for. The mask had never been checked against an actual flood. Checked — against Sentinel-2 optical water on a flood date — it scores an IoU of 0.59 across the river. A single VH threshold, tuned against water rather than against the channel, scores 0.69. The table is per stretch, because one figure hides that the method runs near 0.9 at the top of the river and near 0.5 at the bottom.",
+    colStretch: "Stretch",
+    radarTracks: "“Found” is how much of the water optical sees the radar finds; “right” is how much of what the radar calls water really is; IoU puts the two together and is the number a paper quotes. Published flood-mapping work reaches 0.7–0.9. The upper half of the river sits inside that; the lower half does not, and that is where the floodplain is widest and the water goes under the canopy.",
+    radarGorge: "The two stretches above Posadas were excluded from every total this project published, because no VV threshold would fit them: two neighbouring reaches wanted values 6.5 dB apart, and that was read as radar shadow against the valley walls. Scored against optical water they are the two best on the river, 0.83 and 0.90. The shadow was real; the threshold was the wrong tool for it, and height above nearest drainage handles it directly. What failed the old test was the old test.",
+    radarFilters: "Two filters used to discard passes: one covering less than 95% of the corridor, and one finding less than 70% of the permanent channel — the second happens when wind roughens the surface and water stops looking dark in VV. Neither is needed now. Everything is measured on twelve-day composites, which cover the whole corridor every time, and VH is far less sensitive to wind than VV. The wind filter existed because of a badly chosen band, and changing band fixed it.",
+    radarComposite: "Everything published is a twelve-day composite: the charts, the map and the animation. The satellite's swath is narrower than this run of river, so a single pass almost never covers all of it; a full repeat cycle always does. A composite is a window, not an instant, and the date shown is the day that window closes.",
     radarFloor: "And the limit underneath all of it: radar cannot see water under vegetation. Flooded forest sends the pulse back and counts as dry land. Every area published here is a floor, not a total — over the wooded islands and wetlands, well below the truth.",
 
     deltaHeading: "The Delta, and why almost everything stops there",
     deltaBody: "Below Villa Constitución the Paraná stops being a river and becomes a delta: it opens into branches across a belt of islands tens of kilometres wide, and the Río de la Plata starts to take over. Everything here was extended south to see what would survive. Almost nothing did, and what did not was measured rather than assumed.",
     deltaTide: "Where it stops being the Paraná: comparing each Delta gauge against Villa Constitución, the river still explains 96–98% of what happens at San Nicolás and Ramallo, 83–89% at San Pedro and Baradero, and 73% at Ibicuy. At Zárate, Campana and Escobar that falls to 8–27%, and at Tigre, San Fernando and Olivos to 1–2%. At those last three the day-to-day correlation is negative (−0.15 to −0.28): when the river rises, those gauges tend to move the other way, because wind and tide move them, not the Paraná.",
     deltaTopology: "Why the river line goes no further: the river network everything here is ordered by is a tree — each reach has exactly one reach below it. A delta does the opposite; one branch splits in two. The western branch past San Nicolás, Ramallo and San Pedro simply is not in that network: at San Nicolás's latitude the main line runs 46 km to the east. That is why those gauges were snapped to local creeks draining 2,000 km² where the Paraná carries 2,535,000, and why they are still marked as badly placed. The river's colour stops at Villa Constitución, the last gauge that can paint it.",
-    deltaArea: "And the Delta's flooded area is not published. It calibrates well on low water — in 2021 it gives 277 km² against JRC's 302, an 8.2% residual — and falls apart on a flood: over six months of a record flood the series swings between 430 and 1,326 km² with no trend, and its correlation with the stage at Ibicuy is −0.39. The water falls as the river rises. The six calibrated stretches upstream run +0.43 to +0.72 on the same test. A negative correlation is not a weak measurement, it is a measurement of something else — tide state and wind on open water, averaged into a 12-day window. The Delta shows the radar picture and publishes no figure.",
+    deltaArea: "The Delta publishes no area. On the validation date there was no clear optical scene over the stretch, so the mask could never be scored there: it is not that it is known to be wrong, it is that it is not known to be right, and that is the rule. There is also history pointing the same way — under the previous method the Delta's area correlated at −0.39 with the stage at Ibicuy, the water falling as the river rose, while the stretches upstream ran +0.43 to +0.72. A negative correlation is not a weak measurement, it is a measurement of something else: tide and wind on open water, averaged over twelve days. The Delta shows the radar picture and no figure.",
     lineHeading: "The daily river line",
     lineBody: "The river's colour on the map is the day's percentile at each point, interpolated between the 22 gauges along the run. The interpolation runs along river distance, not straight across the map: two points 20 km apart on a meander are far closer by water than two points 20 km apart across the bend.",
     lineDam: "The line breaks at Yacyretá. Above the dam is a reservoir and below it a regulated river; they are hydraulically separate, and a smooth gradient across the wall would be plainly false while looking perfectly tidy.",
@@ -373,7 +395,7 @@ const T = {
     dataHeading: "The data, as CSV",
     dataBody: "The pages read JSON because a browser does. Anyone who wants to check the work, or use it in their own basin, wants columns. Asking a hydrologist to unpick nested JSON to get a stage series is a way of not really publishing it.",
     dataRiver: "— level and percentile for every gauge, day by day, over the last 180 days.",
-    dataFlood: "— water area per stretch at each satellite pass. Uncalibrated stretches are absent: they publish no figure here either.",
+    dataFlood: "— water area per stretch at each satellite pass, with the water beyond the permanent channel and each stretch’s validation score on every row. A stretch with no score is absent: it publishes no figure here either.",
     dataLags: "— travel time per leg, with the spread and how many floods it was measured over.",
     dataLicence: "The full record reaches 1884 and runs to 950,000 rows: that lives in the repository, not in a file a page links to. The underlying sources are INA, ESA, the JRC and NASA, each with its own licence; what is added here is the processing.",
     notHeading: "What this site does not do",
@@ -392,7 +414,7 @@ const T = {
 };
 
 let lang = stored();
-let flooded = null, wave = null, track = null;
+let wave = null, track = null, surface = null;
 
 function stored() {
   try {
@@ -455,23 +477,38 @@ function renderNotList() {
 
 function renderCalibration() {
   const body = document.querySelector("#calib tbody");
-  if (!flooded) return;
+  // The validation table, not the calibration table. What a stretch scored
+  // against real water is both the evidence for its number and the reason
+  // it is allowed to have one at all.
+  if (!surface || !surface.skill) return;
   const t = T[lang];
-  body.replaceChildren(...flooded.stretches.map((s) => {
+  const published = new Set((surface.stretches || []).map((s) => s.key));
+  const km = {};
+  for (const s of (surface.stretches || []).concat(surface.withheld || [])) {
+    km[s.key] = s.river_km;
+  }
+  // A stretch that was never scored has no row in the skill table, so it
+  // would simply vanish - and the rule that excluded it would vanish with
+  // it. It gets a row with no numbers, which is the honest shape of
+  // "we do not know".
+  const scored = new Set((surface.skill.stretches || []).map((s) => s.key));
+  const unscored = (surface.withheld || [])
+    .filter((s) => !scored.has(s.key))
+    .map((s) => ({ key: s.key, from_name: s.from_name, to_name: s.to_name }));
+
+  body.replaceChildren(...(surface.skill.stretches || []).concat(unscored).map((s) => {
     const tr = document.createElement("tr");
-    const residual = (s.baseline_km2 && s.permanent_water_km2)
-      ? Math.abs(s.baseline_km2 - s.permanent_water_km2) / s.permanent_water_km2 * 100
-      : null;
-    if (s.calibrated === false) tr.className = "uncalibrated";
+    if (!published.has(s.key)) tr.className = "uncalibrated";
+    const now = s.now || {};
     const cells = [
-      [`${s.from_name} – ${s.to_name}`, ""],
-      [fmt(s.river_km, 0), "num"],
-      [s.threshold_db === undefined ? "—" : `${fmt(s.threshold_db, 1)} dB`, "num"],
-      [fmt(s.baseline_km2, 0), "num"],
-      [fmt(s.permanent_water_km2, 0), "num"],
-      [residual === null ? "—" : `${fmt(residual, 1)}%`, "num"],
-      [s.stage_correlation === null || s.stage_correlation === undefined
-        ? "—" : fmt(s.stage_correlation, 2), "num"],
+      [`${s.from_name} \u2013 ${s.to_name}`, ""],
+      [fmt(km[s.key], 0), "num"],
+      [s.clear_scenes === undefined ? "0" : fmt(s.clear_scenes, 0), "num"],
+      [now.recall === undefined ? "—" : fmt(now.recall, 2), "num"],
+      [now.precision === undefined ? "—" : fmt(now.precision, 2), "num"],
+      [now.iou === undefined ? "—" : fmt(now.iou, 2), "num"],
+      [s.previous ? fmt(s.previous.iou, 2) : "\u2014", "num"],
+      [published.has(s.key) ? t.yes : t.no, "num"],
     ];
     for (const [text, cls] of cells) {
       const td = document.createElement("td");
@@ -482,6 +519,7 @@ function renderCalibration() {
     return tr;
   }));
 }
+
 
 function renderLegs() {
   const body = document.querySelector("#legs tbody");
@@ -520,11 +558,11 @@ for (const b of document.querySelectorAll(".langs button")) {
 }
 
 Promise.all([
-  fetch("data/flooded.json").then((r) => r.ok ? r.json() : null).catch(() => null),
+  fetch("data/floodwater.json").then((r) => r.ok ? r.json() : null).catch(() => null),
   fetch("data/wave.json").then((r) => r.ok ? r.json() : null).catch(() => null),
   fetch("data/track.json").then((r) => r.ok ? r.json() : null).catch(() => null),
-]).then(([f, w, k]) => {
-  flooded = f;
+]).then(([s, w, k]) => {
+  surface = s;
   wave = w;
   track = k;
   setLang(lang);

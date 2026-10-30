@@ -1,5 +1,39 @@
 """How many people the water has reached.
 
+**This does not publish, and here is the measurement that stopped it.**
+
+Tried three times, on three different water masks, and failed the same way
+each time. On the validated VH mask, over 31 repeat cycles from November
+2025 to October 2026:
+
+    2025-11-02       755          2026-06-06    48,959
+    2026-01-13       460          2026-07-12     3,452
+    2026-03-26     1,270          2026-09-22     3,635
+    2026-05-01     2,132          2026-10-28     2,971
+
+Two things are wrong with that column, and either alone is fatal.
+
+The 6 June spike is a city. It is 23,482 people in the Libertador-Posadas
+stretch and 23,433 in the one below it - the two reaches that meet at
+Posadas and Encarnacion. On that one pass the urban surface fell below the
+water threshold and a city of some half a million read as a lake. The old
+VV mask did this too, at Posadas, at 97,498 people. A different band, the
+same city, the same failure.
+
+And the series does not follow the flood. Flood area roughly tripled
+between June and October, from 2,217 to 5,918 km2; the people figure ends
+*lower* in October than it was in July. What is being measured varies with
+the incidence angle and the wetness of built surfaces, not with the river.
+
+So the number is not published, and the reason is worth more than the
+number would have been: it is the clearest demonstration on this project
+that a plausible figure can be entirely spurious, and that radar water
+detection over inhabited ground needs an explicit settlement mask before
+it can say anything about people at all. The series stays in the store and
+the code stays here, because the next attempt should start from the
+measurement that defeated this one.
+
+
 Everything else here measures a river. This is the only thing that
 measures a flood, because a flood is a river that has arrived somewhere
 people are. "2,401 km2 of water near Posadas" is a fact about hydrology;

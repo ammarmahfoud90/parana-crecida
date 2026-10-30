@@ -20,3 +20,8 @@ cache/
 # The DuckDB store is rebuilt from the JSON cache.
 data/*.duckdb
 data/*.duckdb.wal
+
+# The film's individual frames: 11 MB, and the GIF built from them is
+# committed. Kept so a frame can be pulled out for a still without a
+# re-render, but not worth carrying in the repository.
+site/media/river/

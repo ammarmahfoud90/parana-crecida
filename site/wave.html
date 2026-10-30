@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>La onda — Crecida del Paraná</title>
 <meta name="description" content="La onda de crecida bajando el Paraná: estaciones ordenadas aguas abajo contra el tiempo, con los picos marcados.">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,11 +25,9 @@
   </header>
 
   <nav class="views" data-t-aria="viewsNav">
-    <a href="index.html" data-t="viewToday"></a>
-    <a href="wave.html" aria-current="page" data-t="viewWave"></a>
-    <a href="drivers.html" data-t="viewDrivers"></a>
-    <a href="flood.html" data-t="viewFlood"></a>
+    <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
+    <a href="gauges.html" aria-current="page" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
@@ -123,6 +123,7 @@
 
 const T = {
   es: {
+    viewSpace: "Desde el espacio",
     htmlLang: "es", locale: "es-AR",
     title: "La onda de crecida",
     subtitle: "Cómo baja el pico por el Paraná, de Puerto Iguazú al Delta",
@@ -173,6 +174,7 @@ const T = {
     days: (n) => (n === 1 ? "1 día" : fmt(n, 0) + " días"),
   },
   en: {
+    viewSpace: "From space",
     htmlLang: "en", locale: "en-GB",
     title: "The flood wave",
     subtitle: "How the crest moves down the Paraná, from Puerto Iguazú to the Delta",

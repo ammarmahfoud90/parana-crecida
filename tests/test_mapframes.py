@@ -74,9 +74,17 @@ def water_coverage():
     km_per_px = (east - west) * 98.0 / width
     radius = max(1, round(RADIUS_KM / km_per_px))
 
+    # Only the stretches this frame actually draws. Sampling every
+    # corridor asks whether water was drawn on a reach the overlay
+    # deliberately leaves blank, and scores the refusal as a failure: with
+    # the Delta withheld, its centreline dragged one latitude band to 55%
+    # while every other band was at 100%.
     bands: dict[int, list[bool]] = {}
+    drawn = {s["key"] for s in index["stretches"]}
     corridors = json.loads(CORRIDORS.read_text(encoding="utf-8"))
     for stretch in corridors["stretches"]:
+        if stretch["key"] not in drawn:
+            continue
         for lon, lat in stretch["centreline"][::3]:
             if not (south <= lat <= north and west <= lon <= east):
                 continue

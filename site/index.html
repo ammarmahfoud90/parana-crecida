@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crecida del Paraná</title>
-<meta name="description" content="El río Paraná hoy, de Puerto Iguazú a San Fernando. No es un sistema de alerta.">
+<title>El Paraná desde el espacio — Crecida del Paraná</title>
+<meta name="description" content="Cuánta superficie cubre el río Paraná, medida por radar Sentinel-1 pasada por pasada.">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,11 +25,9 @@
   </header>
 
   <nav class="views" data-t-aria="viewsNav">
-    <a href="index.html" aria-current="page" data-t="viewToday"></a>
-    <a href="wave.html" data-t="viewWave"></a>
-    <a href="drivers.html" data-t="viewDrivers"></a>
-    <a href="flood.html" data-t="viewFlood"></a>
+    <a href="index.html" aria-current="page" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
+    <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
@@ -36,35 +36,90 @@
   <p class="notice">
     <strong data-t="noticeStrong"></strong>
     <span data-t="noticeBody"></span>
-    <a id="official" href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
   </p>
 
   <div id="error" class="err" role="alert" hidden></div>
 
-  <section class="verdict" id="verdict" hidden aria-labelledby="verdictState">
-    <p class="state" id="verdictState"></p>
-    <p class="detail" id="verdictDetail"></p>
-    <p class="detail rarity" id="verdictRarity" hidden></p>
-    <ul class="evidence" id="verdictEvidence"></ul>
+  <!-- The finding, before any measurement: how much of the valley is wet,
+       and how much wetter than the driest pass on the record. -->
+  <div class="headline lede" id="headline" hidden>
+    <span class="big" id="area">–</span>
+    <span class="unit" id="areaCap"></span>
+    <p class="say" id="areaNote"></p>
+    <p class="say" id="floodNote" hidden></p>
+    <dl class="facts" id="meta" hidden>
+      <div><dt data-t="passLabel"></dt><dd id="passDay"></dd></div>
+      <div><dt data-t="reachLabel"></dt><dd id="reach"></dd></div>
+      <div><dt data-t="riseLabel"></dt><dd id="rise"></dd></div>
+    </dl>
+  </div>
+
+  <h2 class="section major" style="margin-top:34px" data-t="chartHeading"></h2>
+  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="chartLead"></p>
+  <div class="chartbox">
+    <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
+      <title id="chartTitle"></title>
+      <desc id="chartDesc"></desc>
+    </svg>
+  </div>
+  <div class="floodkeys" id="keys" hidden>
+    <span><i class="water"></i><span data-t="keyWater"></span></span>
+    <span><i class="flood"></i><span data-t="keyFlood"></span></span>
+  </div>
+
+  <h2 class="section major" style="margin-top:34px" data-t="loopHeading"></h2>
+  <figure class="loop">
+    <div class="loopwrap">
+      <img src="media/river.gif" alt="" id="loop" data-t-alt="loopAlt"
+           width="785" height="1100" loading="lazy" decoding="async">
+      <canvas id="loopFrame" hidden aria-hidden="true"></canvas>
+      <button type="button" id="loopToggle" class="playbtn loopbtn playing"></button>
+    </div>
+    <figcaption id="loopCaption"></figcaption>
+  </figure>
+
+  <!-- How good the instrument is. Published because a water mask with no
+       score attached is a picture, not a measurement. -->
+  <h2 class="section major" style="margin-top:34px" data-t="skillHeading"></h2>
+  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" id="skillLead"></p>
+  <div class="skillwrap">
+    <table class="skill">
+      <caption class="vh" data-t="skillCaption"></caption>
+      <thead>
+        <tr>
+          <th scope="col" data-t="skillMethod"></th>
+          <th scope="col" data-t="skillRecall"></th>
+          <th scope="col" data-t="skillPrecision"></th>
+          <th scope="col" data-t="skillIou"></th>
+          <th scope="col" data-t="skillWas"></th>
+        </tr>
+      </thead>
+      <tbody id="skillRows"></tbody>
+    </table>
+  </div>
+  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="skillWhat"></p>
+
+  <h2 class="section major" style="margin-top:34px" data-t="limitsHeading"></h2>
+  <ul class="limits measure">
+    <li data-t="limitTrees"></li>
+    <li data-t="limitWindow"></li>
+    <li data-t="limitGorge"></li>
+    <li data-t="limitFloor"></li>
+  </ul>
+
+  <section class="seealso" aria-labelledby="alsoHeading">
+    <h2 class="section" id="alsoHeading" data-t="alsoHeading"></h2>
+    <ul class="alsolist">
+      <li><a href="flood.html" data-t="alsoFlood"></a>
+          <span data-t="alsoFloodWhy"></span></li>
+      <li><a href="map.html" data-t="alsoMap"></a>
+          <span data-t="alsoMapWhy"></span></li>
+      <li><a href="gauges.html" data-t="alsoGauges"></a>
+          <span data-t="alsoGaugesWhy"></span></li>
+    </ul>
   </section>
 
-  <div class="meta" id="meta" hidden>
-    <span><span data-t="dataTo"></span> <b id="lastDay"></b> <span id="fresh"></span></span>
-    <span><span data-t="thresholdsFrom"></span> <b id="thrDate"></b></span>
-    <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
-  </div>
-
-  <div class="tally" id="tally" hidden>
-    <div class="evac"><span class="n" id="nEvac">–</span><span class="k" data-t="tallyEvac"></span></div>
-    <div class="alert"><span class="n" id="nAlert">–</span><span class="k" data-t="tallyAlert"></span></div>
-    <div><span class="n" id="nRising">–</span><span class="k" data-t="tallyRising"></span></div>
-    <div><span class="n" id="nOfficial">–</span><span class="k" data-t="tallyOfficial"></span></div>
-  </div>
-
-  <h2 class="section" data-t="listHeading"></h2>
-  <ul class="gauges" id="list"></ul>
-
-  
   <section class="provenance" aria-labelledby="provHeading">
     <h2 class="section" id="provHeading" data-t="provHeading"></h2>
     <dl>
@@ -84,168 +139,184 @@
 <script>
 "use strict";
 
-// Every string the page shows. Nothing is translated in the pipeline: the
-// exported JSON carries proper nouns and stable keys only, so adding a
-// language is a change here and nowhere else.
 const T = {
   es: {
-    htmlLang: "es",
-    locale: "es-AR",
-    stateExtreme: "El Paraná está en una crecida excepcional.",
-    stateHighWide: "El Paraná está en una crecida importante, y a lo largo de casi todo el río.",
-    stateNotable: "El Paraná está crecido, dentro de lo que pasa cada pocos años.",
-    stateHigh: "El Paraná está en una crecida importante.",
-    stateNormal: "El Paraná está dentro de lo normal para la época del año.",
-    stateUnknown: "No hay datos suficientes para decir cómo está el río.",
-    verdictRarity: (years, gauge, stage, record, year) =>
-      `La lectura más alta equivale a una altura de 1 en ${years} años en ${gauge}: ${stage} m, contra un récord de ${record} m en ${year}.`,
-    verdictRarityNone: "",
-    returnPeriod: (years) => `1 en ${years} años`,
-    returnPeriodTitle: (years, record, year) =>
-      `Una altura que, en promedio, se alcanza una vez cada ${years} años. El máximo del registro es ${record} m, en ${year}.`,
-    verdictDetail: (high, counted, top, from_, to) =>
-      `${high} de ${counted} estaciones del cauce principal superan el percentil 95 para esta fecha` +
-      (top ? `, y ${top} están en el máximo registrado para el día del año` : "") +
-      (from_ ? `. El tramo alto más largo va de ${from_} a ${to}.` : "."),
-    evidenceFront: (gauge, day, provisional) =>
-      provisional
-        ? `El río dejó de subir en ${gauge} el ${day}`
-        : `El pico pasó por ${gauge} el ${day}`,
-    evidenceWater: (ratio, stretch) =>
-      `El agua cubre ${ratio} veces la bajante de 2021 entre ${stretch}`,
-    evidenceAsOf: (day) => `Medido hasta el ${day}`,
-    evidenceSeeWave: "ver la onda",
-    evidenceSeeFlood: "ver la superficie",
-    evidenceSeeGauges: "ver las estaciones",
-    title: "Crecida del Paraná",
-    subtitle: "El río hoy, de Puerto Iguazú a San Fernando",
-    langGroup: "Idioma",
+    chartLow: "mínimo",
+    chartNow: "hoy",
+    htmlLang: "es", locale: "es-AR",
+    title: "El Paraná desde el espacio",
+    subtitle: "Cuánta superficie cubre el río, medida por radar pasada por pasada",
+    langGroup: "Idioma", viewsNav: "Vistas",
+    skipLink: "Saltar al contenido",
+    viewSpace: "Desde el espacio",
+    viewMap: "Mapa",
+    viewToday: "El río hoy",
+    viewMethod: "Método",
+    noticeStrong: "No es un pronóstico oficial.",
+    noticeBody: "Este sitio mide, no avisa. Para alertas y evacuaciones:",
+    officialLink: "Sistema de Alerta Hidrológico del INA",
+
+    areaCap: "km² del valle del Paraná bajo agua",
+    areaNote: (day, extra, low, lowDay) =>
+      `En la última pasada completa del satélite, cerrada el ${day}. Son ${extra} km² ` +
+      `más que en la pasada más seca del registro (${low} km², ${lowDay}).`,
+    floodNote: (now, low, times) =>
+      `Fuera del cauce permanente, que es el agua que normalmente no está ahí: ` +
+      `${now} km² hoy contra ${low} km² en esa misma pasada seca, ${times} veces más.`,
+    areaNoteFlat: (day) =>
+      `En la última pasada completa del satélite, cerrada el ${day}.`,
+    passLabel: "Última pasada",
+    reachLabel: "Tramo medido",
+    riseLabel: "Contra la pasada más seca",
+    reachValue: (km, n) => `${km} km de río, ${n} tramos`,
+
+    chartHeading: "Un año de río, pasada por pasada",
+    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1 — una vuelta completa del satélite, que es lo que tarda en ver el río entero. La línea llena es toda el agua; la punteada deja afuera el cauce permanente, así que es el agua que normalmente no está ahí.",
+    chartTitle: "Superficie de agua del río Paraná por pasada del satélite",
+    chartDesc: (first, last, lo, hi) =>
+      `Serie de superficie de agua entre ${first} y ${last}. El mínimo es ${lo} km² ` +
+      `y el máximo ${hi} km².`,
+    keyWater: "Toda el agua", keyFlood: "Sin el cauce permanente",
+    axisKm2: "km²",
+
+    loopHeading: "El río entero, un año",
+    loopCaption: (km, n, first, last) =>
+      `${km} km de Paraná, de Puerto Iguazú a Villa Constitución, en ${n} pasadas ` +
+      `del satélite entre ${first} y ${last}. El azul es el cauce permanente —agua ` +
+      `que el JRC mapea como siempre presente, o que seguía ahí en la bajante de ` +
+      `2021—, una constante y no una medición; el naranja es el agua que el radar ` +
+      `encontró más allá de ese cauce, que es lo que se mide.`,
+    loopCaptionFlat: "El río entero, una pasada del satélite cada doce días. El azul es el cauce permanente; el naranja es el agua medida más allá de él.",
+    loopAlt: "Animación del río Paraná desde Puerto Iguazú hasta Villa Constitución, un cuadro cada doce días a lo largo de un año. El cauce permanente en azul y el agua detectada por radar en naranja, que crece a lo largo del río al avanzar la crecida.",
+    playLoop: "Reproducir la animación", pauseLoop: "Pausar la animación",
+
+    skillHeading: "Qué tan bien funciona la medición",
+    skillLead: (against, n) =>
+      `Cada tramo medido contra agua óptica de Sentinel-2 del ${against}: ${n} ` +
+      `tramos con escena limpia. ` +
+      `Ahí el satélite óptico ve el agua directamente, así que es lo más cercano a ` +
+      `la verdad que hay. La última columna es lo que daba el método anterior en el ` +
+      `mismo tramo, el mismo día.`,
+    skillCaption: "Comparación de dos métodos de detección de agua por radar",
+    skillMethod: "Tramo", skillRecall: "Hallada", skillPrecision: "Acertada", skillIou: "IoU",
+    skillWas: "IoU antes", skillWhole: "Todo el río medido",
+    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos, y es el número que publica un paper. La literatura de mapeo de inundaciones llega a 0,7–0,9: los tramos de arriba están ahí adentro, los de abajo no. Un tramo que no llega a 0,45 —o que nunca se pudo medir contra el óptico— no publica cifra.",
+
+    limitsHeading: "Lo que esta medición no puede hacer",
+    limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Es el cuarto del agua que falta, y ningún umbral lo recupera.",
+    limitWindow: "Cada punto son doce días, no un instante. La franja que ve el satélite es más angosta que este tramo de río, así que una foto del río entero necesita una vuelta completa.",
+    limitGorge: "El Delta no publica número. Ahí no hubo escena óptica limpia para medir la máscara, y la superficie tampoco sigue a la altura de su estación: la correlación es negativa, porque lo que se mide es marea y viento sobre agua abierta.",
+    limitFloor: "Todos los números son un piso, no un total.",
+
+    alsoHeading: "Más sobre la superficie de agua",
+    alsoFlood: "Superficie, tramo por tramo",
+    alsoFloodWhy: "la serie de cada tramo y su relación con la altura en la estación de referencia.",
+    alsoMap: "El mapa animado",
+    alsoMapWhy: "las mismas pasadas sobre el fondo satelital, tramo por tramo, con el río entero.",
+    alsoGauges: "El río hoy",
+    alsoGaugesWhy: "la altura medida en cada estación del INA, que es la verdad de terreno detrás de todo esto.",
+
     provHeading: "De dónde sale cada número",
     provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
-    provMeasured: "Las alturas diarias de cada estación y los niveles oficiales de alerta y evacuación, ambos del INA.",
-    provCalculated: "El percentil para el día del año de cada estación, contra su propio registro; la variación de 7 días; y el titular de arriba, que se arma con esas cuentas y no está escrito a mano.",
-    provMissing: "Las estaciones sin nivel oficial publicado aparecen sin línea de alerta. No se estima ninguno.",
-    noticeStrong: "Esto no es un sistema de alerta.",
-    noticeBody: "Los niveles de alerta y evacuación, los avisos y los pronósticos oficiales los publica el Instituto Nacional del Agua.",
-    officialLink: "Ver el alerta oficial del INA →",
-    dataTo: "Datos hasta el",
-    thresholdsFrom: "Niveles oficiales del",
-    generatedAt: "Generado",
-    tallyEvac: "superan evacuación",
-    tallyAlert: "superan alerta",
-    tallyRising: "en aumento",
-    tallyOfficial: "con niveles oficiales",
-    listHeading: "Estaciones, aguas arriba hacia aguas abajo",
-    viewsNav: "Vistas",
-    skipLink: "Saltar al contenido", viewToday: "El río hoy",
-    viewWave: "La onda",
-    viewDrivers: "Aguas arriba",
-    viewFlood: "Superficie",
-    viewMap: "Mapa", viewMethod: "Método",
-    statusBelow: "Bajo el nivel de alerta",
-    statusAlert: "Supera el nivel de alerta",
-    statusEvacuation: "Supera el nivel de evacuación",
-    statusUnknown: "Sin niveles oficiales publicados",
-    noData: "sin dato",
-    alertShort: "Alerta",
-    evacShort: "Evac.",
-    inDays: (n) => (n === 1 ? "en 1 día" : "en " + n + " días"),
-    flagRegulated: "regulado por represa",
-    flagTide: "afectado por marea",
-    branchPalmas: "Paraná de las Palmas",
-    branchGuazu: "Paraná Guazú",
-    branchIbicuy: "Ibicuy",
-    branchVictoria: "Riacho Victoria",
-    branchEstuary: "estuario",
-    stale: (n) => "(" + n + " días de atraso)",
-    method: "Niveles del día de la API a5 del INA. Los niveles de alerta y evacuación se extraen del reporte diario del INA; donde el INA no publica un nivel, la estación aparece sin niveles oficiales y nunca con un valor estimado. Los datos pasan un conjunto de pruebas antes de publicarse: si una prueba falla, no se actualiza nada y queda a la vista la fecha del último dato bueno.",
-    credits: "Fuente: Instituto Nacional del Agua (INA), Argentina. Código abierto.",
+    provMeasured: "La retrodispersión del radar Sentinel-1 de la ESA, el agua óptica de Sentinel-2 contra la que se validó, y la altura sobre el drenaje más cercano de MERIT Hydro.",
+    provCalculated: "La máscara de agua, la superficie por tramo y por pasada, el total del río y el puntaje contra el agua óptica.",
+    provMissing: "El Delta. Está medido pero no publicado, porque la máscara no se pudo validar ahí contra agua óptica.",
+
+    method: "Sentinel-1 GRD (VH), compuestos de 12 días, 60 m. Validado contra Sentinel-2 MNDWI. Altura sobre el drenaje: MERIT Hydro. Agua permanente: JRC Global Surface Water.",
+    credits: "Datos de la ESA (Copernicus), el JRC y el INA. Código abierto.",
   },
   en: {
-    htmlLang: "en",
-    locale: "en-GB",
-    stateExtreme: "The Paraná is in an exceptional flood.",
-    stateHighWide: "The Paraná is in a major flood, along most of its length.",
-    stateNotable: "The Paraná is high, within what happens every few years.",
-    stateHigh: "The Paraná is in a major flood.",
-    stateNormal: "The Paraná is within its normal range for the time of year.",
-    stateUnknown: "There is not enough data to say how the river is behaving.",
-    verdictRarity: (years, gauge, stage, record, year) =>
-      `The highest reading is about a 1-in-${years}-year height at ${gauge}: ${stage} m, against a record of ${record} m in ${year}.`,
-    verdictRarityNone: "",
-    returnPeriod: (years) => `1 in ${years} yr`,
-    returnPeriodTitle: (years, record, year) =>
-      `A height reached on average once every ${years} years. The highest in the record is ${record} m, in ${year}.`,
-    verdictDetail: (high, counted, top, from_, to) =>
-      `${high} of ${counted} main-stem gauges are above the 95th percentile for this date` +
-      (top ? `, and ${top} are at the highest ever recorded for the day of year` : "") +
-      (from_ ? `. The longest unbroken high reach runs from ${from_} to ${to}.` : "."),
-    evidenceFront: (gauge, day, provisional) =>
-      provisional
-        ? `The river stopped rising at ${gauge} on ${day}`
-        : `The crest passed ${gauge} on ${day}`,
-    evidenceWater: (ratio, stretch) =>
-      `Water covers ${ratio} times the 2021 low water between ${stretch}`,
-    evidenceAsOf: (day) => `Measured to ${day}`,
-    evidenceSeeWave: "see the wave",
-    evidenceSeeFlood: "see the area",
-    evidenceSeeGauges: "see the gauges",
-    title: "Paraná flood tracker",
-    subtitle: "The river today, from Puerto Iguazú to San Fernando",
-    langGroup: "Language",
+    chartLow: "lowest",
+    chartNow: "now",
+    htmlLang: "en", locale: "en-GB",
+    title: "The Paraná from space",
+    subtitle: "How much ground the river covers, measured by radar pass by pass",
+    langGroup: "Language", viewsNav: "Views",
+    skipLink: "Skip to content",
+    viewSpace: "From space",
+    viewMap: "Map",
+    viewToday: "The river today",
+    viewMethod: "Method",
+    noticeStrong: "This is not an official forecast.",
+    noticeBody: "This site measures; it does not warn. For alerts and evacuations:",
+    officialLink: "INA's hydrological alert system",
+
+    areaCap: "km² of the Paraná valley under water",
+    areaNote: (day, extra, low, lowDay) =>
+      `In the satellite's last complete pass, closed on ${day}. That is ${extra} km² ` +
+      `more than the driest pass on the record (${low} km², ${lowDay}).`,
+    floodNote: (now, low, times) =>
+      `Outside the permanent channel, which is the water that is not normally ` +
+      `there: ${now} km² today against ${low} km² on that same dry pass, ` +
+      `${times} times as much.`,
+    areaNoteFlat: (day) =>
+      `In the satellite's last complete pass, closed on ${day}.`,
+    passLabel: "Last pass",
+    reachLabel: "Reach measured",
+    riseLabel: "Against the driest pass",
+    reachValue: (km, n) => `${km} km of river, ${n} stretches`,
+
+    chartHeading: "A year of river, pass by pass",
+    chartLead: "Each point is a twelve-day Sentinel-1 composite — one full repeat cycle, which is how long the satellite takes to see the whole river. The solid line is all water; the dashed one leaves out the permanent channel, so it is the water that is not normally there.",
+    chartTitle: "Water surface of the Paraná by satellite pass",
+    chartDesc: (first, last, lo, hi) =>
+      `Water surface from ${first} to ${last}. The lowest pass is ${lo} km² and ` +
+      `the highest ${hi} km².`,
+    keyWater: "All water", keyFlood: "Without the permanent channel",
+    axisKm2: "km²",
+
+    loopHeading: "The whole river, a year",
+    loopCaption: (km, n, first, last) =>
+      `${km} km of the Paraná, from Puerto Iguazú to Villa Constitución, over ${n} ` +
+      `satellite passes between ${first} and ${last}. The blue is the permanent ` +
+      `channel — water the JRC maps as always present, or still there through ` +
+      `the 2021 bajante — a constant and not a measurement; the orange is the ` +
+      `water the radar found beyond it, which is what is being measured.`,
+    loopCaptionFlat: "The whole river, one satellite pass every twelve days. The blue is the permanent channel; the orange is the water measured beyond it.",
+    loopAlt: "Animation of the Paraná from Puerto Iguazú to Villa Constitución, one frame every twelve days across a year. The permanent channel in blue and radar-detected water in orange, spreading along the river as the flood advances.",
+    playLoop: "Play the animation", pauseLoop: "Pause the animation",
+
+    skillHeading: "How well the measurement works",
+    skillLead: (against, n) =>
+      `Each stretch measured against Sentinel-2 optical water on ${against}: ${n} ` +
+      `stretches with a clear scene. Optical sees water directly, so it is the ` +
+      `closest thing to truth ` +
+      `available here. The last column is what the old method scored on the same ` +
+      `stretch on the same day.`,
+    skillCaption: "Comparison of two radar water-detection methods",
+    skillMethod: "Stretch", skillRecall: "Found", skillPrecision: "Right", skillIou: "IoU",
+    skillWas: "IoU before", skillWhole: "The whole measured river",
+    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together, and is the number a paper quotes. Published flood-mapping work reaches 0.7–0.9: the upper stretches sit inside that, the lower ones do not. A stretch that does not clear 0.45 — or that could never be measured against optical at all — publishes no figure.",
+
+    limitsHeading: "What this measurement cannot do",
+    limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. That is the missing quarter of the water, and no threshold recovers it.",
+    limitWindow: "Each point is twelve days, not an instant. The satellite's swath is narrower than this run of river, so a picture of the whole river needs a full repeat cycle.",
+    limitGorge: "The Delta publishes no figure. There was no clear optical scene there to score the mask against, and the surface does not track the stage at its gauge either: the correlation is negative, because what is being measured is tide and wind on open water.",
+    limitFloor: "Every number here is a floor, not a total.",
+
+    alsoHeading: "More on the water surface",
+    alsoFlood: "Surface, stretch by stretch",
+    alsoFloodWhy: "each stretch's series and how it tracks the stage at its reference gauge.",
+    alsoMap: "The animated map",
+    alsoMapWhy: "the same passes over the satellite backdrop, stretch by stretch, for the whole river.",
+    alsoGauges: "The river today",
+    alsoGaugesWhy: "the stage measured at each INA gauge, which is the ground truth behind all of this.",
+
     provHeading: "Where each number comes from",
-    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
-    provMeasured: "The daily level at each gauge and the official alert and evacuation levels, both from INA.",
-    provCalculated: "Each gauge's percentile for the day of year, against its own record; the 7-day change; and the finding at the top, which is assembled from those counts rather than written by hand.",
-    provMissing: "Gauges with no official level published are shown without an alert line. None is estimated.",
-    noticeStrong: "This is not an alert system.",
-    noticeBody: "Alert and evacuation levels, warnings and official forecasts are published by Argentina's Instituto Nacional del Agua.",
-    officialLink: "See INA's official alert →",
-    dataTo: "Data to",
-    thresholdsFrom: "Official levels from",
-    generatedAt: "Generated",
-    tallyEvac: "above evacuation",
-    tallyAlert: "above alert",
-    tallyRising: "rising",
-    tallyOfficial: "with official levels",
-    listHeading: "Gauges, upstream to downstream",
-    viewsNav: "Views",
-    skipLink: "Skip to content", viewToday: "The river today",
-    viewWave: "The wave",
-    viewDrivers: "Upstream",
-    viewFlood: "Flooded area",
-    viewMap: "Map", viewMethod: "Method",
-    statusBelow: "Below the alert level",
-    statusAlert: "Above the alert level",
-    statusEvacuation: "Above the evacuation level",
-    statusUnknown: "No official levels published",
-    noData: "no data",
-    alertShort: "Alert",
-    evacShort: "Evac.",
-    inDays: (n) => (n === 1 ? "in 1 day" : "in " + n + " days"),
-    flagRegulated: "dam-regulated",
-    flagTide: "tide-affected",
-    branchPalmas: "Paraná de las Palmas",
-    branchGuazu: "Paraná Guazú",
-    branchIbicuy: "Ibicuy",
-    branchVictoria: "Riacho Victoria",
-    branchEstuary: "estuary",
-    stale: (n) => "(" + n + " days behind)",
-    method: "Daily levels from INA's a5 API. Alert and evacuation levels are parsed from INA's daily report; where INA publishes no level, the gauge is shown as having none and never with an estimated value. The data passes a set of tests before it is published: if a test fails nothing is updated, and the date of the last good reading stays visible.",
-    credits: "Source: Instituto Nacional del Agua (INA), Argentina. Open source.",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Worked out here", provMissingLabel: "No data",
+    provMeasured: "Backscatter from ESA's Sentinel-1 radar, the Sentinel-2 optical water it was validated against, and height above nearest drainage from MERIT Hydro.",
+    provCalculated: "The water mask, the surface per stretch and per pass, the river-wide total, and the score against optical water.",
+    provMissing: "The Delta. It is measured but not published, because the mask could not be validated there against optical water.",
+
+    method: "Sentinel-1 GRD (VH), 12-day composites, 60 m. Validated against Sentinel-2 MNDWI. Height above drainage: MERIT Hydro. Permanent water: JRC Global Surface Water.",
+    credits: "Data from ESA (Copernicus), the JRC and INA. Open source.",
   },
 };
 
-const BRANCH_KEY = {
-  palmas: "branchPalmas",
-  guazu: "branchGuazu",
-  ibicuy: "branchIbicuy",
-  victoria: "branchVictoria",
-  estuary: "branchEstuary",
-};
-
+const SVG = "http://www.w3.org/2000/svg";
 let lang = "es";
 let payload = null;
+let film = null;
 
 function pickLang() {
   let saved = null;
@@ -259,283 +330,279 @@ function setLang(next) {
   try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
   const t = T[lang];
   document.documentElement.lang = t.htmlLang;
-  document.title = t.title;
   for (const el of document.querySelectorAll("[data-t]")) {
-    const value = t[el.dataset.t];
-    if (typeof value === "string") el.textContent = value;
+    const v = t[el.dataset.t];
+    if (typeof v === "string") el.textContent = v;
   }
   for (const el of document.querySelectorAll("[data-t-aria]")) {
     el.setAttribute("aria-label", t[el.dataset.tAria] || "");
   }
+  for (const el of document.querySelectorAll("[data-t-alt]")) {
+    el.setAttribute("alt", t[el.dataset.tAlt] || "");
+  }
   for (const b of document.querySelectorAll(".langs button")) {
     b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
   }
+  document.getElementById("chartTitle").textContent = t.chartTitle;
+  loopToggle.setAttribute("aria-label", loopRunning ? t.pauseLoop : t.playLoop);
   if (payload) render(payload);
+  if (film) describeFilm(film);
+  else document.getElementById("loopCaption").textContent = T[lang].loopCaptionFlat;
 }
 
-function num(value, unit) {
-  if (value === null || value === undefined) return null;
-  const digits = unit === "m3/s" ? 0 : 2;
+function describeFilm(data) {
+  const frames = data.frames || [];
+  if (!frames.length) return;
+  document.getElementById("loopCaption").textContent = T[lang].loopCaption(
+    num(Math.round(data.river_km || 0)), frames.length,
+    longDay(frames[0].end), longDay(frames[frames.length - 1].end));
+}
+
+function el(name, attrs, text) {
+  const n = document.createElementNS(SVG, name);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+function niceStep(raw) {
+  const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+  for (const multiple of [1, 2, 2.5, 5, 10]) {
+    if (magnitude * multiple >= raw) return magnitude * multiple;
+  }
+  return magnitude * 10;
+}
+
+function num(v, digits) {
   return new Intl.NumberFormat(T[lang].locale, {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  }).format(value);
+    minimumFractionDigits: digits || 0, maximumFractionDigits: digits || 0,
+  }).format(v);
 }
 
-function signed(value, unit) {
-  const text = num(Math.abs(value), unit);
-  const sign = value > 0 ? "+" : value < 0 ? "−" : "±";
-  return sign + text;
+function dayLabel(iso) {
+  return new Intl.DateTimeFormat(T[lang].locale, { day: "numeric", month: "short" })
+    .format(new Date(iso + "T12:00:00"));
 }
 
-function shortDate(iso) {
-  if (!iso) return "—";
+function longDay(iso) {
   return new Intl.DateTimeFormat(T[lang].locale, {
-    day: "numeric", month: "short",
+    day: "numeric", month: "long", year: "numeric",
   }).format(new Date(iso + "T12:00:00"));
 }
 
-function longDate(iso) {
-  if (!iso) return "—";
-  const d = new Date(iso + "T12:00:00");
-  return new Intl.DateTimeFormat(T[lang].locale, {
-    day: "numeric", month: "long", year: "numeric",
-  }).format(d);
-}
-
-function shortDateTime(iso) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
-  return new Intl.DateTimeFormat(T[lang].locale, {
-    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-  }).format(d);
-}
-
-function returnTag(g) {
-  if (!g.return_period) return null;
-  const el = document.createElement("span");
-  el.className = "tag rare" + (g.return_period >= 10 ? " high" : "");
-  el.textContent = T[lang].returnPeriod(Math.round(g.return_period));
-  if (g.record_max) {
-    el.title = T[lang].returnPeriodTitle(
-      Math.round(g.return_period), num(g.record_max), g.record_max_year);
-  }
-  return el;
-}
-
-function tag(text) {
-  const span = document.createElement("span");
-  span.className = "tag";
-  span.textContent = text;
-  return span;
-}
-
-function gaugeItem(g) {
+function drawChart(rows) {
   const t = T[lang];
-  const li = document.createElement("li");
-  li.className = "gauge";
-  li.dataset.status = g.status;
+  const svg = document.getElementById("chart");
+  // Keep everything up to and including <desc>, which aria-labelledby points
+  // at, and drop the drawing below it. Counting child nodes instead counts
+  // the whitespace between tags and deletes the <desc>.
+  const keep = document.getElementById("chartDesc");
+  while (svg.lastChild && svg.lastChild !== keep) svg.removeChild(svg.lastChild);
+  if (rows.length < 2) return;
 
-  const left = document.createElement("div");
-  const name = document.createElement("p");
-  name.className = "name";
-  name.textContent = g.name;
-  left.appendChild(name);
+  const W = 760, H = 320, L = 58, R = 16, TOP = 16, B = 46;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - L - R, plotH = H - TOP - B;
 
-  const tags = document.createElement("div");
-  tags.className = "tags";
-  const branchKey = BRANCH_KEY[g.branch];
-  if (branchKey) tags.appendChild(tag(t[branchKey]));
-  if (g.flags.includes("regulated")) tags.appendChild(tag(t.flagRegulated));
-  if (g.flags.includes("tide_affected")) tags.appendChild(tag(t.flagTide));
-  const rare = returnTag(g);
-  if (rare) tags.appendChild(rare);
-  if (tags.childElementCount) left.appendChild(tags);
+  const water = rows.map((r) => r.water_km2);
+  const top = Math.max(...water) * 1.08;
+  const x = (i) => L + (rows.length === 1 ? plotW / 2 : (i * plotW) / (rows.length - 1));
+  const y = (v) => TOP + plotH - (v / top) * plotH;
 
-  const status = document.createElement("div");
-  status.className = "status";
-  status.textContent =
-    g.status === "evacuation" ? t.statusEvacuation
-    : g.status === "alert" ? t.statusAlert
-    : g.status === "below" ? t.statusBelow
-    : t.statusUnknown;
-  left.appendChild(status);
-  li.appendChild(left);
-
-  const right = document.createElement("div");
-  right.className = "reading";
-  if (g.value === null) {
-    const none = document.createElement("div");
-    none.className = "nodata";
-    none.textContent = t.noData;
-    right.appendChild(none);
-  } else {
-    const level = document.createElement("div");
-    level.className = "level";
-    level.textContent = num(g.value, g.unit);
-    const unit = document.createElement("span");
-    unit.className = "unit";
-    unit.textContent = g.unit === "m3/s" ? "m³/s" : "m";
-    level.appendChild(unit);
-    right.appendChild(level);
-
-    if (g.change !== null) {
-      const change = document.createElement("div");
-      change.className = "change " + (g.change > 0 ? "up" : g.change < 0 ? "down" : "");
-      const days = g.change_days && g.change_days !== 1 ? " " + t.inDays(g.change_days) : "";
-      change.textContent = signed(g.change, g.unit) + days;
-      right.appendChild(change);
-    }
-  }
-  li.appendChild(right);
-
-  // The bar is drawn only when there is something official to draw it
-  // against. An invented scale would imply a threshold that does not exist.
-  if (g.value !== null && (g.alert !== null || g.evacuation !== null)) {
-    const lines = [g.alert, g.evacuation].filter((v) => v !== null);
-    const top = Math.max(g.value, ...lines) * 1.12;
-    const bar = document.createElement("div");
-    bar.className = "bar";
-
-    const track = document.createElement("div");
-    track.className = "track";
-    const fill = document.createElement("div");
-    fill.className = "fill";
-    fill.style.width = Math.max(0, Math.min(100, (g.value / top) * 100)) + "%";
-    track.appendChild(fill);
-    for (const [value, cls] of [[g.alert, "a"], [g.evacuation, "e"]]) {
-      if (value === null) continue;
-      const tick = document.createElement("div");
-      tick.className = "tick " + cls;
-      tick.style.left = (value / top) * 100 + "%";
-      track.appendChild(tick);
-    }
-    bar.appendChild(track);
-
-    const scale = document.createElement("div");
-    scale.className = "scale";
-    const a = document.createElement("span");
-    a.textContent = g.alert === null ? "" : t.alertShort + " " + num(g.alert, g.unit);
-    const e = document.createElement("span");
-    e.textContent = g.evacuation === null ? "" : t.evacShort + " " + num(g.evacuation, g.unit);
-    scale.append(a, e);
-    bar.appendChild(scale);
-    li.appendChild(bar);
-  }
-
-  return li;
-}
-
-// The lead. A reader arrives asking whether the river is behaving, not
-// wanting a table of thirty-seven readings, and every part of the sentence
-// carries the number it came from so the claim can be checked rather than
-// taken.
-function renderVerdict(v) {
-  const t = T[lang];
-  // This page formats with longDate and num; the shorter helpers the wave
-  // and map pages use do not exist here.
-  const day = (iso) => shortDate(iso);
-  const ratio = (x) => new Intl.NumberFormat(T[lang].locale, {
-    minimumFractionDigits: 1, maximumFractionDigits: 1,
-  }).format(x);
-  const section = document.getElementById("verdict");
-  if (!v || v.state === "unknown") { section.hidden = true; return; }
-
-  const word = {
-    extreme: t.stateExtreme, high_wide: t.stateHighWide, high: t.stateHigh,
-    notable: t.stateNotable, normal: t.stateNormal,
-  }[v.state] || t.stateUnknown;
-  const state = document.getElementById("verdictState");
-  state.textContent = word;
-  state.className = "state " + v.state;
-
-  document.getElementById("verdictDetail").textContent = t.verdictDetail(
-    v.high, v.counted, v.at_top,
-    v.reach && v.reach.from, v.reach && v.reach.to);
-
-  // The magnitude, after the extent. A percentile says where today sits
-  // among past 29ths of October; a return period says how big the flood
-  // is. On this river in spring they routinely disagree, and the reader
-  // wants both.
-  const rare = document.getElementById("verdictRarity");
-  if (v.rarest && v.rarest.record_max) {
-    rare.textContent = t.verdictRarity(
-      Math.round(v.rarest.years), v.rarest.gauge, num(v.rarest.stage_m),
-      num(v.rarest.record_max), v.rarest.record_max_year);
-    rare.hidden = false;
-  } else {
-    rare.hidden = true;
-  }
-
-  const items = [];
-  if (v.front) {
-    items.push([
-      t.evidenceFront(v.front.gauge, day(v.front.day), !v.front.confirmed),
-      "wave.html", t.evidenceSeeWave]);
-  }
-  if (v.water) {
-    items.push([
-      t.evidenceWater(ratio(v.water.ratio), v.water.stretch),
-      "flood.html", t.evidenceSeeFlood]);
-  }
-  if (v.as_of) items.push([t.evidenceAsOf(day(v.as_of)), null, null]);
-
-  document.getElementById("verdictEvidence").replaceChildren(
-    ...items.map(([text, href, label]) => {
-      const li = document.createElement("li");
-      li.append(text);
-      if (href) {
-        const a = document.createElement("a");
-        a.href = href;
-        a.textContent = label;
-        li.append(" ", a);
-      }
-      return li;
+  // Horizontal rules with their values, so the shape can be read as numbers.
+  // Round gridlines. Dividing the data maximum into four gave 2,626 /
+  // 5,253 / 7,879 / 10,506 - four numbers nobody can hold in their head
+  // and none of them a quantity anyone would choose to mark.
+  const step = niceStep(top / 4);
+  for (let value = 0; value <= top; value += step) {
+    svg.appendChild(el("line", {
+      x1: L, x2: W - R, y1: y(value), y2: y(value),
+      stroke: "var(--line)", "stroke-width": 1,
     }));
-  section.hidden = false;
+    svg.appendChild(el("text", {
+      x: L - 8, y: y(value) + 4, "text-anchor": "end",
+      fill: "var(--ink-faint)", "font-size": 11,
+    }, num(value)));
+  }
+  // Inside the plot rather than over the top tick, which it sat on.
+  svg.appendChild(el("text", {
+    x: L + 4, y: TOP + 10, "text-anchor": "start",
+    fill: "var(--ink-faint)", "font-size": 11,
+  }, t.axisKm2));
+
+  const path = (values, dashed) => {
+    const d = values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+    const attrs = {
+      d, fill: "none", stroke: dashed ? "var(--evac)" : "var(--accent)",
+      "stroke-width": dashed ? 2 : 2.6, "stroke-linejoin": "round",
+    };
+    if (dashed) attrs["stroke-dasharray"] = "5 4";
+    svg.appendChild(el("path", attrs));
+  };
+  path(water, false);
+  path(rows.map((r) => r.flood_km2), true);
+
+  for (let i = 0; i < rows.length; i += 1) {
+    svg.appendChild(el("circle", {
+      cx: x(i), cy: y(water[i]), r: 2.6, fill: "var(--accent)",
+    }));
+  }
+
+  // A date label roughly every other month, and always the last one. The
+  // last is chosen first and the run works backwards from it, because
+  // forcing it on at the end put it on top of the label before it.
+  const GAP = 76;
+  const labels = [rows.length - 1];
+  for (let i = rows.length - 2; i >= 0; i -= 1) {
+    if (x(labels[labels.length - 1]) - x(i) >= GAP) labels.push(i);
+  }
+  labels.reverse();
+  for (const i of labels) {
+    svg.appendChild(el("text", {
+      x: x(i), y: H - B + 20, "text-anchor": "middle",
+      fill: "var(--ink-faint)", "font-size": 11,
+    }, dayLabel(rows[i].day)));
+  }
+
+  const lowAt = water.indexOf(Math.min(...water));
+  const lastAt = rows.length - 1;
+  for (const [index, key, anchor] of [[lowAt, "chartLow", "start"],
+                                      [lastAt, "chartNow", "end"]]) {
+    if (index < 0) continue;
+    const cx = x(index), cy = y(water[index]);
+    svg.appendChild(el("circle", {
+      cx, cy, r: 5, fill: "none",
+      stroke: index === lastAt ? "var(--evac)" : "var(--ink-faint)",
+      "stroke-width": 2,
+    }));
+    const dx = anchor === "end" ? -10 : 10;
+    svg.appendChild(el("text", {
+      x: cx + dx, y: cy - 12, "text-anchor": anchor,
+      fill: index === lastAt ? "var(--evac)" : "var(--ink-faint)",
+      "font-size": 11.5, "font-weight": index === lastAt ? 650 : 500,
+    }, `${t[key]} ${num(Math.round(water[index]))}`));
+  }
+
+  const lo = Math.min(...water), hi = Math.max(...water);
+  document.getElementById("chartDesc").textContent = t.chartDesc(
+    longDay(rows[0].day), longDay(rows[rows.length - 1].day), num(lo), num(hi));
+  document.getElementById("keys").hidden = false;
+}
+
+function drawSkill(skill) {
+  const t = T[lang];
+  const body = document.getElementById("skillRows");
+  body.textContent = "";
+
+  // One row per stretch, because a single river-wide figure hides that the
+  // method is near 0.9 in the gorge and near 0.5 below Corrientes, and
+  // which end of that a given number came from is the reader's business.
+  const line = (label, now, before, strong) => {
+    const tr = document.createElement("tr");
+    if (strong) tr.className = "now";
+    const th = document.createElement("th");
+    th.scope = "row";
+    th.textContent = label;
+    tr.appendChild(th);
+    const cells = [now.recall, now.precision, now.iou, before && before.iou];
+    for (const v of cells) {
+      const td = document.createElement("td");
+      td.textContent = v === null || v === undefined ? "–" : num(v, 2);
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  };
+
+  for (const s of skill.stretches || []) {
+    line(`${s.from_name} – ${s.to_name}`, s.now || {}, s.previous, false);
+  }
+  line(t.skillWhole, skill, skill.previous || {}, true);
+
+  document.getElementById("skillLead").textContent = t.skillLead(
+    skill.day ? longDay(skill.day) : (skill.measured_against || "Sentinel-2"),
+    (skill.stretches || []).length);
 }
 
 function render(data) {
   const t = T[lang];
-  const gauges = data.gauges || [];
-  renderVerdict(data.verdict);
+  const rows = (data.river || []).filter((r) => r.complete);
+  const latest = data.latest, low = data.lowest;
 
-  document.getElementById("lastDay").textContent = longDate(data.last_data_day);
-  const fresh = document.getElementById("fresh");
-  const age = data.data_age_days;
-  if (age !== null && age !== undefined && age > 1) {
-    fresh.textContent = t.stale(age);
-    // Three days, the same threshold `crecida freshness` fails CI on. They
-    // have to agree, because when the scheduled run does not happen at all
-    // the CI check never runs either - and then this line is the only thing
-    // in the world that notices the data has stopped moving.
-    fresh.className = age > 3 ? "stale" : "";
-  } else {
-    fresh.textContent = "";
-    fresh.className = "";
+  if (latest) {
+    document.getElementById("area").textContent = num(Math.round(latest.water_km2));
+    document.getElementById("areaCap").textContent = t.areaCap;
+    document.getElementById("areaNote").textContent = low && low.day !== latest.day
+      ? t.areaNote(longDay(latest.day), num(Math.round(latest.water_km2 - low.water_km2)),
+                   num(Math.round(low.water_km2)), longDay(low.day))
+      : t.areaNoteFlat(longDay(latest.day));
+    const beyond = document.getElementById("floodNote");
+    if (low && low.flood_km2 > 0 && low.day !== latest.day) {
+      beyond.textContent = t.floodNote(
+        num(Math.round(latest.flood_km2)), num(Math.round(low.flood_km2)),
+        num(latest.flood_km2 / low.flood_km2, 1));
+      beyond.hidden = false;
+    } else {
+      beyond.hidden = true;
+    }
+    document.getElementById("headline").hidden = false;
+
+    document.getElementById("passDay").textContent = longDay(latest.day);
+    document.getElementById("reach").textContent =
+      t.reachValue(num(Math.round(riverKm(data))), latest.stretches);
+    document.getElementById("rise").textContent = low
+      ? `+${num(Math.round(((latest.water_km2 / low.water_km2) - 1) * 100))}%`
+      : "–";
+    document.getElementById("meta").hidden = false;
   }
-  document.getElementById("thrDate").textContent = longDate(
-    (data.thresholds || {}).source_date
-  );
-  document.getElementById("genAt").textContent = shortDateTime(data.generated_at);
-  document.getElementById("meta").hidden = false;
 
-  document.getElementById("nEvac").textContent = gauges.filter((g) => g.status === "evacuation").length;
-  document.getElementById("nAlert").textContent = gauges.filter((g) => g.status === "alert").length;
-  document.getElementById("nRising").textContent = gauges.filter((g) => g.change !== null && g.change > 0).length;
-  document.getElementById("nOfficial").textContent = gauges.filter((g) => g.alert !== null || g.evacuation !== null).length;
-  document.getElementById("tally").hidden = false;
-
-  const list = document.getElementById("list");
-  list.replaceChildren(...gauges.map(gaugeItem));
+  drawChart(rows);
+  if (data.skill) drawSkill(data.skill);
 }
 
-function fail(message) {
-  const box = document.getElementById("error");
-  box.textContent = message;
-  box.hidden = false;
+function riverKm(data) {
+  if (typeof data.river_km === "number") return data.river_km;
+  return (data.stretches || []).reduce((sum, s) => sum + (s.river_km || 0), 0);
 }
+
+// -- the animation ---------------------------------------------------------
+
+const loopImg = document.getElementById("loop");
+const loopFrame = document.getElementById("loopFrame");
+const loopToggle = document.getElementById("loopToggle");
+let loopRunning = true;
+
+function freezeLoop() {
+  // A GIF cannot be paused, so the first frame is painted to a canvas and
+  // the canvas is shown in its place.
+  const w = loopImg.naturalWidth, h = loopImg.naturalHeight;
+  if (w && h) {
+    loopFrame.width = w;
+    loopFrame.height = h;
+    loopFrame.getContext("2d").drawImage(loopImg, 0, 0);
+    loopFrame.hidden = false;
+    loopImg.hidden = true;
+  }
+  loopRunning = false;
+  loopToggle.classList.remove("playing");
+  loopToggle.setAttribute("aria-label", T[lang].playLoop);
+}
+
+function runLoop() {
+  loopFrame.hidden = true;
+  loopImg.hidden = false;
+  loopRunning = true;
+  loopToggle.classList.add("playing");
+  loopToggle.setAttribute("aria-label", T[lang].pauseLoop);
+}
+
+loopToggle.addEventListener("click", () => (loopRunning ? freezeLoop() : runLoop()));
+
+function settleLoop() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) freezeLoop();
+  else runLoop();
+}
+if (loopImg.complete) settleLoop();
+else loopImg.addEventListener("load", settleLoop);
 
 for (const b of document.querySelectorAll(".langs button")) {
   b.addEventListener("click", () => setLang(b.dataset.lang));
@@ -543,16 +610,19 @@ for (const b of document.querySelectorAll(".langs button")) {
 
 setLang(pickLang());
 
-fetch("data/river_today.json", { cache: "no-cache" })
-  .then((r) => {
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
-  })
-  .then((data) => {
-    payload = data;
-    render(data);
-  })
-  .catch((err) => fail("No se pudieron cargar los datos / could not load data: " + err.message));
+fetch("data/river_film.json", { cache: "no-cache" })
+  .then((r) => (r.ok ? r.json() : null))
+  .then((d) => { film = d; if (d) describeFilm(d); })
+  .catch(() => { /* the caption falls back to the flat wording */ });
+
+fetch("data/floodwater.json", { cache: "no-cache" })
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then((data) => { payload = data; render(data); })
+  .catch((err) => {
+    const box = document.getElementById("error");
+    box.textContent = "No se pudieron cargar los datos / could not load data: " + err.message;
+    box.hidden = false;
+  });
 </script>
 </body>
 </html>

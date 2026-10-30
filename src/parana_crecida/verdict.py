@@ -250,25 +250,26 @@ def payload(verdict: Verdict, *, track: dict | None = None,
             "river_km": anchor["river_km"],
         }
 
+    # The whole river, not the one stretch that happens to look worst.
+    # This used to pick the highest ratio of water to the 2021 bajante
+    # across stretches, which made the evidence line a different reach
+    # from one day to the next and quietly rewarded whichever stretch the
+    # mask was noisiest on. The measurement that belongs beside a verdict
+    # about the river is the river's.
     water = None
     if flooded:
-        best = None
-        for stretch in flooded.get("stretches", []):
-            if stretch.get("calibrated") is False:
-                continue
-            latest, baseline = stretch.get("latest"), stretch.get("baseline_km2")
-            if not latest or not baseline:
-                continue
-            ratio = latest["km2"] / baseline
-            if best is None or ratio > best["ratio"]:
-                best = {
-                    "stretch": f"{stretch['from_name']} - {stretch['to_name']}",
-                    "ratio": round(ratio, 1),
-                    "km2": latest["km2"],
-                    "day": latest["day"],
-                    "tracks_river": stretch.get("stage_correlation"),
-                }
-        water = best
+        latest, lowest = flooded.get("latest"), flooded.get("lowest")
+        if latest and lowest and lowest.get("water_km2"):
+            water = {
+                "km2": latest["water_km2"],
+                "day": latest["day"],
+                "ratio": round(latest["water_km2"] / lowest["water_km2"], 1),
+                "flood_km2": latest.get("flood_km2"),
+                "driest_day": lowest["day"],
+                "driest_km2": lowest["water_km2"],
+                "river_km": flooded.get("river_km"),
+                "stretches": len(flooded.get("stretches") or []),
+            }
 
     return {
         "state": verdict.state,

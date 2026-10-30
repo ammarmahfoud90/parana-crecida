@@ -42,6 +42,7 @@ TRACK = "track.json"
 CSV_DIR = "csv"
 AREA_STAGE = "area_stage.json"
 EXPOSURE = "exposure.json"
+FLOODWATER = "floodwater.json"
 
 #: Bump when the shape changes, so a cached page can tell.
 SCHEMA_VERSION = 1
@@ -181,7 +182,7 @@ def export_river_today(
     payload["verdict"] = vd.payload(
         built,
         track=_maybe_json(out_dir / TRACK),
-        flooded=_maybe_json(out_dir / FLOODED),
+        flooded=_maybe_json(out_dir / FLOODWATER),
         rarity=vd.rarest(built, periods, store),
     )
 
@@ -466,7 +467,8 @@ def export_csv(
     Three files, each the whole of one thing:
 
     - ``river_daily.csv`` - every gauge, every day, level and percentile.
-    - ``flooded_area.csv`` - every stretch, every satellite pass.
+    - ``flooded_area.csv`` - every stretch, every satellite pass, with
+      the validation score behind each stretch's figures.
     - ``travel_times.csv`` - every leg, with the spread and how many floods
       it was measured over.
 
@@ -477,8 +479,6 @@ def export_csv(
     from . import chain as ch
     from .lag import DEFAULT_TABLE as LAG_TABLE
     from .lag import load_table as load_lags
-    from .flooded import DEFAULT_TABLE as FLOOD_TABLE
-    from .flooded import load_table as load_flood
     from .normalize import Climatology
 
     if not result.ok:
@@ -518,26 +518,34 @@ def export_csv(
         river_rows(),
     )
 
-    flood = load_flood(FLOOD_TABLE)
+    # The water surface as published, not the superseded table. A CSV is
+    # the copy that gets downloaded, cited and kept, so it is the last
+    # place an old measurement should survive - and each row carries the
+    # score of the stretch it came from, because a figure that travels
+    # without its evidence stops being a measurement.
+    surface = _maybe_json(out_dir / FLOODWATER) or {}
 
     def flood_rows():
-        for stretch in flood.get("stretches", []):
-            # An uncalibrated stretch publishes no number here either. The
-            # file would otherwise be the one place the gorge and the Delta
-            # still quote an area.
-            if stretch.get("calibrated") is False:
-                continue
-            for day, km2 in zip(stretch.get("days", []), stretch.get("km2", [])):
+        for stretch in surface.get("stretches", []):
+            days = stretch.get("days") or []
+            water = stretch.get("water_km2") or []
+            flood_only = stretch.get("flood_km2") or []
+            for index, day in enumerate(days):
+                if index >= len(water) or water[index] is None:
+                    continue
+                beyond = flood_only[index] if index < len(flood_only) else None
                 yield [
                     day, stretch["key"], stretch["from_name"], stretch["to_name"],
-                    round(km2, 1), stretch.get("baseline_km2"),
-                    stretch.get("permanent_water_km2"), stretch.get("threshold_db"),
+                    round(water[index], 1),
+                    None if beyond is None else round(beyond, 1),
+                    stretch.get("iou"), stretch.get("recall"),
+                    stretch.get("precision"),
                 ]
 
     written["flooded_area.csv"] = _write_csv(
         out / "flooded_area.csv",
         ["day", "stretch", "from_gauge", "to_gauge", "water_km2",
-         "bajante_2021_km2", "jrc_permanent_km2", "threshold_db"],
+         "beyond_permanent_km2", "iou", "recall", "precision"],
         flood_rows(),
     )
 
@@ -603,15 +611,28 @@ def export_area_stage(
     *,
     source_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
+    publish: bool = False,
 ) -> ExportResult | None:
     """Publish how well a river level predicts flooded area.
 
     Frozen input: it needs Earth Engine and ten years of satellite passes,
     so it is built by ``scripts/area_stage_history.py`` and committed, the
-    way the travel times and the backtest are. Absent, the page simply does
-    not show the section.
+    way the travel times and the backtest are.
+
+    **It does not publish at present.** The 398 observations behind it were
+    measured with the per-stretch VV mask, which has since been scored
+    against optical water at an IoU of 0.59 and replaced. The finding it
+    produced - that area at a given stage scatters by about 55% - was a
+    statement about the river, and some unknown part of it was a statement
+    about the mask. It has to be measured again on the current mask before
+    it can be quoted, and until then it is withdrawn rather than left on
+    the page with a caveat nobody reads.
     """
     from . import areastage
+
+    if not publish:
+        log.info("area-against-stage is withdrawn pending re-measurement")
+        return None
 
     if not result.ok:
         names = ", ".join(c.name for c in result.failures)
@@ -643,6 +664,7 @@ def export_exposure(
     *,
     source_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
+    publish: bool = False,
 ) -> ExportResult | None:
     """Publish who lives where the water is.
 
@@ -664,6 +686,15 @@ def export_exposure(
             "nothing was exported and the last good data stands"
         )
 
+    if not publish:
+        # Refuses by default, and the module docstring holds the series
+        # that earned the refusal: a city read as a lake on one pass, and
+        # a people-count that falls while the flood triples. Passing
+        # publish=True is a deliberate act, to be taken once a settlement
+        # mask exists and the series has been measured again.
+        log.info("exposure is not published; see parana_crecida.exposure")
+        return None
+
     payload = ex.load(source_path or ex.DEFAULT_TABLE)
     if not payload or not payload.get("series"):
         log.info("no exposure record; the section stays hidden")
@@ -678,6 +709,150 @@ def export_exposure(
     return ExportResult(
         path=path,
         gauges=len(payload["series"]),
+        with_official_thresholds=0,
+        last_data_day=None,
+    )
+
+
+#: The lowest IoU against optical water at which a stretch's area is
+#: published. Below it the series is still measured and still stored; it
+#: just does not get to be a number on a page.
+SKILL_FLOOR = 0.45
+
+
+def _mask_skill(path: Path | None = None) -> dict:
+    path = path or Path("data/mask_skill.json")
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def export_floodwater(
+    result: ValidationResult,
+    *,
+    source_path: Path | None = None,
+    skill_path: Path | None = None,
+    out_dir: Path = DEFAULT_SITE_DATA,
+) -> ExportResult | None:
+    """Publish the water surface measured by the validated mask.
+
+    This is the product. Everything else on the site is either the ground
+    truth behind it or a limit on it.
+
+    Frozen input, like the rest of the Earth Engine work: built locally and
+    committed, because a daily Actions run has no Earth Engine credential.
+
+    The whole-river total is computed here rather than in the page, for one
+    reason: a stretch with no reading on a given cycle must not be read as
+    zero water. A cycle counts toward the total only where every stretch
+    reported, and the count of stretches behind each total is published so
+    that a gap is visible instead of looking like a drop in the river.
+    """
+    from . import floodwater as fw
+
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
+    payload = fw.load(source_path or Path("data/floodwater.json"))
+    measured = payload.get("stretches") or []
+    if not measured:
+        log.info("no water record; the page shows nothing")
+        return None
+
+    # What publishes, and why.
+    #
+    # The old rule was calibration: does a per-stretch VV threshold
+    # reproduce JRC permanent water during the 2021 bajante? That asks
+    # about the channel at low flow, which is the one thing this is not
+    # for, and it withheld the two gorge stretches for failing it. Scored
+    # against optical water on a flood date they are the best two reaches
+    # on the river, at 0.83 and 0.90. They were never bad measurements;
+    # the old test was the wrong test.
+    #
+    # The rule now is the measurement itself. A stretch publishes when it
+    # has been scored against optical water and clears the floor. A stretch
+    # that has never been scored does not publish, however plausible it
+    # looks, and the reason travels with it to the page.
+    skill = _mask_skill(skill_path)
+    scores = {row["key"]: row for row in (skill.get("stretches") or [])}
+
+    stretches, withheld = [], []
+    for row in measured:
+        score = scores.get(row["key"])
+        iou = (score or {}).get("now", {}).get("iou")
+        bare = {k: v for k, v in row.items()
+                if k not in ("days", "water_km2", "flood_km2")}
+        if score is None:
+            withheld.append(bare | {"withheld": "never scored against optical water"})
+            continue
+        if iou is None or iou < SKILL_FLOOR:
+            withheld.append(bare | {"withheld": "scored below the floor", "iou": iou})
+            continue
+        stretches.append(row | {"iou": iou, "recall": score["now"]["recall"],
+                                "precision": score["now"]["precision"]})
+    if not stretches:
+        log.info("nothing scored well enough to publish")
+        return None
+
+    # One row per cycle, across the river.
+    by_day: dict[str, dict[str, float]] = {}
+    for stretch in stretches:
+        days = stretch.get("days") or []
+        water = stretch.get("water_km2") or []
+        flood = stretch.get("flood_km2") or []
+        for index, day in enumerate(days):
+            if index >= len(water):
+                continue
+            row = by_day.setdefault(day, {"water_km2": 0.0, "flood_km2": 0.0, "stretches": 0})
+            row["water_km2"] += water[index]
+            row["flood_km2"] += flood[index] if index < len(flood) else 0.0
+            row["stretches"] += 1
+
+    full = len(stretches)
+    river = [
+        {
+            "day": day,
+            "water_km2": round(row["water_km2"], 1),
+            "flood_km2": round(row["flood_km2"], 1),
+            "stretches": int(row["stretches"]),
+            "complete": int(row["stretches"]) == full,
+        }
+        for day, row in sorted(by_day.items())
+    ]
+    complete = [r for r in river if r["complete"]]
+
+    out = {
+        "schema": payload.get("schema", 2),
+        "note": payload.get("note"),
+        "method": payload.get("method"),
+        "vh_threshold_db": payload.get("vh_threshold_db"),
+        "hand_limit_m": payload.get("hand_limit_m"),
+        "window_days": payload.get("window_days"),
+        "skill": skill or payload.get("skill") or fw.SKILL,
+        "skill_floor": SKILL_FLOOR,
+        "fetched_on": payload.get("fetched_on"),
+        "corridor_km2": sum(s.get("corridor_km2") or 0 for s in stretches),
+        "river_km": round(sum(s.get("river_km") or 0 for s in stretches), 1),
+        "withheld": withheld,
+        "river": river,
+        "latest": complete[-1] if complete else None,
+        "lowest": min(complete, key=lambda r: r["water_km2"]) if complete else None,
+        "highest": max(complete, key=lambda r: r["water_km2"]) if complete else None,
+        "stretches": stretches,
+    }
+    path = out_dir / FLOODWATER
+    write_json(path, out)
+    log.info(
+        "exported %d stretches over %d cycles (%d complete), %d withheld -> %s",
+        len(stretches), len(river), len(complete), len(withheld), path,
+    )
+    return ExportResult(
+        path=path,
+        gauges=len(stretches),
         with_official_thresholds=0,
         last_data_day=None,
     )

@@ -15,10 +15,11 @@ stretch at 99.6% every time, which is what a whole-river animation needs.
 The cost is that a frame is a window rather than an instant, and the page
 says so.
 
-**One threshold per stretch.** Each corridor was calibrated separately
-against JRC permanent water, landing at -16.0 or -16.5 dB. The stretches are
-masked and thresholded individually, then mosaicked, so no stretch is
-measured with another's number.
+**One threshold for the whole river.** VH below -25 dB, bounded by height
+above nearest drainage, which is the mask validated against optical water.
+The per-stretch VV thresholds this used to carry were tuned against the
+channel at low flow and scored 0.59 against real water; see
+:mod:`parana_crecida.floodwater`.
 
 Land is transparent. Only water is drawn, in two colours: the permanent
 channel and everything beyond it.
@@ -33,6 +34,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from . import flooded as fl
+from . import floodwater as fw
 
 log = logging.getLogger(__name__)
 
@@ -80,22 +82,13 @@ def water_image(stretches: list[fl.Stretch], start: date, end: date):
     """
     import ee
 
-    permanent = ee.Image(fl.GSW).select("occurrence").gt(90).unmask(0)
+    permanent = fw.permanent_water()
     masks = []
     corridors = []
     for stretch in stretches:
         corridor = fl.corridor_geometry(stretch)
         corridors.append(corridor)
-        mosaic = fl._collection(corridor, start, end).mosaic().clip(corridor)
-        masks.append(
-            fl.water_mask(
-                mosaic,
-                threshold_db=stretch.threshold_db,
-                slope_mask=stretch.slope_mask,
-            )
-            .unmask(0)
-            .clip(corridor)
-        )
+        masks.append(fw.water_mask(corridor, start, end).unmask(0).clip(corridor))
 
     detected = ee.ImageCollection(masks).mosaic().unmask(0)
     inside = ee.Image.constant(1).clip(
@@ -117,12 +110,11 @@ def stretch_areas(
     out: dict[str, float] = {}
     for stretch in stretches:
         corridor = fl.corridor_geometry(stretch)
-        value = fl.water_area_km2(
-            corridor, start, end,
-            threshold_db=stretch.threshold_db, slope_mask=stretch.slope_mask,
-        )
-        if value is not None:
-            out[stretch.key] = value
+        try:
+            out[stretch.key] = round(
+                fw.area_km2(corridor, fw.water_mask(corridor, start, end)), 1)
+        except Exception as error:  # pragma: no cover - Earth Engine
+            log.warning("  area %s %s: %s", stretch.key, end, error)
     return out
 
 
@@ -145,9 +137,16 @@ def render(
     # exactly what the gorge and the Delta were marked uncalibrated to
     # prevent. They keep their satellite background; they lose the radar
     # layer that looks like a measurement and is not one.
-    stretches = [s for s in fl.load_corridors() if s.calibrated]
+    # Only stretches whose mask was scored against optical water and
+    # cleared the floor. A picture with no figure attached invites a
+    # reader to estimate one off the screen, so the overlay is held to
+    # the same evidence as the number.
+    from .riverfilm import published_keys
+
+    keys = published_keys()
+    stretches = [s for s in fl.load_corridors() if s.key in keys]
     if not stretches:
-        raise ValueError("no calibrated corridors defined")
+        raise ValueError("no stretch cleared the skill floor")
 
     today = today or date.today()
     last = today - timedelta(days=fl.LAG_DAYS)
@@ -159,7 +158,7 @@ def render(
     # Leaflet wants [[south, west], [north, east]].
     bounds = [[min(lats), min(lons)], [max(lats), max(lons)]]
 
-    calibrated = {s.key for s in stretches if s.calibrated}
+    calibrated = {s.key for s in stretches}
     out_dir.mkdir(parents=True, exist_ok=True)
     frames: list[MapFrame] = []
     for index in range(cycles - 1, -1, -1):
@@ -230,6 +229,16 @@ def render(
             for s in stretches
         ],
     }
+    # Frames from an earlier run that this one did not replace. The window
+    # ends move with the run date, so a re-render usually writes a whole new
+    # set of filenames and leaves the old set beside it - committed, served
+    # and measured with whatever mask was current when they were made.
+    kept = {f.path.name for f in frames}
+    for stale in sorted(out_dir.glob("water_*.png")):
+        if stale.name not in kept:
+            stale.unlink()
+            log.info("removed superseded frame %s", stale.name)
+
     index_path.parent.mkdir(parents=True, exist_ok=True)
     index_path.write_text(
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n",

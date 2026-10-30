@@ -48,6 +48,7 @@ from .export import (
     export_flooded,
     export_area_stage,
     export_exposure,
+    export_floodwater,
     export_csv,
     export_river_stage,
     export_track,
@@ -953,15 +954,22 @@ def freshness(
                     f"{max_age_days} allowed"
                 )
 
-    water = site_data / "flooded.json"
+    # The water surface, which is the product. It was the superseded
+    # flooded.json until the mask was replaced; a staleness gate pointed at
+    # a file nothing publishes any more is a green light for an empty page.
+    water = site_data / "floodwater.json"
     if water.exists():
         flood = _json.loads(water.read_text(encoding="utf-8")) or {}
         if flood.get("stretches"):
-            stale = flood.get("stale_days")
-            rep.say(f"flooded:    {flood.get('fetched_on')} ({stale} days old)")
+            fetched = flood.get("fetched_on")
+            stale = None
+            if fetched:
+                stale = (datetime.now(DEFAULT_TZ).date()
+                         - date.fromisoformat(fetched)).days
+            rep.say(f"water:      {fetched} ({stale} days old)")
             if stale is None or stale > max_rain_age_days:
                 problems.append(
-                    f"flooded area is {stale} days old, over the "
+                    f"the water surface is {stale} days old, over the "
                     f"{max_rain_age_days} allowed"
                 )
 
@@ -1204,6 +1212,11 @@ def export(
             rep.say(line)
         rep.say()
         try:
+            # Before the verdict, which reads it for its evidence line.
+            # Written afterwards, the verdict quotes the previous run's
+            # measurement, and on the day a method changes that is the
+            # old method's number under the new method's heading.
+            surface = export_floodwater(result, out_dir=out)
             exported = export_river_today(store, loaded, result, out_dir=out, today=today)
             wave = export_wave(store, result, out_dir=out, today=today)
             drivers = export_drivers(store, result, out_dir=out, today=today)
@@ -1218,6 +1231,8 @@ def export(
             rep.write(report)
             raise click.ClickException(str(exc)) from exc
 
+    if surface is not None:
+        rep.say(f"{surface.gauges} stretches of water surface -> {surface.path}")
     if people is not None:
         rep.say(f"{people.gauges} exposure composites -> {people.path}")
     if cloud is not None:

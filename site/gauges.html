@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="es" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El río hoy — Crecida del Paraná</title>
+<meta name="description" content="El río Paraná hoy, de Puerto Iguazú a San Fernando. No es un sistema de alerta.">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#content" data-t="skipLink"></a>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="subtitle"></p>
+    </div>
+    <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <nav class="views" data-t-aria="viewsNav">
+    <a href="index.html" data-t="viewSpace"></a>
+    <a href="map.html" data-t="viewMap"></a>
+    <a href="gauges.html" aria-current="page" data-t="viewToday"></a>
+    <a href="method.html" data-t="viewMethod"></a>
+  </nav>
+
+  <main id="content" tabindex="-1">
+
+  <p class="notice">
+    <strong data-t="noticeStrong"></strong>
+    <span data-t="noticeBody"></span>
+    <a id="official" href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+  </p>
+
+  <div id="error" class="err" role="alert" hidden></div>
+
+  <section class="verdict" id="verdict" hidden aria-labelledby="verdictState">
+    <p class="state" id="verdictState"></p>
+    <p class="detail" id="verdictDetail"></p>
+    <p class="detail rarity" id="verdictRarity" hidden></p>
+    <ul class="evidence" id="verdictEvidence"></ul>
+  </section>
+
+  <div class="meta" id="meta" hidden>
+    <span><span data-t="dataTo"></span> <b id="lastDay"></b> <span id="fresh"></span></span>
+    <span><span data-t="thresholdsFrom"></span> <b id="thrDate"></b></span>
+    <span><span data-t="generatedAt"></span> <b id="genAt"></b></span>
+  </div>
+
+  <div class="tally" id="tally" hidden>
+    <div class="evac"><span class="n" id="nEvac">–</span><span class="k" data-t="tallyEvac"></span></div>
+    <div class="alert"><span class="n" id="nAlert">–</span><span class="k" data-t="tallyAlert"></span></div>
+    <div><span class="n" id="nRising">–</span><span class="k" data-t="tallyRising"></span></div>
+    <div><span class="n" id="nOfficial">–</span><span class="k" data-t="tallyOfficial"></span></div>
+  </div>
+
+  <h2 class="section" data-t="listHeading"></h2>
+  <ul class="gauges" id="list"></ul>
+
+  
+  <section class="seealso" aria-labelledby="alsoHeading">
+    <h2 class="section" id="alsoHeading" data-t="alsoHeading"></h2>
+    <ul class="alsolist">
+      <li><a href="wave.html" data-t="alsoWave"></a>
+          <span data-t="alsoWaveWhy"></span></li>
+      <li><a href="drivers.html" data-t="alsoDrivers"></a>
+          <span data-t="alsoDriversWhy"></span></li>
+    </ul>
+  </section>
+
+  <section class="provenance" aria-labelledby="provHeading">
+    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
+    <dl>
+      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+    </dl>
+  </section>
+  </main>
+
+  <footer>
+    <p data-t="method"></p>
+    <p data-t="credits"></p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+// Every string the page shows. Nothing is translated in the pipeline: the
+// exported JSON carries proper nouns and stable keys only, so adding a
+// language is a change here and nowhere else.
+const T = {
+  es: {
+    alsoHeading: "Más sobre el registro de las estaciones",
+    alsoWave: "La onda",
+    alsoWaveWhy: "cómo viaja un pico río abajo, y los tiempos de viaje medidos entre estaciones.",
+    alsoDrivers: "Aguas arriba",
+    alsoDriversWhy: "la lluvia en la cuenca alta y el caudal que entra desde Brasil y Paraguay.",
+    viewSpace: "Desde el espacio",
+    htmlLang: "es",
+    locale: "es-AR",
+    stateExtreme: "El Paraná está en una crecida excepcional.",
+    stateHighWide: "El Paraná está en una crecida importante, y a lo largo de casi todo el río.",
+    stateNotable: "El Paraná está crecido, dentro de lo que pasa cada pocos años.",
+    stateHigh: "El Paraná está en una crecida importante.",
+    stateNormal: "El Paraná está dentro de lo normal para la época del año.",
+    stateUnknown: "No hay datos suficientes para decir cómo está el río.",
+    verdictRarity: (years, gauge, stage, record, year) =>
+      `La lectura más alta equivale a una altura de 1 en ${years} años en ${gauge}: ${stage} m, contra un récord de ${record} m en ${year}.`,
+    verdictRarityNone: "",
+    returnPeriod: (years) => `1 en ${years} años`,
+    returnPeriodTitle: (years, record, year) =>
+      `Una altura que, en promedio, se alcanza una vez cada ${years} años. El máximo del registro es ${record} m, en ${year}.`,
+    verdictDetail: (high, counted, top, from_, to) =>
+      `${high} de ${counted} estaciones del cauce principal superan el percentil 95 para esta fecha` +
+      (top ? `, y ${top} están en el máximo registrado para el día del año` : "") +
+      (from_ ? `. El tramo alto más largo va de ${from_} a ${to}.` : "."),
+    evidenceFront: (gauge, day, provisional) =>
+      provisional
+        ? `El río dejó de subir en ${gauge} el ${day}`
+        : `El pico pasó por ${gauge} el ${day}`,
+    evidenceWater: (km2, ratio, km) =>
+      `El radar mide ${km2} km² de agua sobre ${km} km de río, ${ratio} veces la pasada más seca`,
+    evidenceAsOf: (day) => `Medido hasta el ${day}`,
+    evidenceSeeWave: "ver la onda",
+    evidenceSeeFlood: "ver desde el espacio",
+    evidenceSeeGauges: "ver las estaciones",
+    title: "El río hoy",
+    subtitle: "Altura en cada estación del INA, de Puerto Iguazú a San Fernando",
+    langGroup: "Idioma",
+    provHeading: "De dónde sale cada número",
+    provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
+    provMeasured: "Las alturas diarias de cada estación y los niveles oficiales de alerta y evacuación, ambos del INA.",
+    provCalculated: "El percentil para el día del año de cada estación, contra su propio registro; la variación de 7 días; y el titular de arriba, que se arma con esas cuentas y no está escrito a mano.",
+    provMissing: "Las estaciones sin nivel oficial publicado aparecen sin línea de alerta. No se estima ninguno.",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Los niveles de alerta y evacuación, los avisos y los pronósticos oficiales los publica el Instituto Nacional del Agua.",
+    officialLink: "Ver el alerta oficial del INA →",
+    dataTo: "Datos hasta el",
+    thresholdsFrom: "Niveles oficiales del",
+    generatedAt: "Generado",
+    tallyEvac: "superan evacuación",
+    tallyAlert: "superan alerta",
+    tallyRising: "en aumento",
+    tallyOfficial: "con niveles oficiales",
+    listHeading: "Estaciones, aguas arriba hacia aguas abajo",
+    viewsNav: "Vistas",
+    skipLink: "Saltar al contenido", viewToday: "El río hoy",
+    viewWave: "La onda",
+    viewDrivers: "Aguas arriba",
+    viewFlood: "Superficie",
+    viewMap: "Mapa", viewMethod: "Método",
+    statusBelow: "Bajo el nivel de alerta",
+    statusAlert: "Supera el nivel de alerta",
+    statusEvacuation: "Supera el nivel de evacuación",
+    statusUnknown: "Sin niveles oficiales publicados",
+    noData: "sin dato",
+    alertShort: "Alerta",
+    evacShort: "Evac.",
+    inDays: (n) => (n === 1 ? "en 1 día" : "en " + n + " días"),
+    flagRegulated: "regulado por represa",
+    flagTide: "afectado por marea",
+    branchPalmas: "Paraná de las Palmas",
+    branchGuazu: "Paraná Guazú",
+    branchIbicuy: "Ibicuy",
+    branchVictoria: "Riacho Victoria",
+    branchEstuary: "estuario",
+    stale: (n) => "(" + n + " días de atraso)",
+    method: "Niveles del día de la API a5 del INA. Los niveles de alerta y evacuación se extraen del reporte diario del INA; donde el INA no publica un nivel, la estación aparece sin niveles oficiales y nunca con un valor estimado. Los datos pasan un conjunto de pruebas antes de publicarse: si una prueba falla, no se actualiza nada y queda a la vista la fecha del último dato bueno.",
+    credits: "Fuente: Instituto Nacional del Agua (INA), Argentina. Código abierto.",
+  },
+  en: {
+    alsoHeading: "More from the gauge record",
+    alsoWave: "The wave",
+    alsoWaveWhy: "how a crest travels downstream, and the measured travel times between gauges.",
+    alsoDrivers: "Upstream",
+    alsoDriversWhy: "rain over the upper basin and the flow arriving from Brazil and Paraguay.",
+    viewSpace: "From space",
+    htmlLang: "en",
+    locale: "en-GB",
+    stateExtreme: "The Paraná is in an exceptional flood.",
+    stateHighWide: "The Paraná is in a major flood, along most of its length.",
+    stateNotable: "The Paraná is high, within what happens every few years.",
+    stateHigh: "The Paraná is in a major flood.",
+    stateNormal: "The Paraná is within its normal range for the time of year.",
+    stateUnknown: "There is not enough data to say how the river is behaving.",
+    verdictRarity: (years, gauge, stage, record, year) =>
+      `The highest reading is about a 1-in-${years}-year height at ${gauge}: ${stage} m, against a record of ${record} m in ${year}.`,
+    verdictRarityNone: "",
+    returnPeriod: (years) => `1 in ${years} yr`,
+    returnPeriodTitle: (years, record, year) =>
+      `A height reached on average once every ${years} years. The highest in the record is ${record} m, in ${year}.`,
+    verdictDetail: (high, counted, top, from_, to) =>
+      `${high} of ${counted} main-stem gauges are above the 95th percentile for this date` +
+      (top ? `, and ${top} are at the highest ever recorded for the day of year` : "") +
+      (from_ ? `. The longest unbroken high reach runs from ${from_} to ${to}.` : "."),
+    evidenceFront: (gauge, day, provisional) =>
+      provisional
+        ? `The river stopped rising at ${gauge} on ${day}`
+        : `The crest passed ${gauge} on ${day}`,
+    evidenceWater: (km2, ratio, km) =>
+      `Radar measures ${km2} km² of water over ${km} km of river, ${ratio} times the driest pass`,
+    evidenceAsOf: (day) => `Measured to ${day}`,
+    evidenceSeeWave: "see the wave",
+    evidenceSeeFlood: "see it from space",
+    evidenceSeeGauges: "see the gauges",
+    title: "The river today",
+    subtitle: "Stage at every INA gauge, from Puerto Iguazú to San Fernando",
+    langGroup: "Language",
+    provHeading: "Where each number comes from",
+    provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",
+    provMeasured: "The daily level at each gauge and the official alert and evacuation levels, both from INA.",
+    provCalculated: "Each gauge's percentile for the day of year, against its own record; the 7-day change; and the finding at the top, which is assembled from those counts rather than written by hand.",
+    provMissing: "Gauges with no official level published are shown without an alert line. None is estimated.",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "Alert and evacuation levels, warnings and official forecasts are published by Argentina's Instituto Nacional del Agua.",
+    officialLink: "See INA's official alert →",
+    dataTo: "Data to",
+    thresholdsFrom: "Official levels from",
+    generatedAt: "Generated",
+    tallyEvac: "above evacuation",
+    tallyAlert: "above alert",
+    tallyRising: "rising",
+    tallyOfficial: "with official levels",
+    listHeading: "Gauges, upstream to downstream",
+    viewsNav: "Views",
+    skipLink: "Skip to content", viewToday: "The river today",
+    viewWave: "The wave",
+    viewDrivers: "Upstream",
+    viewFlood: "Flooded area",
+    viewMap: "Map", viewMethod: "Method",
+    statusBelow: "Below the alert level",
+    statusAlert: "Above the alert level",
+    statusEvacuation: "Above the evacuation level",
+    statusUnknown: "No official levels published",
+    noData: "no data",
+    alertShort: "Alert",
+    evacShort: "Evac.",
+    inDays: (n) => (n === 1 ? "in 1 day" : "in " + n + " days"),
+    flagRegulated: "dam-regulated",
+    flagTide: "tide-affected",
+    branchPalmas: "Paraná de las Palmas",
+    branchGuazu: "Paraná Guazú",
+    branchIbicuy: "Ibicuy",
+    branchVictoria: "Riacho Victoria",
+    branchEstuary: "estuary",
+    stale: (n) => "(" + n + " days behind)",
+    method: "Daily levels from INA's a5 API. Alert and evacuation levels are parsed from INA's daily report; where INA publishes no level, the gauge is shown as having none and never with an estimated value. The data passes a set of tests before it is published: if a test fails nothing is updated, and the date of the last good reading stays visible.",
+    credits: "Source: Instituto Nacional del Agua (INA), Argentina. Open source.",
+  },
+};
+
+const BRANCH_KEY = {
+  palmas: "branchPalmas",
+  guazu: "branchGuazu",
+  ibicuy: "branchIbicuy",
+  victoria: "branchVictoria",
+  estuary: "branchEstuary",
+};
+
+let lang = "es";
+let payload = null;
+
+function pickLang() {
+  let saved = null;
+  try { saved = localStorage.getItem("crecida.lang"); } catch (e) { /* private mode */ }
+  if (saved === "es" || saved === "en") return saved;
+  return (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
+  const t = T[lang];
+  document.documentElement.lang = t.htmlLang;
+  document.title = t.title;
+  for (const el of document.querySelectorAll("[data-t]")) {
+    const value = t[el.dataset.t];
+    if (typeof value === "string") el.textContent = value;
+  }
+  for (const el of document.querySelectorAll("[data-t-aria]")) {
+    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  }
+  for (const b of document.querySelectorAll(".langs button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  }
+  if (payload) render(payload);
+}
+
+function whole(value) {
+  return new Intl.NumberFormat(T[lang].locale, {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function num(value, unit) {
+  if (value === null || value === undefined) return null;
+  const digits = unit === "m3/s" ? 0 : 2;
+  return new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
+function signed(value, unit) {
+  const text = num(Math.abs(value), unit);
+  const sign = value > 0 ? "+" : value < 0 ? "−" : "±";
+  return sign + text;
+}
+
+function shortDate(iso) {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "short",
+  }).format(new Date(iso + "T12:00:00"));
+}
+
+function longDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso + "T12:00:00");
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "long", year: "numeric",
+  }).format(d);
+}
+
+function shortDateTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return new Intl.DateTimeFormat(T[lang].locale, {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  }).format(d);
+}
+
+function returnTag(g) {
+  if (!g.return_period) return null;
+  const el = document.createElement("span");
+  el.className = "tag rare" + (g.return_period >= 10 ? " high" : "");
+  el.textContent = T[lang].returnPeriod(Math.round(g.return_period));
+  if (g.record_max) {
+    el.title = T[lang].returnPeriodTitle(
+      Math.round(g.return_period), num(g.record_max), g.record_max_year);
+  }
+  return el;
+}
+
+function tag(text) {
+  const span = document.createElement("span");
+  span.className = "tag";
+  span.textContent = text;
+  return span;
+}
+
+function gaugeItem(g) {
+  const t = T[lang];
+  const li = document.createElement("li");
+  li.className = "gauge";
+  li.dataset.status = g.status;
+
+  const left = document.createElement("div");
+  const name = document.createElement("p");
+  name.className = "name";
+  name.textContent = g.name;
+  left.appendChild(name);
+
+  const tags = document.createElement("div");
+  tags.className = "tags";
+  const branchKey = BRANCH_KEY[g.branch];
+  if (branchKey) tags.appendChild(tag(t[branchKey]));
+  if (g.flags.includes("regulated")) tags.appendChild(tag(t.flagRegulated));
+  if (g.flags.includes("tide_affected")) tags.appendChild(tag(t.flagTide));
+  const rare = returnTag(g);
+  if (rare) tags.appendChild(rare);
+  if (tags.childElementCount) left.appendChild(tags);
+
+  const status = document.createElement("div");
+  status.className = "status";
+  status.textContent =
+    g.status === "evacuation" ? t.statusEvacuation
+    : g.status === "alert" ? t.statusAlert
+    : g.status === "below" ? t.statusBelow
+    : t.statusUnknown;
+  left.appendChild(status);
+  li.appendChild(left);
+
+  const right = document.createElement("div");
+  right.className = "reading";
+  if (g.value === null) {
+    const none = document.createElement("div");
+    none.className = "nodata";
+    none.textContent = t.noData;
+    right.appendChild(none);
+  } else {
+    const level = document.createElement("div");
+    level.className = "level";
+    level.textContent = num(g.value, g.unit);
+    const unit = document.createElement("span");
+    unit.className = "unit";
+    unit.textContent = g.unit === "m3/s" ? "m³/s" : "m";
+    level.appendChild(unit);
+    right.appendChild(level);
+
+    if (g.change !== null) {
+      const change = document.createElement("div");
+      change.className = "change " + (g.change > 0 ? "up" : g.change < 0 ? "down" : "");
+      const days = g.change_days && g.change_days !== 1 ? " " + t.inDays(g.change_days) : "";
+      change.textContent = signed(g.change, g.unit) + days;
+      right.appendChild(change);
+    }
+  }
+  li.appendChild(right);
+
+  // The bar is drawn only when there is something official to draw it
+  // against. An invented scale would imply a threshold that does not exist.
+  if (g.value !== null && (g.alert !== null || g.evacuation !== null)) {
+    const lines = [g.alert, g.evacuation].filter((v) => v !== null);
+    const top = Math.max(g.value, ...lines) * 1.12;
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const track = document.createElement("div");
+    track.className = "track";
+    const fill = document.createElement("div");
+    fill.className = "fill";
+    fill.style.width = Math.max(0, Math.min(100, (g.value / top) * 100)) + "%";
+    track.appendChild(fill);
+    for (const [value, cls] of [[g.alert, "a"], [g.evacuation, "e"]]) {
+      if (value === null) continue;
+      const tick = document.createElement("div");
+      tick.className = "tick " + cls;
+      tick.style.left = (value / top) * 100 + "%";
+      track.appendChild(tick);
+    }
+    bar.appendChild(track);
+
+    const scale = document.createElement("div");
+    scale.className = "scale";
+    const a = document.createElement("span");
+    a.textContent = g.alert === null ? "" : t.alertShort + " " + num(g.alert, g.unit);
+    const e = document.createElement("span");
+    e.textContent = g.evacuation === null ? "" : t.evacShort + " " + num(g.evacuation, g.unit);
+    scale.append(a, e);
+    bar.appendChild(scale);
+    li.appendChild(bar);
+  }
+
+  return li;
+}
+
+// The lead. A reader arrives asking whether the river is behaving, not
+// wanting a table of thirty-seven readings, and every part of the sentence
+// carries the number it came from so the claim can be checked rather than
+// taken.
+function renderVerdict(v) {
+  const t = T[lang];
+  // This page formats with longDate and num; the shorter helpers the wave
+  // and map pages use do not exist here.
+  const day = (iso) => shortDate(iso);
+  const ratio = (x) => new Intl.NumberFormat(T[lang].locale, {
+    minimumFractionDigits: 1, maximumFractionDigits: 1,
+  }).format(x);
+  const section = document.getElementById("verdict");
+  if (!v || v.state === "unknown") { section.hidden = true; return; }
+
+  const word = {
+    extreme: t.stateExtreme, high_wide: t.stateHighWide, high: t.stateHigh,
+    notable: t.stateNotable, normal: t.stateNormal,
+  }[v.state] || t.stateUnknown;
+  const state = document.getElementById("verdictState");
+  state.textContent = word;
+  state.className = "state " + v.state;
+
+  document.getElementById("verdictDetail").textContent = t.verdictDetail(
+    v.high, v.counted, v.at_top,
+    v.reach && v.reach.from, v.reach && v.reach.to);
+
+  // The magnitude, after the extent. A percentile says where today sits
+  // among past 29ths of October; a return period says how big the flood
+  // is. On this river in spring they routinely disagree, and the reader
+  // wants both.
+  const rare = document.getElementById("verdictRarity");
+  if (v.rarest && v.rarest.record_max) {
+    rare.textContent = t.verdictRarity(
+      Math.round(v.rarest.years), v.rarest.gauge, num(v.rarest.stage_m),
+      num(v.rarest.record_max), v.rarest.record_max_year);
+    rare.hidden = false;
+  } else {
+    rare.hidden = true;
+  }
+
+  const items = [];
+  if (v.front) {
+    items.push([
+      t.evidenceFront(v.front.gauge, day(v.front.day), !v.front.confirmed),
+      "wave.html", t.evidenceSeeWave]);
+  }
+  if (v.water) {
+    items.push([
+      t.evidenceWater(whole(v.water.km2), ratio(v.water.ratio),
+                      whole(v.water.river_km || 0)),
+      "index.html", t.evidenceSeeFlood]);
+  }
+  if (v.as_of) items.push([t.evidenceAsOf(day(v.as_of)), null, null]);
+
+  document.getElementById("verdictEvidence").replaceChildren(
+    ...items.map(([text, href, label]) => {
+      const li = document.createElement("li");
+      li.append(text);
+      if (href) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = label;
+        li.append(" ", a);
+      }
+      return li;
+    }));
+  section.hidden = false;
+}
+
+function render(data) {
+  const t = T[lang];
+  const gauges = data.gauges || [];
+  renderVerdict(data.verdict);
+
+  document.getElementById("lastDay").textContent = longDate(data.last_data_day);
+  const fresh = document.getElementById("fresh");
+  const age = data.data_age_days;
+  if (age !== null && age !== undefined && age > 1) {
+    fresh.textContent = t.stale(age);
+    // Three days, the same threshold `crecida freshness` fails CI on. They
+    // have to agree, because when the scheduled run does not happen at all
+    // the CI check never runs either - and then this line is the only thing
+    // in the world that notices the data has stopped moving.
+    fresh.className = age > 3 ? "stale" : "";
+  } else {
+    fresh.textContent = "";
+    fresh.className = "";
+  }
+  document.getElementById("thrDate").textContent = longDate(
+    (data.thresholds || {}).source_date
+  );
+  document.getElementById("genAt").textContent = shortDateTime(data.generated_at);
+  document.getElementById("meta").hidden = false;
+
+  document.getElementById("nEvac").textContent = gauges.filter((g) => g.status === "evacuation").length;
+  document.getElementById("nAlert").textContent = gauges.filter((g) => g.status === "alert").length;
+  document.getElementById("nRising").textContent = gauges.filter((g) => g.change !== null && g.change > 0).length;
+  document.getElementById("nOfficial").textContent = gauges.filter((g) => g.alert !== null || g.evacuation !== null).length;
+  document.getElementById("tally").hidden = false;
+
+  const list = document.getElementById("list");
+  list.replaceChildren(...gauges.map(gaugeItem));
+}
+
+function fail(message) {
+  const box = document.getElementById("error");
+  box.textContent = message;
+  box.hidden = false;
+}
+
+for (const b of document.querySelectorAll(".langs button")) {
+  b.addEventListener("click", () => setLang(b.dataset.lang));
+}
+
+setLang(pickLang());
+
+fetch("data/river_today.json", { cache: "no-cache" })
+  .then((r) => {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  })
+  .then((data) => {
+    payload = data;
+    render(data);
+  })
+  .catch((err) => fail("No se pudieron cargar los datos / could not load data: " + err.message));
+</script>
+</body>
+</html>

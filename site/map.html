@@ -6,6 +6,8 @@
 <title>Mapa de la crecida — Crecida del Paraná</title>
 <meta name="description" content="Mapa del Paraná del límite con Brasil a Villa Constitución: altura del río día a día, agua detectada por radar, estaciones y departamentos.">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,11 +26,9 @@
   </header>
 
   <nav class="views" data-t-aria="viewsNav">
-    <a href="index.html" data-t="viewToday"></a>
-    <a href="wave.html" data-t="viewWave"></a>
-    <a href="drivers.html" data-t="viewDrivers"></a>
-    <a href="flood.html" data-t="viewFlood"></a>
+    <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" aria-current="page" data-t="viewMap"></a>
+    <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
 
@@ -96,9 +96,10 @@
 
 const T = {
   es: {
+    viewSpace: "Desde el espacio",
     htmlLang: "es", locale: "es-AR",
     title: "Mapa de la crecida",
-    subtitle: "Del límite con Brasil a Villa Constitución: 1.440 km de río, día a día",
+    subtitle: "Del límite con Brasil a Villa Constitución, día a día",
     langGroup: "Idioma",
     provHeading: "De dónde sale cada número",
     provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
@@ -134,9 +135,10 @@ const T = {
     play: "Reproducir", pause: "Pausar",
   },
   en: {
+    viewSpace: "From space",
     htmlLang: "en", locale: "en-GB",
     title: "Flood map",
-    subtitle: "From the Brazil border to Villa Constitución: 1,440 km of river, day by day",
+    subtitle: "From the Brazil border to Villa Constitución, day by day",
     langGroup: "Language",
     provHeading: "Where each number comes from",
     provMeasuredLabel: "Measured", provCalculatedLabel: "Calculated here", provMissingLabel: "Missing",

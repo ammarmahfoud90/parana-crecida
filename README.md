@@ -1,14 +1,31 @@
 # parana-crecida
 
-Flood-wave tracker for the Argentine Paraná.
+How much of the Paraná valley is under water, measured from space.
 
-A flood wave takes days to travel from the Paraguay/Paraná confluence to the Delta,
-so a crest observed at Corrientes is advance warning for Goya, Paraná, Rosario and
-the Delta towns. This repo turns the observed daily stage into that warning: it
-detects rises and crests at each gauge, estimates travel time between gauges from
-the historical record, and projects where a wave now in progress will arrive.
+Sentinel-1 radar sees through cloud, which is what the Litoral needs when it is
+flooding. Still open water reflects the pulse away from the satellite and reads
+dark; rough land sends it back. That difference is the measurement, and this repo
+turns it into one number per twelve-day repeat cycle, for each stretch of the
+Argentine Paraná and for the river as a whole.
 
-Data comes from INA's a5 API (`alerta.ina.gob.ar/a5`).
+**The mask is validated, and the score is published.** Checked against Sentinel-2
+optical water during an actual flood, the method this project shipped with scored
+an IoU of 0.43 — about half right. Re-tuned against optical water rather than
+against the channel at low flow, a single threshold for the whole river reaches
+0.57 (recall 0.73, precision 0.71). Published flood-mapping work reaches 0.7–0.9,
+so this is a working instrument and not a finished one. A water mask with no score
+attached is a picture, not a measurement; see `src/parana_crecida/floodwater.py`
+and `scripts/validate_mask.py`.
+
+The gauge record is the ground truth behind it, and a product of its own: INA's
+daily stage for the main-stem gauges, day-of-year percentiles, Log-Pearson III
+return periods, and travel times between gauges fitted from the record. Data comes
+from INA's a5 API (`alerta.ina.gob.ar/a5`).
+
+**What is deliberately not here:** arrival dates (built, measured at a 23% hit rate
+with a 9-day median error, and withdrawn), area for the gorge above Posadas and for
+the Delta (the measurement does not track the river there), and any claim that the
+numbers are totals. Radar cannot see water under trees, so every figure is a floor.
 
 ## Two packages
 
@@ -331,16 +348,25 @@ run red — which is what actually reaches a person, since GitHub emails on a fa
 scheduled run. It fails if the river data is more than 3 days old, or the rainfall
 more than 10.
 
-## View 4: flooded area
+## The water surface
 
-`site/flood.html` shows how much ground the river covers between Corrientes and
-Goya, measured by Sentinel-1 radar, with the stage at Corrientes on the same
-dates. A gauge says how high the river is at one point; it says nothing about how
-wide, and on a floodplain tens of kilometres across that is the question.
+`site/index.html` is the product: how much of the valley is under water across
+1,477 km of river, one figure per 12-day repeat cycle, with the whole year as an
+animation. `site/flood.html` is the same measurement stretch by stretch. A gauge
+says how high the river is at one point; it says nothing about how wide, and on a
+floodplain tens of kilometres across that is the question.
 
 Radar rather than optical imagery because the Litoral is cloudy exactly when it
-floods. In VV polarisation calm open water is dark: it reflects the pulse away
-from the satellite instead of scattering it back.
+floods. Calm open water is dark to radar: it reflects the pulse away from the
+satellite instead of scattering it back. VH rather than VV, because wind roughens
+a water surface and lifts its backscatter toward the land value, and
+cross-polarised VH is far less sensitive to that.
+
+A stretch publishes a figure only if its mask was scored against Sentinel-2
+optical water and cleared an IoU of 0.45; `data/mask_skill.json` holds that table
+and `scripts/validate_mask.py` rebuilds it. The section below on the fixed
+threshold describes the superseded method and is kept for the argument, not as a
+description of what runs.
 
 ### Why the threshold is fixed, not Otsu
 
@@ -832,9 +858,17 @@ decided it, and a reader should be able to see the number that decided it.
 
 ## What a river level actually tells you about flooded area
 
+**Withdrawn, pending re-measurement.** The 398 observations below were
+measured with the per-stretch VV mask, which has since scored an IoU of
+0.59 against optical water and been replaced by one scoring 0.69. The
+finding - that area at a given stage scatters by about 55% - was partly a
+statement about the river and partly a statement about the mask, and
+nothing here separates the two. It has to be run again on the current mask
+before it can be quoted. The method stands; the numbers do not.
+
 Every flood map publishes an area. None of them publishes how much that
 figure would move if you measured the same river, at the same level, a
-month later. This one does, and the answer is the most distinctive thing
+month later. This one did, and the answer was the most distinctive thing
 here.
 
 `scripts/area_stage_history.py` samples the whole Sentinel-1 era - one

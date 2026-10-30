@@ -13,6 +13,7 @@ fetches a file the export never writes, a view that quietly dropped the
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -20,9 +21,17 @@ import pytest
 
 SITE = Path("site")
 PAGES = sorted(SITE.glob("*.html"))
-VIEWS = {
-    "index.html", "wave.html", "drivers.html",
-    "flood.html", "map.html", "method.html",
+#: The nav. Four entries, because the project is a satellite water product
+#: and not a gauge dashboard, and six entries said otherwise.
+VIEWS = {"index.html", "map.html", "gauges.html", "method.html"}
+
+#: Pages below the nav, and the nav entry each one lights up. They are
+#: reachable from their section rather than from the nav, and a test below
+#: holds them to that - an orphan page is worse than a long nav.
+SECTION = {
+    "flood.html": "index.html",
+    "wave.html": "gauges.html",
+    "drivers.html": "gauges.html",
 }
 
 pytestmark = pytest.mark.skipif(not PAGES, reason="no site to check")
@@ -132,10 +141,24 @@ def test_every_nav_target_exists(page):
 
 
 @pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
-def test_each_page_marks_itself_as_current(page):
+def test_each_page_marks_its_section_as_current(page):
+    """A page off the nav lights up the entry it belongs under."""
     nav = re.search(r"<nav class=\"views\".*?</nav>", page.read_text(encoding="utf-8"), re.S)
     current = re.findall(r'href="([^"]+)"[^>]*aria-current="page"', nav.group(0))
-    assert current == [page.name], f"{page.name} marks {current} as current"
+    want = SECTION.get(page.name, page.name)
+    assert current == [want], f"{page.name} marks {current}, wanted {want}"
+
+
+@pytest.mark.parametrize("name", sorted(SECTION), ids=lambda n: n)
+def test_every_page_below_the_nav_is_linked_from_its_section(name):
+    """Taking a page out of the nav must not orphan it."""
+    parent = SITE / SECTION[name]
+    assert parent.exists(), f"{name} hangs off a missing {parent.name}"
+    body = parent.read_text(encoding="utf-8")
+    outside = re.sub(r"<nav class=\"views\".*?</nav>", "", body, flags=re.S)
+    assert f'href="{name}"' in outside, (
+        f"{name} is off the nav and {parent.name} does not link to it"
+    )
 
 
 # -- both languages, always ------------------------------------------------
@@ -214,17 +237,19 @@ def test_the_flood_page_states_the_calibration_from_the_data():
 
 
 def test_the_method_page_builds_its_tables_from_published_data():
-    """Its calibration table must not be numbers somebody typed.
+    """Its validation table must not be numbers somebody typed.
 
-    A method page that states a threshold from its own source is a claim
-    that drifts the moment the measurement changes.
+    A method page that states a score from its own source is a claim that
+    drifts the moment the measurement changes, and this table is the
+    evidence for every figure the site publishes.
     """
     text = (SITE / "method.html").read_text(encoding="utf-8")
-    assert 'fetch("data/flooded.json")' in text
-    assert 'fetch("data/wave.json")' in text
-    assert "threshold_db" in text
-    # The calibrated figures themselves must not be written into the page.
-    assert "536.3" not in text and "520.8" not in text
+    for name in ("floodwater", "wave"):
+        assert f'fetch("data/{name}.json")' in text, f"{name} is not fetched"
+    assert "surface.skill" in text, "the table is not built from the skill table"
+    # The scores themselves must not be written into the page.
+    for typed in ("0.83", "0.90", "0.48", "536.3", "520.8"):
+        assert f">{typed}<" not in text, f"{typed} is hardcoded in the markup"
 
 
 # -- accessibility ---------------------------------------------------------
@@ -243,7 +268,7 @@ def test_the_looping_animation_can_be_stopped():
     start stopped. Both are the page's job, because the image format offers
     neither.
     """
-    text = (SITE / "flood.html").read_text(encoding="utf-8")
+    text = (SITE / "index.html").read_text(encoding="utf-8")
     assert 'id="loopToggle"' in text
     assert "prefers-reduced-motion" in text
     for lang_key in ("pauseLoop", "playLoop"):
@@ -277,7 +302,13 @@ def test_every_page_offers_a_way_past_the_nav(page):
     body = text.index("<body>")
     skip = text.index('class="skip"')
     assert skip - body < 40, f"{page.name}: the skip link is not the first thing"
-    assert '<main id="content" tabindex="-1">' in text, page.name
+    # The target of the skip link, matched on the two attributes that make
+    # it work rather than on an exact tag string, which broke the moment a
+    # class was added for layout.
+    main = re.search(r"<main[ >][^>]*>?", text)
+    assert main, f"{page.name}: no <main>"
+    assert 'id="content"' in main.group(0), page.name
+    assert 'tabindex="-1"' in main.group(0), page.name
     assert text.index("<main") > text.index("</nav>"), page.name
     assert text.index("</main>") < text.index("<footer"), page.name
 
@@ -315,19 +346,36 @@ def test_the_csv_files_the_method_page_links_are_published():
 
 
 def test_the_published_csv_withholds_what_the_json_withholds():
-    """The gorge and the Delta claim no area here either.
+    """Exactly the same stretches, from a different code path.
 
     A CSV is the one place a withheld measurement could quietly come back,
-    because it is written from a different code path to the pages.
+    because it is written separately from the pages and because a CSV is
+    the copy people download and keep.
+
+    This used to name the three stretches by hand, which encoded a result
+    rather than the rule behind it: when the mask was revalidated the two
+    gorge reaches turned out to be the best on the river, and a test that
+    said so by name would have had to be argued with rather than simply
+    re-run.
     """
     import csv
 
     path = SITE / "data/csv/flooded_area.csv"
-    if not path.exists():
+    published = SITE / "data/floodwater.json"
+    if not path.exists() or not published.exists():
         pytest.skip("no CSV exported yet")
+
+    payload = json.loads(published.read_text(encoding="utf-8"))
+    allowed = {s["key"] for s in payload["stretches"]}
+    withheld = {s["key"] for s in payload.get("withheld", [])}
+
     with path.open(encoding="utf-8") as handle:
-        keys = {row["stretch"] for row in csv.DictReader(handle)}
-    for withheld in (
-        "puerto_iguazu_libertador", "libertador_posadas", "villa_constitucion_ibicuy"
-    ):
-        assert withheld not in keys, f"{withheld} publishes an area in the CSV"
+        rows = list(csv.DictReader(handle))
+    keys = {row["stretch"] for row in rows}
+
+    assert keys <= allowed, f"the CSV publishes {sorted(keys - allowed)}"
+    assert not (keys & withheld), f"withheld stretches in the CSV: {sorted(keys & withheld)}"
+    # And the evidence travels with the figures, or the file is a set of
+    # numbers with no way to tell how much to trust any of them.
+    for row in rows:
+        assert row["iou"], f"{row['stretch']} has no score in the CSV"

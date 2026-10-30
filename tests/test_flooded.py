@@ -259,36 +259,32 @@ def test_the_threshold_still_reproduces_jrc_permanent_water():
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
-def test_an_uncalibrated_stretch_publishes_no_number():
-    """The gorge reaches show a picture and claim no area.
+def test_the_map_total_counts_only_what_the_map_draws():
+    """A stretch that claims no area is in no total either.
 
-    Between Puerto Iguazu and Posadas the river runs in a basalt gorge. No
-    threshold reproduced JRC there: the search landed on -20/-21 dB with a
-    6.5 dB spread between neighbouring reaches, which is a threshold
-    compensating for radar shadow on the valley walls rather than measuring
-    water. Those stretches are marked uncalibrated, and this asserts the
-    consequence: they are kept out of any published total.
+    This used to name the three stretches it expected to be withheld - the
+    two gorge reaches and the Delta - which encoded a result rather than
+    the rule. When the mask was revalidated against optical water the gorge
+    turned out to score best on the river and started publishing, and a
+    test written that way has to be argued with rather than re-run.
+
+    The rule survives the change: whatever set of stretches the frame
+    draws, the total is the sum of exactly those and nothing else.
     """
     frames = json.loads(
         Path("site/data/map_frames.json").read_text(encoding="utf-8")
     )
-    uncalibrated = {
-        s["key"] for s in frames["stretches"] if not s["calibrated"]
-    }
-    assert uncalibrated == {
-        "puerto_iguazu_libertador",      # the gorge: radar shadow
-        "libertador_posadas",            # the gorge
-        "villa_constitucion_ibicuy",     # the Delta: tide and wind
-    }
+    drawn = {s["key"] for s in frames["stretches"]}
+    assert drawn, "the map draws no stretch at all"
 
     for frame in frames["frames"]:
         if frame["total_km2"] is None:
             continue
-        counted = sum(
-            v for k, v in frame["km2"].items() if k not in uncalibrated
-        )
+        extra = set(frame["km2"]) - drawn
+        assert not extra, f"{frame['end']}: areas for undrawn {sorted(extra)}"
+        counted = sum(v for k, v in frame["km2"].items() if k in drawn)
         assert frame["total_km2"] == pytest.approx(counted, abs=0.5), (
-            f"{frame['end']}: the total includes an uncalibrated stretch"
+            f"{frame['end']}: the total does not match the stretches drawn"
         )
 
 
