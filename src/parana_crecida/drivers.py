@@ -58,12 +58,25 @@ ENSO_BANDS = (
     (-2.0, "la_nina_strong"),
 )
 
-#: The gauges that are upstream drivers rather than main-stem readings.
+#: The gauges that are upstream drivers rather than main-stem readings,
+#: in the order the water arrives.
+#:
+#: The Paraguay was missing from this list until it was noticed that a page
+#: about where the water comes from showed only the Parana's own side of
+#: the confluence. The Parana at Corrientes is the sum of two rivers, and
+#: which of them is high is the first thing a reader should be able to see.
+#: On the flood this was added during, the answer is unambiguous: the
+#: Parana is at its day-of-year maximum while the Paraguay sits around the
+#: 56th to 88th percentile. This is a Parana flood, and without these
+#: gauges on the page there was no way to tell.
 DRIVER_SERIES = (
     "26605",  # Andresito, Iguazu discharge
     "26684",  # Yacyreta afluente
     "26685",  # Yacyreta efluente
-    "26690",  # Confluencia
+    "26652",  # Puerto Pilcomayo, Paraguay discharge
+    "26442",  # Puerto Formosa, Paraguay stage
+    "26300",  # Bermejo, into the Paraguay
+    "26690",  # Confluencia: the two rivers added together
 )
 
 #: Flow stations INA prints but does not serve through a5. Matched on the
