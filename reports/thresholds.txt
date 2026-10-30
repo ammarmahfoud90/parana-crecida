@@ -1,9 +1,9 @@
-ina thresholds - 2026-10-30T13:04:05-03:00
+ina thresholds - 2026-10-30T13:33:10-03:00
 
-  2026-10-30: 2493 KB -> reporte_diario_2026-10-30.pdf
-parsed 24 rows from the report's threshold tables
+  2026-10-30: 2683 KB -> reporte_diario_2026-10-30.pdf
+parsed 25 rows from the report's threshold tables
 
-15 gauges in scope have official levels:
+16 gauges in scope have official levels:
   Puerto Iguazu          alert       25  evac       28  m
   Corrientes             alert      6.5  evac        7  m
   Goya                   alert      5.2  evac      5.7  m
@@ -11,6 +11,7 @@ parsed 24 rows from the report's threshold tables
   Parana                 alert      4.7  evac        5  m
   Rosario                alert        5  evac     5.25  m
   Victoria               alert      4.6  evac      5.9  m
+  San Fernando           alert        3  evac      3.5  m
   Yacyreta afluente      alert    25000  evac    30000  m3/s
   Yacyreta efluente      alert    25000  evac    30000  m3/s
   Confluencia            alert    25000  evac    30000  m3/s
@@ -20,7 +21,7 @@ parsed 24 rows from the report's threshold tables
   Puerto Formosa         alert      7.8  evac      8.3  m
   Andresito              alert     5000  evac     6500  m3/s
 
-32 gauges in scope are NOT in the report, left empty:
+31 gauges in scope are NOT in the report, left empty:
   Libertad, El Dorado, Libertador, Santa Ana
   Posadas, Ituzaingo, Ita Ibate, Itati
   Paso de la Patria, Empedrado, Bella Vista, Esquina
@@ -28,7 +29,7 @@ parsed 24 rows from the report's threshold tables
   Villa Constitucion, San Nicolas, Ramallo, San Pedro
   Baradero, Zarate, Campana, Escobar
   Canal Nuevo, Ibicuy, Guazucito, Tigre
-  San Fernando, Olivos, Puerto Pilcomayo, Bermejo
+  Olivos, Puerto Pilcomayo, Bermejo
 
 9 report rows match no gauge in scope (kept for checking):
   Puerto Pilcomayo, San Javier, Santo Tomé

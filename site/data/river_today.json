@@ -1,13 +1,13 @@
 {
  "schema": 1,
- "generated_at": "2026-10-30T13:11:12-03:00",
+ "generated_at": "2026-10-30T13:39:38-03:00",
  "last_data_day": "2026-10-29",
  "data_age_days": 1,
  "freshness": "1 day behind",
  "official_source_url": "https://alerta.ina.gob.ar/",
  "thresholds": {
   "source_date": "2026-10-30",
-  "gauges_with_values": 15
+  "gauges_with_values": 16
  },
  "validation": {
   "ok": true,
@@ -707,9 +707,9 @@
    "value": 1.15,
    "change": 0.17,
    "change_days": 1,
-   "alert": null,
-   "evacuation": null,
-   "status": "unknown",
+   "alert": 3.0,
+   "evacuation": 3.5,
+   "status": "below",
    "return_period": null,
    "record_max": null,
    "record_max_year": null
