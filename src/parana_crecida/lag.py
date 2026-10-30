@@ -77,6 +77,10 @@ class LegLag:
     p25_days: float | None
     p75_days: float | None
     correlation_days: float | None
+    #: ``{"split_magnitude": float, "small": {...}, "large": {...}}`` where
+    #: this leg has enough matches on both sides of its own median wave
+    #: size, otherwise None.
+    sizes: dict[str, object] | None = None
 
     @property
     def km(self) -> float:
@@ -221,6 +225,54 @@ def _days(n: int):
     return timedelta(days=n)
 
 
+#: Fewest matches a size band needs before its own median is used. Below
+#: this the band is reported but the pooled figure is what gets quoted:
+#: three crests is a number, not a distribution.
+MIN_PAIRS_PER_BAND = 4
+
+
+def _band(matches: list[Match]) -> dict[str, object] | None:
+    """Median and quartiles for one set of matches."""
+    if not matches:
+        return None
+    lags = np.array([m.lag_days for m in matches], dtype=float)
+    return {
+        "n": len(matches),
+        "median_days": float(np.median(lags)),
+        "p25_days": float(np.percentile(lags, 25)),
+        "p75_days": float(np.percentile(lags, 75)),
+    }
+
+
+def by_wave_size(matches: list[Match]) -> dict[str, object] | None:
+    """Travel time split by how big the wave was.
+
+    Celerity rises with stage: a flood that fills the valley moves faster
+    than one that stays in the channel, and a single median over every
+    crest on record sits between the two and fits neither. The split is at
+    the median magnitude of this leg's own matches, so each leg is divided
+    against its own history rather than an absolute threshold that would
+    mean different things at Corrientes and at Rosario.
+
+    Magnitude is the day-of-year anomaly, which does not saturate. The
+    percentile would: in a flood like this one half the crests read 100 and
+    the measure stops discriminating exactly where it matters most.
+    """
+    if len(matches) < 2 * MIN_PAIRS_PER_BAND:
+        return None
+    sizes = np.array([_magnitude(m.upstream) for m in matches], dtype=float)
+    split = float(np.median(sizes))
+    small = [m for m, s in zip(matches, sizes) if s < split]
+    large = [m for m, s in zip(matches, sizes) if s >= split]
+    if min(len(small), len(large)) < MIN_PAIRS_PER_BAND:
+        return None
+    return {
+        "split_magnitude": round(split, 3),
+        "small": _band(small),
+        "large": _band(large),
+    }
+
+
 def leg_lag(
     leg: Leg,
     crests: dict[str, list[Crest]],
@@ -252,6 +304,7 @@ def leg_lag(
         p25_days=p25,
         p75_days=p75,
         correlation_days=correlation,
+        sizes=by_wave_size(matches),
     )
 
 
@@ -340,6 +393,7 @@ def to_row(leg: LegLag) -> dict[str, object]:
         "confident": leg.confident,
         "agree": leg.estimators_agree,
         "resolution_limited": leg.resolution_limited,
+        "sizes": leg.sizes,
         "celerity": None
         if leg.resolution_limited or not leg.celerity
         else round(leg.celerity, 1),
