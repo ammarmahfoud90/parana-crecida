@@ -187,7 +187,7 @@
    "timing": "ahead"
   }
  ],
- "generated_at": "2026-10-29T21:54:17-03:00",
+ "generated_at": "2026-10-29T22:06:36-03:00",
  "skill": {
   "schema": 1,
   "note": "The tracker run over the record as it would have run on the day, scored against the first local maximum each gauge then reached. The baseline is the same projection with no travel time in it: the crest arriving everywhere on the day the anchor peaked.",

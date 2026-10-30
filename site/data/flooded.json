@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T21:54:17-03:00",
+ "generated_at": "2026-10-29T22:06:36-03:00",
  "source": "COPERNICUS/S1_GRD",
  "method": {
   "threshold_db": "per stretch; see each stretch's threshold_db",
@@ -32,6 +32,7 @@
    "latest": null,
    "extra_km2": null,
    "peak": null,
+   "stage_correlation": 0.3,
    "levels": {
     "from": [],
     "to": []
@@ -53,6 +54,7 @@
    "latest": null,
    "extra_km2": null,
    "peak": null,
+   "stage_correlation": 0.11,
    "levels": {
     "from": [],
     "to": []
@@ -109,6 +111,7 @@
     "day": "2026-10-28",
     "km2": 2401.1
    },
+   "stage_correlation": 0.54,
    "levels": {
     "from": [
      9.91,
@@ -195,6 +198,7 @@
     "day": "2026-10-28",
     "km2": 1354.5
    },
+   "stage_correlation": 0.59,
    "levels": {
     "from": [
      1.04,
@@ -283,6 +287,7 @@
     "day": "2026-10-28",
     "km2": 1644.7
    },
+   "stage_correlation": 0.43,
    "levels": {
     "from": [
      2.51,
@@ -373,6 +378,7 @@
     "day": "2026-10-28",
     "km2": 1208.6
    },
+   "stage_correlation": 0.65,
    "levels": {
     "from": [
      3.0,
@@ -463,6 +469,7 @@
     "day": "2026-05-25",
     "km2": 1019.2
    },
+   "stage_correlation": 0.01,
    "levels": {
     "from": [
      3.31,
@@ -553,6 +560,7 @@
     "day": "2026-10-04",
     "km2": 1293.0
    },
+   "stage_correlation": 0.68,
    "levels": {
     "from": [
      2.38,
@@ -606,6 +614,7 @@
    "latest": null,
    "extra_km2": null,
    "peak": null,
+   "stage_correlation": -0.44,
    "levels": {
     "from": [],
     "to": []
