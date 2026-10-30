@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T23:50:57-03:00",
+ "generated_at": "2026-10-30T12:24:16-03:00",
  "source": "COPERNICUS/S1_GRD",
  "method": {
   "threshold_db": "per stretch; see each stretch's threshold_db",
@@ -10,7 +10,7 @@
  },
  "note": "Open water from Sentinel-1 VV backscatter. Radar does not see water under vegetation, so flooded forest and wetland read as land and this is a floor, not a total.",
  "fetched_on": "2026-10-30",
- "stale_days": -1,
+ "stale_days": 0,
  "window": {
   "start": "2026-05-01",
   "end": "2026-10-28"
