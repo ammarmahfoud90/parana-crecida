@@ -988,6 +988,108 @@ def freshness(
     "--project", envvar="EE_PROJECT", default=None,
     help="Earth Engine cloud project id. Also read from EE_PROJECT.",
 )
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=Path("data/floodwater.json"), show_default=True,
+)
+@click.option(
+    "--lag-days", default=None, type=int,
+    help="How far back the newest usable pass is. Defaults to the project's own.",
+)
+@report_option
+def floodwater(project: str | None, out: Path, lag_days: int | None,
+               report: Path | None) -> None:
+    """Measure the water surface on the validated mask, and freeze it.
+
+    This is the product the site leads with. It is incremental: a run adds
+    a cycle only once a full Sentinel-1 repeat has passed since the last
+    one, so most days it measures nothing and simply records that it
+    looked. The first run against an empty table measures a year, and that
+    one is slow.
+    """
+    from . import flooded as fl
+    from . import floodwater as fw
+    from . import rainfall as rf
+
+    rep = Report("water surface")
+    lag = fl.LAG_DAYS if lag_days is None else lag_days
+    last = date.today() - timedelta(days=lag)
+    try:
+        rf.initialize(project=project)
+        payload = fw.rebuild(out, last=last)
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"Earth Engine fetch failed: {exc}") from exc
+
+    rep.say(f"VH < {fw.VH_THRESHOLD_DB} dB, HAND <= {fw.HAND_LIMIT_M} m, "
+            f"{fw.WINDOW_DAYS}-day composites")
+    rep.say(f"newest usable pass: {last}")
+    for stretch in payload["stretches"]:
+        days = stretch["days"]
+        if not days:
+            rep.say(f"  {stretch['key']}: nothing measured")
+            continue
+        rep.say(f"  {stretch['from_name']} -> {stretch['to_name']}: "
+                f"{len(days)} cycles, {days[0]} to {days[-1]}, "
+                f"latest {stretch['water_km2'][-1]:,.0f} km2")
+    rep.say()
+    rep.say(f"water surface -> {out}")
+    rep.write(report)
+
+
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
+@click.option("--force", is_flag=True,
+              help="Render even when no new cycle has landed.")
+@report_option
+def film(project: str | None, force: bool, report: Path | None) -> None:
+    """Render the whole river over a year, one frame per repeat cycle.
+
+    Guarded on purpose. The render is thirty-one Earth Engine thumbnails
+    and a four megabyte GIF, and running it daily would add that much to
+    the repository every day for a picture that cannot have changed: the
+    frames move on the satellite's twelve-day rhythm, not ours. So it runs
+    when the water series holds a cycle the film does not.
+    """
+    from . import floodwater as fw
+    from . import rainfall as rf
+    from . import riverfilm as rfm
+
+    rep = Report("river film")
+    water = fw.load()
+    newest = max(
+        (s["days"][-1] for s in water.get("stretches", []) if s.get("days")),
+        default=None,
+    )
+    existing = rfm.load()
+    frames = existing.get("frames") or []
+    drawn = frames[-1]["end"] if frames else None
+
+    if not force and newest and drawn and newest <= drawn:
+        rep.say(f"newest cycle {newest} is already drawn; nothing to render")
+        rep.write(report)
+        return
+
+    try:
+        rf.initialize(project=project)
+        payload = rfm.render()
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        raise click.ClickException(f"Earth Engine render failed: {exc}") from exc
+
+    last_frame = payload["frames"][-1]
+    rep.say(f"{len(payload['frames'])} frames over {payload['river_km']:,.0f} km")
+    rep.say(f"last frame {last_frame['end']}, {last_frame['water_km2']:,.0f} km2")
+    rep.say(f"film -> {payload['image']}")
+    rep.write(report)
+
+
+@main.command()
+@click.option(
+    "--project", envvar="EE_PROJECT", default=None,
+    help="Earth Engine cloud project id. Also read from EE_PROJECT.",
+)
 @click.option("--window-days", default=180, show_default=True)
 @click.option(
     "--out", type=click.Path(path_type=Path), default=Path("data/flooded.json"),

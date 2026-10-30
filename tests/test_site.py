@@ -379,3 +379,29 @@ def test_the_published_csv_withholds_what_the_json_withholds():
     # numbers with no way to tell how much to trust any of them.
     for row in rows:
         assert row["iou"], f"{row['stretch']} has no score in the CSV"
+
+
+# -- the pipeline behind the pages -----------------------------------------
+
+
+def test_the_daily_run_refreshes_what_the_front_page_reads():
+    """Every file a page fetches must have something that rebuilds it.
+
+    The front page was shipped reading data/floodwater.json, which at the
+    time was produced by an ad-hoc script and by nothing in CI. The
+    headline figure would have frozen on the day it was committed while
+    the gauge pages went on updating three times a day, and the freshness
+    gate pointed at that same file would have failed every run from ten
+    days later.
+    """
+    workflow = Path(".github/workflows/daily.yml")
+    if not workflow.exists():
+        pytest.skip("no daily workflow")
+    run = workflow.read_text(encoding="utf-8")
+
+    for command in ("crecida floodwater", "crecida flooded", "crecida rainfall"):
+        assert command in run, f"{command} is not in the daily run"
+
+    # And what it measures has to be committed, or the run throws it away.
+    for produced in ("data/floodwater.json", "site/data"):
+        assert produced in run, f"{produced} is never committed"

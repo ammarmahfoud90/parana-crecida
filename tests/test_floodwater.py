@@ -262,3 +262,44 @@ def test_every_published_stretch_cleared_the_floor():
         assert stretch["iou"] >= SKILL_FLOOR, stretch["key"]
     for row in payload["withheld"]:
         assert row.get("iou") is None or row["iou"] < SKILL_FLOOR, row["key"]
+
+
+# -- the incremental rebuild ----------------------------------------------
+
+
+def test_the_cycle_grid_is_anchored_to_what_was_measured():
+    """A daily job must not invent a new set of windows every morning.
+
+    Computing the grid backwards from today moves every date by a day each
+    run, so the series would never grow: each morning would measure a
+    fresh set of windows and discard the old. The map frames did exactly
+    that and left fifteen orphaned images in the repository.
+    """
+    from datetime import date as _date
+
+    from parana_crecida.floodwater import _grid
+
+    known = ["2026-10-04", "2026-10-16", "2026-10-28"]
+
+    # Nothing until a full repeat cycle has passed.
+    assert _grid(known, _date(2026, 10, 30), 12) == []
+    assert _grid(known, _date(2026, 11, 8), 12) == []
+
+    # Then one cycle, on the grid the series already sits on.
+    assert _grid(known, _date(2026, 11, 9), 12) == [_date(2026, 11, 9)]
+
+    # And it keeps that grid rather than drifting with the run date.
+    assert _grid(known, _date(2026, 11, 21), 12) == [
+        _date(2026, 11, 9), _date(2026, 11, 21),
+    ]
+
+
+def test_an_empty_table_asks_for_a_whole_year():
+    from datetime import date as _date
+
+    from parana_crecida.floodwater import KEEP_CYCLES, _grid
+
+    grid = _grid([], _date(2026, 10, 28), 12)
+    assert len(grid) == KEEP_CYCLES
+    assert grid == sorted(grid), "the grid must run oldest first"
+    assert grid[-1] == _date(2026, 10, 28)

@@ -218,6 +218,114 @@ def series(
     return out
 
 
+#: Cycles kept in the published series. Thirty-one is a little over a year,
+#: which is the span that shows a low-water season as well as a flood.
+KEEP_CYCLES = 31
+
+
+def _grid(known: list[str], last: date, window_days: int) -> list[date]:
+    """The cycle ends that should exist, anchored to the ones that do.
+
+    Computing the grid backwards from today moves every date by a day each
+    time it runs, so a daily job would measure a brand new set of windows
+    every morning and never add to the series it already had. The map
+    frames did exactly that and left a full set of orphaned images behind.
+
+    So the grid is anchored to the last cycle already measured, and a new
+    one is added only once a full window has passed since it.
+    """
+    if not known:
+        return [last - timedelta(days=window_days * i) for i in range(KEEP_CYCLES - 1, -1, -1)]
+    anchor = date.fromisoformat(known[-1])
+    fresh = []
+    while anchor + timedelta(days=window_days) <= last:
+        anchor = anchor + timedelta(days=window_days)
+        fresh.append(anchor)
+    return fresh
+
+
+def rebuild(
+    path: Path | str = Path("data/floodwater.json"),
+    *,
+    last: date,
+    window_days: int = WINDOW_DAYS,
+    keep: int = KEEP_CYCLES,
+) -> dict:
+    """Measure the cycles that are missing and leave the rest alone.
+
+    The first run measures a year, which takes a while. Every run after
+    that measures nothing at all until a repeat cycle has passed, then one
+    cycle, which is nine stretches and a couple of minutes. That is what
+    makes this safe to put in a daily job.
+
+    ``fetched_on`` is bumped on every successful run, not only when a cycle
+    is added. The freshness gate asks whether what is published is current,
+    and "checked today, the newest pass is still the one from last week" is
+    a current answer.
+    """
+    path = Path(path)
+    payload = load(path) or {}
+    rows = payload.get("stretches") or []
+    by_key = {row["key"]: row for row in rows}
+
+    for stretch in fl.load_corridors():
+        row = by_key.get(stretch.key)
+        if row is None:
+            row = {
+                "key": stretch.key, "from": stretch.from_id, "to": stretch.to_id,
+                "from_name": stretch.from_name, "to_name": stretch.to_name,
+                "river_km": stretch.river_km, "corridor_km2": None,
+                "days": [], "water_km2": [], "flood_km2": [],
+            }
+            rows.append(row)
+            by_key[stretch.key] = row
+
+        corridor = fl.corridor_geometry(stretch)
+        if not row.get("corridor_km2"):
+            row["corridor_km2"] = round(
+                float(corridor.area(1000).divide(1e6).getInfo()))
+
+        for end in _grid(row["days"], last, window_days):
+            start = end - timedelta(days=window_days - 1)
+            try:
+                water = area_km2(corridor, water_mask(corridor, start, end))
+                flood = area_km2(corridor, flood_only(corridor, start, end))
+            except Exception as error:  # pragma: no cover - Earth Engine
+                log.warning("%s %s: %s", stretch.key, end, error)
+                continue
+            row["days"].append(end.isoformat())
+            row["water_km2"].append(round(water, 1))
+            row["flood_km2"].append(round(flood, 1))
+            log.info("%s %s: %.0f km2 water, %.0f beyond the channel",
+                     stretch.key, end, water, flood)
+
+        # Trim from the front, keeping every series the same length.
+        for field in ("days", "water_km2", "flood_km2"):
+            row[field] = row[field][-keep:]
+
+    payload.update({
+        "schema": 2,
+        "note": ("Open water from Sentinel-1 VH below -25 dB, bounded by height "
+                 "above nearest drainage. One threshold for the whole river, "
+                 "tuned against Sentinel-2 optical water during a flood rather "
+                 "than against the channel at low flow. water_km2 is all water; "
+                 "flood_km2 excludes the permanent channel."),
+        "method": "vh-threshold/hand",
+        "vh_threshold_db": VH_THRESHOLD_DB,
+        "hand_limit_m": HAND_LIMIT_M,
+        "window_days": window_days,
+        "permanent_water": ("JRC occurrence > 90, or JRC yearly water class 3 "
+                            f"in the {BAJANTE_YEAR} bajante"),
+        "skill": SKILL,
+        "fetched_on": date.today().isoformat(),
+        "stretches": rows,
+    })
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+                    encoding="utf-8")
+    return payload
+
+
 def load(path: Path | str = Path("data/floodwater.json")) -> dict:
     path = Path(path)
     if not path.exists():

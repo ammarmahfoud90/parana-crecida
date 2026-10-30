@@ -7,15 +7,15 @@
  "window_days": 12,
  "skill": {
   "measured_against": "Sentinel-2 MNDWI water, 22 October 2026",
-  "stretches": 4,
-  "recall": 0.73,
-  "precision": 0.71,
-  "iou": 0.57,
+  "stretches": 8,
+  "recall": 0.8,
+  "precision": 0.82,
+  "iou": 0.69,
   "previous": {
    "method": "per-stretch VV threshold",
-   "recall": 0.59,
-   "precision": 0.61,
-   "iou": 0.43
+   "recall": 0.7,
+   "precision": 0.77,
+   "iou": 0.59
   }
  },
  "fetched_on": "2026-10-30",

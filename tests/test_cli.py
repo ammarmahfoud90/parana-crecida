@@ -168,6 +168,8 @@ def test_only_implemented_commands_are_registered():
     assert set(main.commands) == {
         "gauges",
         "animation",
+        "film",
+        "floodwater",
         "backtest",
         "basemap",
         "catalogue",
