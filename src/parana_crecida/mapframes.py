@@ -164,8 +164,18 @@ def render(
         # visualize() turns the float RGB into 8-bit bands; the mask comes
         # through as the PNG's alpha channel, which is what makes the land
         # transparent over the basemap.
+        # crs matters, and its absence was a bug worth naming. getThumbURL
+        # renders in EPSG:4326 by default - linear in latitude - while
+        # Leaflet's imageOverlay stretches the image linearly across the
+        # bounds in EPSG:3857, which is not. The two only agree at the top
+        # and bottom edges; in between the overlay slides toward the pole.
+        # Over this run's 8.5 degrees of latitude that put the water up to
+        # 10 km south of the river it was meant to be lying on, worst near
+        # -29.65. Rendering in Mercator to begin with makes Leaflet's linear
+        # placement the right thing to do.
         url = painted.visualize(min=0, max=1).getThumbURL(
-            {"region": region, "dimensions": px, "format": "png"}
+            {"region": region, "dimensions": px, "format": "png",
+             "crs": "EPSG:3857"}
         )
         path = out_dir / f"water_{end.isoformat()}.png"
         response = requests.get(url, timeout=300)
