@@ -202,14 +202,24 @@ def write_site(
     with_stage=True, stage_age_days=1,
 ):
     import json
-    from datetime import date, timedelta
+    from datetime import timedelta
+
+    # The river's clock, not the runner's. `crecida freshness` measures age
+    # against America/Argentina/Buenos_Aires; a fixture built on the local
+    # date disagrees with it by a day whenever the two are on different
+    # calendar days - which, on a UTC runner, is every day between 00:00
+    # and 03:00 UTC. CI went red at 00:01.
+    from ina_a5.observations import DEFAULT_TZ
+    from datetime import datetime
+
+    today = datetime.now(DEFAULT_TZ).date()
 
     data = tmp_path / "site"
     data.mkdir(exist_ok=True)
     if with_stage:
         # The daily river colour is the map's default layer: absent or behind,
         # the map opens on nothing while every other check passes.
-        newest = date.today() - timedelta(days=stage_age_days)
+        newest = today - timedelta(days=stage_age_days)
         (data / "river_stage.json").write_text(json.dumps({
             "days": [(newest - timedelta(days=1)).isoformat(), newest.isoformat()],
             "anchors": [{"series_id": "26261", "river_km": 659.8}],
