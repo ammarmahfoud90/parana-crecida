@@ -504,6 +504,43 @@ def export_csv(
     return written
 
 
+def _stage_correlation(
+    store: Store, raw: dict, key: str
+) -> float | None:
+    """Correlation between a stretch's water area and its downstream gauge.
+
+    ``None`` where there are too few passes with a matching reading to say
+    anything - which is different from zero, and is published as such.
+
+    Computed from the raw table rather than the summary, so a stretch that
+    publishes no area still publishes this. That is deliberate: it is the
+    evidence for the refusal. The Delta's -0.44 is the reason it shows a
+    picture and claims no number, and a reader should be able to see the
+    number that decided it.
+    """
+    from . import flooded as fl
+
+    corridor = next((c for c in fl.load_corridors() if c.key == key), None)
+    source = next((s for s in raw.get("stretches", []) if s["key"] == key), None)
+    if corridor is None or source is None or not source.get("km2"):
+        return None
+    levels = {v.day.isoformat(): v.value for v in store.series(corridor.to_id)}
+    pairs = [
+        (levels[day], km2)
+        for day, km2 in zip(source["days"], source["km2"])
+        if day in levels
+    ]
+    if len(pairs) < 8:
+        return None
+    try:
+        import numpy as np
+    except ImportError:  # pragma: no cover - numpy is a runtime dependency
+        return None
+    matrix = np.corrcoef([p[0] for p in pairs], [p[1] for p in pairs])
+    value = float(matrix[0, 1])
+    return None if value != value else round(value, 2)
+
+
 def export_flooded(
     store: Store,
     result: ValidationResult,
@@ -532,6 +569,23 @@ def export_flooded(
 
     raw = load_table(flooded_path or FLOOD_TABLE)
     stretches = summarise(raw) if raw else []
+
+    # How well each stretch's measured area moves with the river, published
+    # rather than left for a reader to assume.
+    #
+    # Calibration asks whether the threshold reproduces JRC over low water.
+    # Every stretch here passed that, La Paz to Parana best of all at 1.2%.
+    # It does not ask whether the series that follows carries a flood, and
+    # on that stretch it does not: the area at stage 2.86 m and at 2.82 m
+    # differs by 57%, which is scatter, and its true response is the
+    # smallest on the river - 1.6 times the bajante against 3.2 at
+    # Corrientes to Goya. Small signal, large noise, no correlation.
+    #
+    # The number goes on the page beside the area so that "this stretch
+    # barely moved" can be read as "we cannot tell here" rather than as a
+    # statement about the flood.
+    for stretch in stretches:
+        stretch["stage_correlation"] = _stage_correlation(store, raw, stretch["key"])
 
     # Attach the stage at each gauge on each pass date. Radar says how wide,
     # the gauge says how high, and neither is much use without the other.

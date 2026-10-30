@@ -790,6 +790,46 @@ Paraguay is **not** driving this flood:
 This is a Parana flood. Until these gauges were on the page there was no way
 for a reader to tell, which is the whole argument for putting them there.
 
+## Calibration is not the same question as tracking
+
+Every stretch is calibrated against JRC permanent water over the 2021
+bajante. That asks one thing: does the threshold reproduce an independent
+map of the river at low water? It does not ask whether the series that
+follows carries a flood.
+
+Those are different questions, and the difference is not academic:
+
+| stretch | calibration | tracks the gauge |
+|---|---|---|
+| Parana - Villa Constitucion | 3.2% | **+0.68** |
+| Goya - La Paz | 7.5% | +0.65 |
+| Ita Ibate - Corrientes | 7.1% | +0.59 |
+| Posadas - Ita Ibate | 3.9% | +0.54 |
+| Corrientes - Goya | 3.0% | +0.43 |
+| **La Paz - Parana** | **1.2%** - the best | **+0.01** |
+| Villa Constitucion - Ibicuy (Delta) | 8.2% | **-0.44** |
+
+La Paz to Parana calibrates better than any other stretch and tracks the
+river not at all. It was chased properly before being written down:
+
+- Not coverage. The area correlates -0.12 with the number of images.
+- Not distant water swamping the signal. Narrowing the corridor from 20 km
+  to 10 and then 6 made it *worse*, -0.02 and then -0.30.
+- Not vegetation. ESA WorldCover puts it mid-range on tree cover at 21.9%,
+  while the most wetland-covered stretch on the river, Goya to La Paz at
+  51.8%, tracks fine at +0.65.
+
+What it is: a small signal under large scatter. The area at 2.86 m and at
+2.82 m - two readings four weeks apart at effectively the same stage -
+differs by 57%, and the stretch's full range over the flood is 1.6 times
+the bajante where Corrientes to Goya reaches 3.2. There is a real
+measurement there and not enough of it to see a river in.
+
+So the correlation is now computed for every stretch and published beside
+the area, including for the stretches that publish no area, because it is
+the evidence for those refusals. The Delta's -0.44 is the number that
+decided it, and a reader should be able to see the number that decided it.
+
 ## Status
 
 Built:

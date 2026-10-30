@@ -116,11 +116,13 @@
               <th class="num" data-t="colBajante"></th>
               <th class="num" data-t="colJrc"></th>
               <th class="num" data-t="colResidual"></th>
+              <th class="num" data-t="colTracks"></th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
+      <p data-t="radarTracks"></p>
       <p data-t="radarGorge"></p>
       <p data-t="radarFilters"></p>
       <p data-t="radarComposite"></p>
@@ -238,7 +240,8 @@ const T = {
     radarHeading: "El agua medida por radar",
     radarBody: "La superficie cubierta por el agua se mide con Sentinel-1, un radar que atraviesa las nubes —que es justo lo que hace falta en el Litoral cuando llueve. El agua quieta y abierta se ve oscura porque refleja el pulso lejos del satélite; la tierra, rugosa, lo devuelve. Se usa polarización VV, filtro de moteado de 50 m, sobre un corredor de 20 km a cada lado del cauce.",
     radarCalib: "El umbral que separa agua de tierra no se elige por gusto ni se calcula automáticamente: se calibra tramo por tramo contra el agua permanente que el JRC mapea de forma independiente, usando la bajante de 2021 —la más baja en 77 años— como referencia de «río en su cauce y nada más». El umbral no se traslada de un tramo a otro.",
-    colStretch: "Tramo", colThreshold: "umbral", colBajante: "bajante 2021", colJrc: "JRC", colResidual: "dif.",
+    colStretch: "Tramo", colThreshold: "umbral", colBajante: "bajante 2021", colJrc: "JRC", colResidual: "dif.", colTracks: "sigue al río",
+    radarTracks: "La última columna es la otra mitad de la prueba, y la que importa más. Calibrar pregunta si el umbral reproduce al JRC en bajante; no pregunta si la serie que sale después sigue a la crecida. Es la correlación entre la superficie medida y la altura en la estación de aguas abajo. Los tramos que funcionan dan entre +0,43 y +0,68. El Delta da −0,44: el agua baja cuando el río sube, y por eso no publica cifra. Y La Paz a Paraná da +0,01 pese a ser el que mejor calibró, con un 1,2% de diferencia contra el JRC: ahí la superficie a 2,86 m y a 2,82 m difiere un 57%, y la respuesta real del tramo es la más chica del río. Publica su número, pero ese número no dice si la crecida crece ahí.",
     radarGorge: "Los dos tramos de arriba de Posadas no llegan a calibrar. Ahí el Paraná corre encajonado en basalto, y aunque ampliando la búsqueda aparecen umbrales que coinciden con el JRC —cerca de -20 y -21 dB—, difieren 6,5 dB entre tramos vecinos. Eso es un umbral compensando la sombra del radar contra las paredes del valle, no midiendo agua. Esos dos tramos se dibujan en el mapa pero no publican superficie, y quedan fuera de todos los totales.",
     radarFilters: "Dos filtros descartan pasadas. Una pasada que cubre menos del 95% del corredor deja terreno sin observar, y el terreno sin observar cuenta como cero agua: se leería como que el río se achicó. Y una pasada que encuentra menos del 70% del cauce permanente también se descarta: pasa cuando el viento encrespa la superficie y el agua deja de verse oscura. El segundo filtro apareció por una prueba que falló, no por mirar los mapas: una pasada daba 218 km² donde el cauce permanente solo ya son 556.",
     radarComposite: "El mapa anima compuestos de 12 días; los gráficos usan pasadas sueltas. La franja que ve el satélite es más angosta que este tramo de río, así que una pasada sola casi nunca cubre todo. Un compuesto de un ciclo completo sí, siempre. Cada vista dice cuál de las dos cosas está mostrando: un compuesto es una ventana, no un instante.",
@@ -334,7 +337,8 @@ const T = {
     radarHeading: "Water measured by radar",
     radarBody: "Flooded area is measured with Sentinel-1, a radar that sees through cloud — which is exactly what the Litoral needs when it rains. Calm open water looks dark because it reflects the pulse away from the satellite; rough land sends it back. VV polarisation, a 50 m speckle filter, over a corridor 20 km either side of the channel.",
     radarCalib: "The threshold separating water from land is neither chosen by eye nor computed automatically: it is calibrated stretch by stretch against the permanent water the JRC maps independently, using the 2021 bajante — the lowest Paraná in 77 years — as the reference for “the river in its channel and nothing more”. The threshold does not transfer between stretches.",
-    colStretch: "Stretch", colThreshold: "threshold", colBajante: "2021 bajante", colJrc: "JRC", colResidual: "diff.",
+    colStretch: "Stretch", colThreshold: "threshold", colBajante: "2021 bajante", colJrc: "JRC", colResidual: "diff.", colTracks: "tracks river",
+    radarTracks: "The last column is the other half of the test, and the half that matters more. Calibration asks whether the threshold reproduces JRC over low water; it does not ask whether the series that follows carries a flood. This is the correlation between the measured area and the stage at the downstream gauge. The stretches that work run +0.43 to +0.68. The Delta gives −0.44: the water falls as the river rises, which is why it publishes no figure. And La Paz to Paraná gives +0.01 despite calibrating best of all at 1.2% from JRC — there the area at 2.86 m and at 2.82 m differs by 57%, and the stretch's true response is the smallest on the river. It publishes its number, but that number does not tell you whether the flood is growing there.",
     radarGorge: "The two stretches above Posadas never calibrate. There the Paraná runs boxed into basalt, and although widening the search does find thresholds that match JRC — around -20 and -21 dB — they differ by 6.5 dB between neighbouring reaches. That is a threshold compensating for radar shadow against the valley walls, not one measuring water. Those two stretches are drawn on the map but publish no area, and are excluded from every total.",
     radarFilters: "Two filters discard passes. A pass covering less than 95% of the corridor leaves ground unobserved, and unobserved ground counts as zero water: it would read as the river shrinking. And a pass finding less than 70% of the permanent channel is also discarded — that happens when wind roughens the surface and water stops looking dark. The second filter came from a failing test, not from looking at maps: one pass reported 218 km² where the permanent channel alone is 556.",
     radarComposite: "The map animates 12-day composites; the charts use single passes. The satellite's swath is narrower than this run of river, so a single pass almost never covers all of it. A composite over a full repeat cycle always does. Each view says which of the two it is showing: a composite is a window, not an instant.",
@@ -457,6 +461,8 @@ function renderCalibration() {
       [fmt(s.baseline_km2, 0), "num"],
       [fmt(s.permanent_water_km2, 0), "num"],
       [residual === null ? "—" : `${fmt(residual, 1)}%`, "num"],
+      [s.stage_correlation === null || s.stage_correlation === undefined
+        ? "—" : fmt(s.stage_correlation, 2), "num"],
     ];
     for (const [text, cls] of cells) {
       const td = document.createElement("td");

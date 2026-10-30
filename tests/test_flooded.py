@@ -424,3 +424,28 @@ def test_every_published_area_moves_with_the_river():
         # here. That is a currency mismatch - CI refreshed the satellite
         # table after the last fetch - not a verdict on the measurement.
         pytest.skip("the store is behind the committed measurement")
+
+
+@pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
+def test_every_stretch_publishes_how_well_it_tracks_the_river():
+    """Including the ones that publish no area.
+
+    Calibration and tracking are different questions, and a page that shows
+    only the first invites a reader to assume the second. La Paz to Parana
+    calibrates best of all - 1.2% from JRC - and tracks the gauge at +0.01.
+    """
+    published = json.loads(
+        Path("site/data/flooded.json").read_text(encoding="utf-8")
+    )
+    for stretch in published["stretches"]:
+        assert "stage_correlation" in stretch, stretch["key"]
+        value = stretch["stage_correlation"]
+        assert value is None or -1.0 <= value <= 1.0, stretch["key"]
+
+    by_key = {s["key"]: s["stage_correlation"] for s in published["stretches"]}
+    # The evidence for the Delta's refusal has to survive, because the
+    # method page quotes it as the reason.
+    delta = by_key.get("villa_constitucion_ibicuy")
+    assert delta is not None and delta < 0, (
+        f"the Delta tracks the river at {delta}; the page says it is negative"
+    )

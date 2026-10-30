@@ -499,3 +499,9 @@ main:focus { outline: none; }
 }
 .prose ul.files a { color: var(--accent); text-decoration: none; }
 .prose ul.files a:hover { text-decoration: underline; }
+
+/* Let the long first column wrap so the numbers fit. The tables sit in a
+   scrolling wrapper, but the column a reader most needs here is the last
+   one, and a column you have to scroll sideways to find is a column most
+   people will not read. */
+.prose th:first-child, .prose td:first-child { white-space: normal; }
