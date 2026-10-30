@@ -1,0 +1,457 @@
+{
+ "schema": 1,
+ "note": "Log-Pearson III fitted by L-moments to the annual maxima of each gauge's own record, on a water year starting 1 July so a flood season is not split in two. Stage, not discharge: the channel shifts over decades and so does the rating. A return period is not a schedule - a one-in-fifty-year level has a 2% chance in any year, including the one after it last happened.",
+ "method": "log-pearson-iii/l-moments",
+ "min_years": 30,
+ "ladder": [
+  2,
+  5,
+  10,
+  25,
+  50,
+  100
+ ],
+ "built_on": "2026-10-30",
+ "gauges": [
+  {
+   "series_id": "26251",
+   "name": "Puerto Iguazú",
+   "years": 50,
+   "first_year": 1977,
+   "last_year": 2026,
+   "mean_log": 1.395729,
+   "sd_log": 0.106448,
+   "skew_log": 0.036718,
+   "levels": {
+    "2": 24.84,
+    "5": 30.56,
+    "10": 34.08,
+    "25": 38.32,
+    "50": 41.35,
+    "100": 44.28
+   },
+   "record_max": 40.0,
+   "record_max_year": 1992
+  },
+  {
+   "series_id": "26252",
+   "name": "Libertad",
+   "years": 48,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 1.377491,
+   "sd_log": 0.09735,
+   "skew_log": 0.140703,
+   "levels": {
+    "2": 23.73,
+    "5": 28.75,
+    "10": 31.89,
+    "25": 35.69,
+    "50": 38.43,
+    "100": 41.12
+   },
+   "record_max": 37.8,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26253",
+   "name": "El Dorado",
+   "years": 45,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 1.278393,
+   "sd_log": 0.104115,
+   "skew_log": 0.179053,
+   "levels": {
+    "2": 18.85,
+    "5": 23.17,
+    "10": 25.92,
+    "25": 29.3,
+    "50": 31.78,
+    "100": 34.22
+   },
+   "record_max": 30.74,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26254",
+   "name": "Libertador",
+   "years": 50,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 1.137411,
+   "sd_log": 0.11226,
+   "skew_log": 0.310732,
+   "levels": {
+    "2": 13.54,
+    "5": 16.97,
+    "10": 19.25,
+    "25": 22.15,
+    "50": 24.34,
+    "100": 26.55
+   },
+   "record_max": 23.01,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26256",
+   "name": "Posadas",
+   "years": 56,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 0.775366,
+   "sd_log": 0.176572,
+   "skew_log": 0.533771,
+   "levels": {
+    "2": 5.75,
+    "5": 8.27,
+    "10": 10.21,
+    "25": 13.01,
+    "50": 15.36,
+    "100": 17.96
+   },
+   "record_max": 10.72,
+   "record_max_year": 2026
+  },
+  {
+   "series_id": "26258",
+   "name": "Itá Ibaté",
+   "years": 111,
+   "first_year": 1913,
+   "last_year": 2026,
+   "mean_log": 0.677885,
+   "sd_log": 0.097415,
+   "skew_log": -0.091326,
+   "levels": {
+    "2": 4.78,
+    "5": 5.76,
+    "10": 6.33,
+    "25": 7.0,
+    "50": 7.47,
+    "100": 7.91
+   },
+   "record_max": 8.23,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26259",
+   "name": "Itatí",
+   "years": 106,
+   "first_year": 1913,
+   "last_year": 2026,
+   "mean_log": 0.791899,
+   "sd_log": 0.084063,
+   "skew_log": -0.083498,
+   "levels": {
+    "2": 6.21,
+    "5": 7.29,
+    "10": 7.92,
+    "25": 8.64,
+    "50": 9.14,
+    "100": 9.6
+   },
+   "record_max": 10.13,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26260",
+   "name": "Paso de la Patria",
+   "years": 56,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 0.793411,
+   "sd_log": 0.087087,
+   "skew_log": -0.188119,
+   "levels": {
+    "2": 6.25,
+    "5": 7.37,
+    "10": 8.0,
+    "25": 8.71,
+    "50": 9.19,
+    "100": 9.64
+   },
+   "record_max": 9.54,
+   "record_max_year": 1983
+  },
+  {
+   "series_id": "26261",
+   "name": "Corrientes",
+   "years": 125,
+   "first_year": 1902,
+   "last_year": 2026,
+   "mean_log": 0.769793,
+   "sd_log": 0.079353,
+   "skew_log": -0.235413,
+   "levels": {
+    "2": 5.93,
+    "5": 6.88,
+    "10": 7.4,
+    "25": 7.98,
+    "50": 8.37,
+    "100": 8.72
+   },
+   "record_max": 9.02,
+   "record_max_year": 1984
+  },
+  {
+   "series_id": "26263",
+   "name": "Empedrado",
+   "years": 83,
+   "first_year": 1913,
+   "last_year": 2026,
+   "mean_log": 0.69776,
+   "sd_log": 0.069386,
+   "skew_log": -0.766146,
+   "levels": {
+    "2": 5.09,
+    "5": 5.72,
+    "10": 6.01,
+    "25": 6.3,
+    "50": 6.47,
+    "100": 6.61
+   },
+   "record_max": 6.92,
+   "record_max_year": 1998
+  },
+  {
+   "series_id": "26264",
+   "name": "Bella Vista",
+   "years": 54,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 0.748502,
+   "sd_log": 0.059286,
+   "skew_log": -0.418661,
+   "levels": {
+    "2": 5.66,
+    "5": 6.3,
+    "10": 6.63,
+    "25": 6.97,
+    "50": 7.19,
+    "100": 7.38
+   },
+   "record_max": 7.41,
+   "record_max_year": 1998
+  },
+  {
+   "series_id": "26265",
+   "name": "Goya",
+   "years": 123,
+   "first_year": 1904,
+   "last_year": 2026,
+   "mean_log": 0.71022,
+   "sd_log": 0.058838,
+   "skew_log": -0.15773,
+   "levels": {
+    "2": 5.15,
+    "5": 5.76,
+    "10": 6.09,
+    "25": 6.46,
+    "50": 6.7,
+    "100": 6.92
+   },
+   "record_max": 7.2,
+   "record_max_year": 1992
+  },
+  {
+   "series_id": "26267",
+   "name": "Esquina",
+   "years": 56,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 0.709858,
+   "sd_log": 0.067531,
+   "skew_log": -0.468937,
+   "levels": {
+    "2": 5.19,
+    "5": 5.86,
+    "10": 6.2,
+    "25": 6.55,
+    "50": 6.78,
+    "100": 6.98
+   },
+   "record_max": 7.29,
+   "record_max_year": 1992
+  },
+  {
+   "series_id": "26268",
+   "name": "La Paz",
+   "years": 119,
+   "first_year": 1904,
+   "last_year": 2026,
+   "mean_log": 0.729584,
+   "sd_log": 0.058063,
+   "skew_log": -0.342163,
+   "levels": {
+    "2": 5.41,
+    "5": 6.01,
+    "10": 6.33,
+    "25": 6.67,
+    "50": 6.89,
+    "100": 7.08
+   },
+   "record_max": 7.37,
+   "record_max_year": 1992
+  },
+  {
+   "series_id": "26269",
+   "name": "Santa Elena",
+   "years": 48,
+   "first_year": 1977,
+   "last_year": 2026,
+   "mean_log": 0.750306,
+   "sd_log": 0.068591,
+   "skew_log": 0.032946,
+   "levels": {
+    "2": 5.62,
+    "5": 6.43,
+    "10": 6.89,
+    "25": 7.43,
+    "50": 7.81,
+    "100": 8.16
+   },
+   "record_max": 7.83,
+   "record_max_year": 1992
+  },
+  {
+   "series_id": "26270",
+   "name": "Hernandarias",
+   "years": 50,
+   "first_year": 1977,
+   "last_year": 2026,
+   "mean_log": 0.724994,
+   "sd_log": 0.092916,
+   "skew_log": 0.102073,
+   "levels": {
+    "2": 5.29,
+    "5": 6.35,
+    "10": 7.0,
+    "25": 7.78,
+    "50": 8.33,
+    "100": 8.87
+   },
+   "record_max": 8.03,
+   "record_max_year": 1983
+  },
+  {
+   "series_id": "26271",
+   "name": "Paraná",
+   "years": 123,
+   "first_year": 1904,
+   "last_year": 2026,
+   "mean_log": 0.650312,
+   "sd_log": 0.090192,
+   "skew_log": -0.126245,
+   "levels": {
+    "2": 4.49,
+    "5": 5.33,
+    "10": 5.82,
+    "25": 6.37,
+    "50": 6.75,
+    "100": 7.11
+   },
+   "record_max": 6.96,
+   "record_max_year": 1905
+  },
+  {
+   "series_id": "26273",
+   "name": "Diamante",
+   "years": 124,
+   "first_year": 1903,
+   "last_year": 2026,
+   "mean_log": 0.687855,
+   "sd_log": 0.076238,
+   "skew_log": -0.505403,
+   "levels": {
+    "2": 4.95,
+    "5": 5.66,
+    "10": 6.03,
+    "25": 6.42,
+    "50": 6.66,
+    "100": 6.87
+   },
+   "record_max": 7.09,
+   "record_max_year": 1905
+  },
+  {
+   "series_id": "26275",
+   "name": "San Lorenzo",
+   "years": 56,
+   "first_year": 1971,
+   "last_year": 2026,
+   "mean_log": 0.693234,
+   "sd_log": 0.085841,
+   "skew_log": -0.916568,
+   "levels": {
+    "2": 5.08,
+    "5": 5.84,
+    "10": 6.19,
+    "25": 6.51,
+    "50": 6.7,
+    "100": 6.85
+   },
+   "record_max": 6.82,
+   "record_max_year": 1998
+  },
+  {
+   "series_id": "26276",
+   "name": "Rosario",
+   "years": 142,
+   "first_year": 1885,
+   "last_year": 2026,
+   "mean_log": 0.63715,
+   "sd_log": 0.085544,
+   "skew_log": -0.463696,
+   "levels": {
+    "2": 4.4,
+    "5": 5.13,
+    "10": 5.52,
+    "25": 5.92,
+    "50": 6.18,
+    "100": 6.41
+   },
+   "record_max": 6.43,
+   "record_max_year": 1998
+  },
+  {
+   "series_id": "26277",
+   "name": "Villa Constitución",
+   "years": 44,
+   "first_year": 1975,
+   "last_year": 2026,
+   "mean_log": 0.611105,
+   "sd_log": 0.11347,
+   "skew_log": -0.483922,
+   "levels": {
+    "2": 4.17,
+    "5": 5.11,
+    "10": 5.61,
+    "25": 6.16,
+    "50": 6.52,
+    "100": 6.83
+   },
+   "record_max": 6.43,
+   "record_max_year": 1998
+  },
+  {
+   "series_id": "26287",
+   "name": "Ibicuy",
+   "years": 38,
+   "first_year": 1984,
+   "last_year": 2026,
+   "mean_log": 0.325552,
+   "sd_log": 0.132228,
+   "skew_log": 0.658655,
+   "levels": {
+    "2": 2.05,
+    "5": 2.69,
+    "10": 3.17,
+    "25": 3.84,
+    "50": 4.38,
+    "100": 4.96
+   },
+   "record_max": 4.35,
+   "record_max_year": 1984
+  }
+ ]
+}

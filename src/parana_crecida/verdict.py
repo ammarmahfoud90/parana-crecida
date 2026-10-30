@@ -33,11 +33,23 @@ log = logging.getLogger(__name__)
 HIGH_PERCENTILE = 95.0
 TOP_PERCENTILE = 99.9
 
-#: Share of the chain needed for each verdict. Deliberately blunt: these
-#: decide one word, and a word that changes on a single gauge flickering
-#: across a threshold would be worse than a blunt one.
+#: Share of the chain needed before the river counts as widely high.
+#: Deliberately blunt: these decide one word, and a word that changes on a
+#: single gauge flickering across a threshold would be worse.
 EXTREME_SHARE = 0.4
 HIGH_SHARE = 0.25
+
+#: Return periods, in years, that decide the word. Magnitude leads and
+#: extent follows, because they answer different questions and the first
+#: is the one a reader means by "how bad".
+#:
+#: The site used to pick the word from extent alone, and on this flood that
+#: called a one-in-twenty-year river "extraordinary" - true of how much of
+#: the river was high, wrong about how high. A 1-in-50 year stage is
+#: genuinely rare; 1-in-10 is a flood a working lifetime sees several of.
+EXTREME_YEARS = 50.0
+HIGH_YEARS = 10.0
+NOTABLE_YEARS = 3.0
 
 #: Gauges whose level is not a river signal cannot vote. The same rule the
 #: daily river line uses, for the same reason.
@@ -89,10 +101,31 @@ class Verdict:
         return self.readings[best[0]], self.readings[best[1]]
 
 
-def classify(high: int, counted: int) -> str:
+def classify(high: int, counted: int, years: float | None = None) -> str:
+    """One word for the river, from magnitude first and extent second.
+
+    ``years`` is the rarest return period on the chain. Where it is known
+    it decides, because "how rare is this" is what a reader means. Extent
+    only promotes: a one-in-five-year stage along most of the river is
+    worth more than the same stage at a single gauge, but no amount of
+    extent turns an ordinary height into an extraordinary one.
+
+    Without a frequency fit it falls back to extent alone, which is what
+    the site did everywhere before.
+    """
     if not counted:
         return "unknown"
     share = high / counted
+
+    if years is not None:
+        if years >= EXTREME_YEARS:
+            return "extreme"
+        if years >= HIGH_YEARS:
+            return "high" if share < EXTREME_SHARE else "high_wide"
+        if years >= NOTABLE_YEARS:
+            return "notable"
+        return "normal"
+
     if share >= EXTREME_SHARE:
         return "extreme"
     if share >= HIGH_SHARE:
@@ -100,7 +133,8 @@ def classify(high: int, counted: int) -> str:
     return "normal"
 
 
-def build(store, clim, *, today: date | None = None) -> Verdict:
+def build(store, clim, *, periods: dict | None = None,
+          today: date | None = None) -> Verdict:
     """Read the chain once and decide what it is saying."""
     readings: list[Reading] = []
     last: date | None = None
@@ -128,8 +162,21 @@ def build(store, clim, *, today: date | None = None) -> Verdict:
 
     high = sum(1 for r in readings if r.percentile >= HIGH_PERCENTILE)
     at_top = sum(1 for r in readings if r.percentile >= TOP_PERCENTILE)
+
+    rarest_years = None
+    if periods:
+        from . import frequency as fq
+
+        for reading in readings:
+            values = store.series(reading.series_id)
+            if not values:
+                continue
+            found = fq.return_period_of(periods, reading.series_id, values[-1].value)
+            if found is not None and (rarest_years is None or found > rarest_years):
+                rarest_years = found
+
     verdict = Verdict(
-        state=classify(high, len(readings)),
+        state=classify(high, len(readings), rarest_years),
         as_of=last,
         counted=len(readings),
         high=high,
@@ -143,8 +190,47 @@ def build(store, clim, *, today: date | None = None) -> Verdict:
     return verdict
 
 
+def rarest(verdict: Verdict, table: dict, store) -> dict | None:
+    """The gauge whose reading is rarest, and how rare.
+
+    This is the number the percentile could not give. A gauge can sit at
+    p100 - the highest ever recorded *for the date* - while the reading
+    itself is an ordinary flood, which is exactly the case on a river that
+    normally peaks in autumn and is in flood in spring. The return period
+    says which of those two things is happening.
+    """
+    from . import frequency as fq
+
+    if not table:
+        return None
+    best = None
+    for reading in verdict.readings:
+        values = store.series(reading.series_id)
+        if not values:
+            continue
+        latest = values[-1]
+        period = fq.return_period_of(table, reading.series_id, latest.value)
+        if period is None:
+            continue
+        row = next(
+            (g for g in table["gauges"] if g["series_id"] == reading.series_id), None
+        )
+        if best is None or period > best["years"]:
+            best = {
+                "gauge": reading.name,
+                "series_id": reading.series_id,
+                "years": period,
+                "stage_m": round(latest.value, 2),
+                "day": latest.day.isoformat(),
+                "record_max": row and row["record_max"],
+                "record_max_year": row and row["record_max_year"],
+                "record_years": row and row["years"],
+            }
+    return best
+
+
 def payload(verdict: Verdict, *, track: dict | None = None,
-            flooded: dict | None = None) -> dict[str, object]:
+            flooded: dict | None = None, rarity: dict | None = None) -> dict[str, object]:
     """The verdict as the page wants it, with its supporting evidence.
 
     The evidence is the point. A finding on a public page that a reader
@@ -200,4 +286,5 @@ def payload(verdict: Verdict, *, track: dict | None = None,
         },
         "front": front,
         "water": water,
+        "rarest": rarity,
     }

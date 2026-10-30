@@ -170,15 +170,38 @@ def export_river_today(
     # The finding, alongside the readings it came from. It travels in this
     # file rather than its own so the page that leads with it does not have
     # to wait on a second request to know what to say.
+    from . import frequency as fq
     from . import verdict as vd
     from .normalize import Climatology
 
     clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
+    periods = fq.load()
+    built = vd.build(store, clim, periods=periods, today=today)
     payload["verdict"] = vd.payload(
-        vd.build(store, clim, today=today),
+        built,
         track=_maybe_json(out_dir / TRACK),
         flooded=_maybe_json(out_dir / FLOODED),
+        rarity=vd.rarest(built, periods, store),
     )
+
+    # How rare each reading is, beside how high it is. A percentile says
+    # where today sits among past 29ths of October; a return period says
+    # how big the flood is. Both are wanted and they often disagree.
+    if periods:
+        ladder = {g["series_id"]: g for g in periods["gauges"]}
+        for gauge in payload["gauges"]:
+            row = ladder.get(gauge["series_id"])
+            gauge["return_period"] = fq.return_period_of(
+                periods, gauge["series_id"], gauge.get("value")
+            )
+            gauge["record_max"] = row["record_max"] if row else None
+            gauge["record_max_year"] = row["record_max_year"] if row else None
+        payload["frequency"] = {
+            "method": periods["method"],
+            "built_on": periods["built_on"],
+            "min_years": periods["min_years"],
+            "note": periods["note"],
+        }
 
     path = out_dir / RIVER_TODAY
     write_json(path, payload)

@@ -182,6 +182,7 @@ def test_only_implemented_commands_are_registered():
         "mapframes",
         "validate",
         "export",
+        "frequency",
         "daily",
         "flooded",
         "freshness",

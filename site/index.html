@@ -44,6 +44,7 @@
   <section class="verdict" id="verdict" hidden aria-labelledby="verdictState">
     <p class="state" id="verdictState"></p>
     <p class="detail" id="verdictDetail"></p>
+    <p class="detail rarity" id="verdictRarity" hidden></p>
     <ul class="evidence" id="verdictEvidence"></ul>
   </section>
 
@@ -90,10 +91,18 @@ const T = {
   es: {
     htmlLang: "es",
     locale: "es-AR",
-    stateExtreme: "El Paraná está en una crecida extraordinaria.",
-    stateHigh: "El Paraná está alto para la época del año.",
+    stateExtreme: "El Paraná está en una crecida excepcional.",
+    stateHighWide: "El Paraná está en una crecida importante, y a lo largo de casi todo el río.",
+    stateNotable: "El Paraná está crecido, dentro de lo que pasa cada pocos años.",
+    stateHigh: "El Paraná está en una crecida importante.",
     stateNormal: "El Paraná está dentro de lo normal para la época del año.",
     stateUnknown: "No hay datos suficientes para decir cómo está el río.",
+    verdictRarity: (years, gauge, stage, record, year) =>
+      `La lectura más alta equivale a una altura de 1 en ${years} años en ${gauge}: ${stage} m, contra un récord de ${record} m en ${year}.`,
+    verdictRarityNone: "",
+    returnPeriod: (years) => `1 en ${years} años`,
+    returnPeriodTitle: (years, record, year) =>
+      `Una altura que, en promedio, se alcanza una vez cada ${years} años. El máximo del registro es ${record} m, en ${year}.`,
     verdictDetail: (high, counted, top, from_, to) =>
       `${high} de ${counted} estaciones del cauce principal superan el percentil 95 para esta fecha` +
       (top ? `, y ${top} están en el máximo registrado para el día del año` : "") +
@@ -155,10 +164,18 @@ const T = {
   en: {
     htmlLang: "en",
     locale: "en-GB",
-    stateExtreme: "The Paraná is in an extraordinary flood.",
-    stateHigh: "The Paraná is high for the time of year.",
+    stateExtreme: "The Paraná is in an exceptional flood.",
+    stateHighWide: "The Paraná is in a major flood, along most of its length.",
+    stateNotable: "The Paraná is high, within what happens every few years.",
+    stateHigh: "The Paraná is in a major flood.",
     stateNormal: "The Paraná is within its normal range for the time of year.",
     stateUnknown: "There is not enough data to say how the river is behaving.",
+    verdictRarity: (years, gauge, stage, record, year) =>
+      `The highest reading is about a 1-in-${years}-year height at ${gauge}: ${stage} m, against a record of ${record} m in ${year}.`,
+    verdictRarityNone: "",
+    returnPeriod: (years) => `1 in ${years} yr`,
+    returnPeriodTitle: (years, record, year) =>
+      `A height reached on average once every ${years} years. The highest in the record is ${record} m, in ${year}.`,
     verdictDetail: (high, counted, top, from_, to) =>
       `${high} of ${counted} main-stem gauges are above the 95th percentile for this date` +
       (top ? `, and ${top} are at the highest ever recorded for the day of year` : "") +
@@ -295,6 +312,18 @@ function shortDateTime(iso) {
   }).format(d);
 }
 
+function returnTag(g) {
+  if (!g.return_period) return null;
+  const el = document.createElement("span");
+  el.className = "tag rare" + (g.return_period >= 10 ? " high" : "");
+  el.textContent = T[lang].returnPeriod(Math.round(g.return_period));
+  if (g.record_max) {
+    el.title = T[lang].returnPeriodTitle(
+      Math.round(g.return_period), num(g.record_max), g.record_max_year);
+  }
+  return el;
+}
+
 function tag(text) {
   const span = document.createElement("span");
   span.className = "tag";
@@ -320,6 +349,8 @@ function gaugeItem(g) {
   if (branchKey) tags.appendChild(tag(t[branchKey]));
   if (g.flags.includes("regulated")) tags.appendChild(tag(t.flagRegulated));
   if (g.flags.includes("tide_affected")) tags.appendChild(tag(t.flagTide));
+  const rare = returnTag(g);
+  if (rare) tags.appendChild(rare);
   if (tags.childElementCount) left.appendChild(tags);
 
   const status = document.createElement("div");
@@ -412,7 +443,8 @@ function renderVerdict(v) {
   if (!v || v.state === "unknown") { section.hidden = true; return; }
 
   const word = {
-    extreme: t.stateExtreme, high: t.stateHigh, normal: t.stateNormal,
+    extreme: t.stateExtreme, high_wide: t.stateHighWide, high: t.stateHigh,
+    notable: t.stateNotable, normal: t.stateNormal,
   }[v.state] || t.stateUnknown;
   const state = document.getElementById("verdictState");
   state.textContent = word;
@@ -421,6 +453,20 @@ function renderVerdict(v) {
   document.getElementById("verdictDetail").textContent = t.verdictDetail(
     v.high, v.counted, v.at_top,
     v.reach && v.reach.from, v.reach && v.reach.to);
+
+  // The magnitude, after the extent. A percentile says where today sits
+  // among past 29ths of October; a return period says how big the flood
+  // is. On this river in spring they routinely disagree, and the reader
+  // wants both.
+  const rare = document.getElementById("verdictRarity");
+  if (v.rarest && v.rarest.record_max) {
+    rare.textContent = t.verdictRarity(
+      Math.round(v.rarest.years), v.rarest.gauge, num(v.rarest.stage_m),
+      num(v.rarest.record_max), v.rarest.record_max_year);
+    rare.hidden = false;
+  } else {
+    rare.hidden = true;
+  }
 
   const items = [];
   if (v.front) {

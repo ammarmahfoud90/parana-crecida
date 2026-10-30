@@ -1,9 +1,9 @@
 {
  "schema": 1,
- "generated_at": "2026-10-30T12:24:15-03:00",
- "last_data_day": "2026-10-29",
- "data_age_days": 1,
- "freshness": "1 day behind",
+ "generated_at": "2026-10-30T12:37:25-03:00",
+ "last_data_day": "2026-10-28",
+ "data_age_days": 2,
+ "freshness": "2 days behind",
  "official_source_url": "https://alerta.ina.gob.ar/",
  "thresholds": {
   "source_date": "2026-10-29",
@@ -25,13 +25,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 28.7,
-   "change": -0.6,
+   "day": "2026-10-28",
+   "value": 29.3,
+   "change": 0.8,
    "change_days": 1,
    "alert": 25.0,
    "evacuation": 28.0,
-   "status": "evacuation"
+   "status": "evacuation",
+   "return_period": 4.0,
+   "record_max": 40.0,
+   "record_max_year": 1992
   },
   {
    "series_id": "26252",
@@ -42,13 +45,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 28.2,
-   "change": 0.3,
+   "day": "2026-10-28",
+   "value": 27.9,
+   "change": 1.1,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 4.2,
+   "record_max": 37.8,
+   "record_max_year": 1984
   },
   {
    "series_id": "26253",
@@ -59,13 +65,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 21.85,
-   "change": 0.15,
+   "day": "2026-10-28",
+   "value": 21.7,
+   "change": 0.6,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 3.6,
+   "record_max": 30.74,
+   "record_max_year": 1984
   },
   {
    "series_id": "26254",
@@ -76,13 +85,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 16.36,
-   "change": 0.17,
+   "day": "2026-10-28",
+   "value": 16.19,
+   "change": 0.38,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 4.0,
+   "record_max": 23.01,
+   "record_max_year": 1984
   },
   {
    "series_id": "26255",
@@ -93,13 +105,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
+   "day": "2026-10-28",
    "value": 9.33,
-   "change": 0.0,
+   "change": -0.02,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26256",
@@ -110,13 +125,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 9.88,
-   "change": 0.07,
+   "day": "2026-10-28",
+   "value": 9.81,
+   "change": -0.09,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 8.7,
+   "record_max": 10.72,
+   "record_max_year": 2026
   },
   {
    "series_id": "26257",
@@ -128,13 +146,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 4.0,
-   "change": -0.3,
+   "day": "2026-10-28",
+   "value": 4.3,
+   "change": -0.1,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26258",
@@ -145,13 +166,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 6.54,
-   "change": -0.16,
+   "day": "2026-10-28",
+   "value": 6.7,
+   "change": -0.06,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 16.3,
+   "record_max": 8.23,
+   "record_max_year": 1984
   },
   {
    "series_id": "26259",
@@ -162,13 +186,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 8.11,
-   "change": -0.09,
+   "day": "2026-10-28",
+   "value": 8.2,
+   "change": -0.01,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 14.0,
+   "record_max": 10.13,
+   "record_max_year": 1984
   },
   {
    "series_id": "26260",
@@ -179,13 +206,16 @@
     "regulated"
    ],
    "unit": "m",
-   "day": "2026-10-29",
+   "day": "2026-10-28",
    "value": 7.74,
    "change": 0.0,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 7.4,
+   "record_max": 9.54,
+   "record_max_year": 1983
   },
   {
    "series_id": "26261",
@@ -194,13 +224,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 7.38,
-   "change": -0.01,
+   "day": "2026-10-28",
+   "value": 7.39,
+   "change": 0.04,
    "change_days": 1,
    "alert": 6.5,
    "evacuation": 7.0,
-   "status": "evacuation"
+   "status": "evacuation",
+   "return_period": 9.8,
+   "record_max": 9.02,
+   "record_max_year": 1984
   },
   {
    "series_id": "26263",
@@ -209,13 +242,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
+   "day": "2026-10-28",
    "value": 6.25,
-   "change": 0.0,
+   "change": 0.04,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 20.9,
+   "record_max": 6.92,
+   "record_max_year": 1998
   },
   {
    "series_id": "26264",
@@ -224,13 +260,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 6.45,
-   "change": 0.02,
+   "day": "2026-10-28",
+   "value": 6.43,
+   "change": 0.07,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 6.5,
+   "record_max": 7.41,
+   "record_max_year": 1998
   },
   {
    "series_id": "26265",
@@ -239,13 +278,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 5.76,
-   "change": 0.08,
+   "day": "2026-10-28",
+   "value": 5.68,
+   "change": 0.02,
    "change_days": 1,
    "alert": 5.2,
    "evacuation": 5.7,
-   "status": "evacuation"
+   "status": "alert",
+   "return_period": 4.3,
+   "record_max": 7.2,
+   "record_max_year": 1992
   },
   {
    "series_id": "26267",
@@ -254,13 +296,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 5.19,
-   "change": 0.03,
+   "day": "2026-10-28",
+   "value": 5.16,
+   "change": 0.04,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.9,
+   "record_max": 7.29,
+   "record_max_year": 1992
   },
   {
    "series_id": "26268",
@@ -269,13 +314,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 5.75,
-   "change": 0.03,
+   "day": "2026-10-28",
+   "value": 5.72,
+   "change": 0.01,
    "change_days": 1,
    "alert": 5.8,
    "evacuation": 6.15,
-   "status": "below"
+   "status": "below",
+   "return_period": 3.0,
+   "record_max": 7.37,
+   "record_max_year": 1992
   },
   {
    "series_id": "26269",
@@ -284,13 +332,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
+   "day": "2026-10-28",
    "value": 5.46,
-   "change": 0.0,
+   "change": 0.08,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.7,
+   "record_max": 7.83,
+   "record_max_year": 1992
   },
   {
    "series_id": "26270",
@@ -299,13 +350,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 4.92,
-   "change": 0.04,
+   "day": "2026-10-28",
+   "value": 4.88,
+   "change": 0.05,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.5,
+   "record_max": 8.03,
+   "record_max_year": 1983
   },
   {
    "series_id": "26271",
@@ -314,13 +368,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 4.25,
-   "change": 0.04,
+   "day": "2026-10-28",
+   "value": 4.21,
+   "change": 0.05,
    "change_days": 1,
    "alert": 4.7,
    "evacuation": 5.0,
-   "status": "below"
+   "status": "below",
+   "return_period": 1.6,
+   "record_max": 6.96,
+   "record_max_year": 1905
   },
   {
    "series_id": "26273",
@@ -329,13 +386,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 4.58,
-   "change": 0.03,
+   "day": "2026-10-28",
+   "value": 4.55,
+   "change": 0.05,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.5,
+   "record_max": 7.09,
+   "record_max_year": 1905
   },
   {
    "series_id": "26275",
@@ -344,13 +404,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 4.13,
-   "change": 0.02,
+   "day": "2026-10-28",
+   "value": 4.11,
+   "change": 0.03,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.2,
+   "record_max": 6.82,
+   "record_max_year": 1998
   },
   {
    "series_id": "26276",
@@ -359,13 +422,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 3.83,
-   "change": 0.03,
+   "day": "2026-10-28",
+   "value": 3.8,
+   "change": 0.05,
    "change_days": 1,
    "alert": 5.0,
    "evacuation": 5.25,
-   "status": "below"
+   "status": "below",
+   "return_period": 1.3,
+   "record_max": 6.43,
+   "record_max_year": 1998
   },
   {
    "series_id": "26277",
@@ -374,13 +440,16 @@
    "tier": 1,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 3.02,
-   "change": -0.01,
+   "day": "2026-10-28",
+   "value": 3.03,
+   "change": 0.02,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.1,
+   "record_max": 6.43,
+   "record_max_year": 1998
   },
   {
    "series_id": "26274",
@@ -389,13 +458,16 @@
    "tier": 2,
    "flags": [],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 3.96,
-   "change": 0.02,
+   "day": "2026-10-28",
+   "value": 3.94,
+   "change": 0.01,
    "change_days": 1,
    "alert": 4.6,
    "evacuation": 5.9,
-   "status": "below"
+   "status": "below",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26278",
@@ -406,13 +478,16 @@
     "bad_snap"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 2.74,
-   "change": -0.01,
+   "day": "2026-10-28",
+   "value": 2.75,
+   "change": -0.02,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26279",
@@ -423,13 +498,16 @@
     "bad_snap"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 2.36,
-   "change": -0.02,
+   "day": "2026-10-28",
+   "value": 2.38,
+   "change": -0.04,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26280",
@@ -440,13 +518,16 @@
     "bad_snap"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.89,
-   "change": -0.05,
+   "day": "2026-10-28",
+   "value": 1.94,
+   "change": -0.1,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26281",
@@ -457,13 +538,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.68,
-   "change": -0.05,
+   "day": "2026-10-28",
+   "value": 1.73,
+   "change": -0.12,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26282",
@@ -475,13 +559,16 @@
     "tide_affected"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.14,
-   "change": 0.29,
+   "day": "2026-10-28",
+   "value": 0.85,
+   "change": -0.21,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26283",
@@ -493,13 +580,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 0.8,
-   "change": 0.2,
+   "day": "2026-10-28",
+   "value": 0.6,
+   "change": -0.1,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26284",
@@ -511,13 +601,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 0.9,
-   "change": 0.1,
+   "day": "2026-10-28",
+   "value": 0.8,
+   "change": -0.2,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26286",
@@ -528,13 +621,16 @@
     "tide_affected"
    ],
    "unit": "m",
-   "day": "2026-10-29",
+   "day": "2026-10-28",
    "value": 2.1,
-   "change": 0.0,
+   "change": -0.04,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26287",
@@ -545,13 +641,16 @@
     "tide_affected"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 0.9,
+   "day": "2026-10-28",
+   "value": 1.0,
    "change": -0.1,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": 1.0,
+   "record_max": 4.35,
+   "record_max_year": 1984
   },
   {
    "series_id": "26290",
@@ -562,13 +661,16 @@
     "tide_affected"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.45,
-   "change": 0.1,
+   "day": "2026-10-28",
+   "value": 1.35,
+   "change": -0.25,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26291",
@@ -580,13 +682,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.3,
-   "change": 0.6,
+   "day": "2026-10-28",
+   "value": 0.7,
+   "change": -0.2,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26294",
@@ -598,13 +703,16 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.15,
-   "change": 0.17,
+   "day": "2026-10-28",
+   "value": 0.98,
+   "change": -0.02,
    "change_days": 1,
    "alert": 3.0,
    "evacuation": 3.5,
-   "status": "below"
+   "status": "below",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   },
   {
    "series_id": "26296",
@@ -616,18 +724,21 @@
     "unrouted"
    ],
    "unit": "m",
-   "day": "2026-10-29",
-   "value": 1.0,
-   "change": 0.3,
+   "day": "2026-10-28",
+   "value": 0.7,
+   "change": -0.3,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
-   "status": "unknown"
+   "status": "unknown",
+   "return_period": null,
+   "record_max": null,
+   "record_max_year": null
   }
  ],
  "verdict": {
-  "state": "extreme",
-  "as_of": "2026-10-29",
+  "state": "high_wide",
+  "as_of": "2026-10-28",
   "counted": 22,
   "high": 14,
   "at_top": 12,
@@ -654,6 +765,22 @@
    "km2": 2401.1,
    "day": "2026-10-28",
    "tracks_river": 0.54
+  },
+  "rarest": {
+   "gauge": "Empedrado",
+   "series_id": "26263",
+   "years": 20.9,
+   "stage_m": 6.25,
+   "day": "2026-10-28",
+   "record_max": 6.92,
+   "record_max_year": 1998,
+   "record_years": 83
   }
+ },
+ "frequency": {
+  "method": "log-pearson-iii/l-moments",
+  "built_on": "2026-10-30",
+  "min_years": 30,
+  "note": "Log-Pearson III fitted by L-moments to the annual maxima of each gauge's own record, on a water year starting 1 July so a flood season is not split in two. Stage, not discharge: the channel shifts over decades and so does the rating. A return period is not a schedule - a one-in-fifty-year level has a 2% chance in any year, including the one after it last happened."
  }
 }

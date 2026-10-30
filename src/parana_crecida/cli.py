@@ -1329,6 +1329,44 @@ def basemap(
     rep.write(report)
 
 
+@main.command()
+@db_option
+@click.option(
+    "--out", type=click.Path(path_type=Path),
+    default=Path("data/return_periods.json"), show_default=True,
+)
+@report_option
+def frequency(db: Path, out: Path, report: Path | None) -> None:
+    """Fit stage-frequency curves, so the site can say how rare this is.
+
+    Log-Pearson III by L-moments on each gauge's annual maxima. Needs the
+    long record, so it runs here and the table is committed; the daily job
+    reads it.
+    """
+    import json as _json
+
+    from . import frequency as fq
+
+    rep = Report("frequency")
+    with Store(db, read_only=True) as store:
+        fits = fq.build(store)
+    if not fits:
+        raise click.ClickException("no gauge has enough years to fit")
+
+    payload = fq.to_payload(fits)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        _json.dumps(payload, ensure_ascii=False, indent=1) + chr(10), encoding="utf-8"
+    )
+    for f in fits:
+        rep.say(
+            f"  {f.name:22s} {f.years:3d} yr  1-in-10 {f.levels[10]:6.2f} m  "
+            f"1-in-50 {f.levels[50]:6.2f} m  record {f.record_max:6.2f} ({f.record_max_year})"
+        )
+    rep.say(f"{len(fits)} gauges fitted -> {out}")
+    rep.write(report)
+
+
 # -- daily -----------------------------------------------------------------
 
 

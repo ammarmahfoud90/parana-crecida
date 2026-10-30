@@ -611,3 +611,14 @@ main:focus { outline: none; }
   background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .12);
 }
 .baseswitch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* How rare, beside how high. A percentile says where today sits among
+   past 29ths of October; this says how big the flood is. */
+.tag.rare { border-color: var(--accent); color: var(--accent); }
+.tag.rare.high { border-color: var(--alert); color: var(--alert); font-weight: 650; }
+.verdict .detail.rarity { margin-top: 6px; color: var(--ink); }
+
+.verdict .state.high_wide, .verdict .state.high { color: var(--evac); }
+.verdict .state.notable { color: var(--alert); }
+.verdict:has(.state.high_wide), .verdict:has(.state.high) { border-left-color: var(--evac); }
+.verdict:has(.state.notable) { border-left-color: var(--alert); }
