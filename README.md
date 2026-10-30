@@ -915,11 +915,11 @@ project can read; and a return period is not a schedule.
 - **The ENSO panel.** A quarterly Pacific average sitting beside daily
   gauge readings read as though it were one of them.
 
-### The radar method was the problem, not the river
+### The radar method is half the problem, and the new one is not ready
 
 The site had published that La Paz to Parana could not be measured - a
 small signal under large scatter, correlating +0.01 with its own gauge.
-That was wrong, and the trial that replaced the method proved it:
+That was wrong, and a trial proved it. Against the gauge:
 
 | stretch | thresholded VV | VH change detection |
 |---|---|---|
@@ -928,35 +928,56 @@ That was wrong, and the trial that replaced the method proved it:
 
 Three changes, each for a measured reason. **VH instead of VV**, because
 wind roughens water and lifts its backscatter toward land - the documented
-source of the scatter, and the reason a plausibility filter had to throw
-away whole passes. **Change against each pixel's own dry-season value
-instead of an absolute threshold**, because backscatter is not comparable
-between reaches, which is why nine thresholds had to be tuned one at a
-time and why the gorge defeated all of them. **Height above nearest
-drainage instead of slope**, because ground twenty-five metres above the
-nearest channel cannot hold standing water whatever its backscatter, and a
-radar shadow on a valley wall is exactly that.
+source of the scatter, and the reason whole passes had to be thrown away.
+**Change against each pixel's own dry-season value instead of an absolute
+threshold**, because backscatter is not comparable between reaches, which
+is why nine thresholds had to be tuned one at a time and why the gorge
+defeated all of them. **Height above nearest drainage instead of slope**,
+because ground twenty-five metres above the nearest channel cannot hold
+standing water whatever its backscatter, and a radar shadow on a valley
+wall is exactly that.
 
-The number now means something different and the page says so: flood water
-only, ground that is dry when the river is low and is not now, with the
-channel excluded by construction rather than subtracted afterwards.
+**And it was not adopted, because its absolute areas do not validate.**
+Run over all nine stretches it returns more *flood* water than the old
+method returned *total* water, channel included:
 
-### Who the water reached
+| stretch | old total water | new flood-only | share of corridor |
+|---|---|---|---|
+| parana_villa_constitucion | 1,293 km2 | 3,431 km2 | 36% |
+| la_paz_parana | 1,019 km2 | 2,042 km2 | 29% |
+| goya_la_paz | 1,209 km2 | 2,186 km2 | 23% |
 
-The point of the whole exercise. Modelled residential population on ground
-the radar finds under water and that is dry at low flow.
+Flood-only cannot exceed total. A third of a 20 km-wide corridor under
+water is not what happened. A 3 dB drop against a five-year-old dry
+reference catches a great deal that is not water - vegetation change, soil
+moisture, a different look angle between orbits.
 
-The first attempt, on the old mask, returned **97,498 people under water
-near Posadas on a single June day** - a city of smooth tarmac read as a
-lake by a VV threshold. That one number is the clearest argument for
-change detection there is: a street is dark in August and dark in June, so
-it never drops, so it is never flooded.
+So the correlation gain is real and the areas are not, and a measurement
+that correlates well while being wrong by a factor of two is worse than
+the one it replaces. The trial is committed, the finding is written down,
+and the published series still comes from the old method. What it needs is
+a stricter drop, a persistence constraint across consecutive passes, and
+validation against optical water on a cloud-free flood date - not another
+afternoon of tuning.
 
-It is not a count of people flooded. It is who lives where the water now
-is - someone on a raised bank inside a flooded hectare is in it and dry -
-and it is a floor, because radar cannot see water under trees, and
-modelled, because GHSL spreads census totals over a built-surface grid and
-this floodplain is mostly scattered rural settlement.
+### Who the water reached, and why there is no number yet
+
+The point of the whole exercise, and it is not publishable.
+
+The first attempt returned **97,498 people under water near Posadas on a
+single June day** - a city of smooth tarmac read as a lake by a VV
+threshold. Change detection was meant to fix exactly that, on the
+reasoning that a street is dark in August and dark in June, so it never
+drops. It did not: the same date returned 108,814.
+
+Worse, the series runs against the flood. The real peak, the composite
+ending 16 October, gives the *lowest* figure of the fifteen at 21,826,
+while June gives five times that. Whatever is being counted, it is not
+people reached by this flood.
+
+Exposure is the single most valuable thing this project could publish and
+it needs a water mask that does not mistake a city for a lake. That is the
+blocker, and it is the same blocker as above.
 
 ## Status
 
