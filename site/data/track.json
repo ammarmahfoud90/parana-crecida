@@ -2,7 +2,7 @@
  "schema": 1,
  "note": "When the crest now in the river is due at the gauges below it, from travel times measured over the whole record. It says when, not how high. The range is every leg at its fast end against every leg at its slow end, not a confidence interval.",
  "generated_for": "2026-10-30",
- "as_of": "2026-10-28",
+ "as_of": "2026-10-29",
  "reason": null,
  "anchor": {
   "series_id": "26261",
@@ -10,11 +10,11 @@
   "river_km": 659.8,
   "peak_day": "2026-10-23",
   "peak_value": 7.42,
-  "last_day": "2026-10-28",
-  "last_value": 7.39,
-  "days_since_peak": 5,
+  "last_day": "2026-10-29",
+  "last_value": 7.38,
+  "days_since_peak": 6,
   "rise_m": 3.87,
-  "fall_m": 0.03,
+  "fall_m": 0.04,
   "confirmed": false
  },
  "projections": [
@@ -56,7 +56,7 @@
    "latest": "2026-10-29",
    "days_ahead": -3,
    "legs": 3,
-   "percentile_now": 98.9,
+   "percentile_now": 99.8,
    "state": "rising",
    "timing": "due"
   },
@@ -70,7 +70,7 @@
    "latest": "2026-11-02",
    "days_ahead": 0,
    "legs": 4,
-   "percentile_now": 93.6,
+   "percentile_now": 94.0,
    "state": "rising",
    "timing": "ahead"
   },
@@ -98,7 +98,7 @@
    "latest": "2026-11-08",
    "days_ahead": 3,
    "legs": 6,
-   "percentile_now": 97.1,
+   "percentile_now": 96.9,
    "state": "rising",
    "timing": "ahead"
   },
@@ -112,7 +112,7 @@
    "latest": "2026-11-10",
    "days_ahead": 4,
    "legs": 7,
-   "percentile_now": 92.0,
+   "percentile_now": 92.3,
    "state": "rising",
    "timing": "ahead"
   },
@@ -126,7 +126,7 @@
    "latest": "2026-11-12",
    "days_ahead": 6,
    "legs": 8,
-   "percentile_now": 94.5,
+   "percentile_now": 94.7,
    "state": "rising",
    "timing": "ahead"
   },
@@ -154,7 +154,7 @@
    "latest": "2026-11-17",
    "days_ahead": 10,
    "legs": 10,
-   "percentile_now": 77.9,
+   "percentile_now": 78.5,
    "state": "rising",
    "timing": "ahead"
   },
@@ -168,7 +168,7 @@
    "latest": "2026-11-19",
    "days_ahead": 12,
    "legs": 11,
-   "percentile_now": 86.4,
+   "percentile_now": 86.7,
    "state": "rising",
    "timing": "ahead"
   },
@@ -182,12 +182,12 @@
    "latest": "2026-11-22",
    "days_ahead": 14,
    "legs": 12,
-   "percentile_now": 69.5,
+   "percentile_now": 68.4,
    "state": "rising",
    "timing": "ahead"
   }
  ],
- "generated_at": "2026-10-30T18:26:38-03:00",
+ "generated_at": "2026-10-30T19:35:49-03:00",
  "skill": {
   "schema": 1,
   "note": "The tracker run over the record as it would have run on the day, scored against the first local maximum each gauge then reached. The baseline is the same projection with no travel time in it: the crest arriving everywhere on the day the anchor peaked.",
