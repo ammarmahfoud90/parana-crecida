@@ -1169,8 +1169,11 @@ def animation(project: str | None, out: Path, px: int, report: Path | None) -> N
 @click.option("--cycles", default=15, show_default=True,
               help="How many 12-day windows to render.")
 @click.option("--px", default=1600, show_default=True, help="Longest edge, in pixels.")
+@click.option("--force", is_flag=True,
+              help="Render even when no new cycle has landed.")
 @report_option
-def mapframes(project: str | None, cycles: int, px: int, report: Path | None) -> None:
+def mapframes(project: str | None, cycles: int, px: int, force: bool,
+              report: Path | None) -> None:
     """Render georeferenced water overlays for the map.
 
     Twelve-day composites rather than single passes: the satellite's swath
@@ -1179,9 +1182,28 @@ def mapframes(project: str | None, cycles: int, px: int, report: Path | None) ->
     Engine credential.
     """
     from . import flooded as _fl
-    from .mapframes import render
+    from . import floodwater as _fw
+    from .mapframes import DEFAULT_INDEX, render
 
     rep = Report("map frames")
+
+    # The same guard the film uses: the frames move on the satellite's
+    # twelve-day rhythm, not on how often this job happens to run.
+    newest = max(
+        (s["days"][-1] for s in (_fw.load().get("stretches") or []) if s.get("days")),
+        default=None,
+    )
+    drawn = None
+    if DEFAULT_INDEX.exists():
+        import json as _json
+
+        frames = _json.loads(DEFAULT_INDEX.read_text(encoding="utf-8")).get("frames") or []
+        drawn = frames[-1]["end"] if frames else None
+    if not force and newest and drawn and newest <= drawn:
+        rep.say(f"newest cycle {newest} is already drawn; nothing to render")
+        rep.write(report)
+        return
+
     try:
         _fl.initialize(project)
         payload = render(cycles=cycles, px=px)

@@ -405,3 +405,27 @@ def test_the_daily_run_refreshes_what_the_front_page_reads():
     # And what it measures has to be committed, or the run throws it away.
     for produced in ("data/floodwater.json", "site/data"):
         assert produced in run, f"{produced} is never committed"
+
+
+def test_the_renders_are_not_rebuilt_every_day():
+    """A render must decide for itself whether it has work to do.
+
+    The workflow used to ask git whether the source table had changed.
+    That held only while the Earth Engine step was being skipped for want
+    of a credential: once it runs for real, both tables rewrite their
+    fetched_on every morning, the guard is true every morning, and
+    fifteen thumbnails and a 4.2 MB GIF get re-rendered and committed
+    daily to say what they said the day before.
+    """
+    workflow = Path(".github/workflows/daily.yml")
+    if not workflow.exists():
+        pytest.skip("no daily workflow")
+    run = workflow.read_text(encoding="utf-8")
+
+    assert "git diff --quiet -- data/floodwater.json" not in run, (
+        "the render guard is back in the shell, where it cannot work"
+    )
+    cli = Path("src/parana_crecida/cli.py").read_text(encoding="utf-8")
+    assert cli.count("is already drawn; nothing to render") == 2, (
+        "both the film and the map frames must guard on the cycle they drew"
+    )

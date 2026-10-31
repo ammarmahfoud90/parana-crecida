@@ -95,19 +95,14 @@ jobs:
           # updating, and the freshness gate below starts failing.
           crecida floodwater --report reports/floodwater.txt
           crecida flooded --report reports/flooded.txt
-          # The renders are 1.3 MB and 4.2 MB and only change when a new
-          # pass lands, which is every 12 days. Re-rendering and committing
-          # them daily would add several gigabytes of history a year to say
-          # the same thing, so git decides: no change to the series, no new
-          # render. The film has the same guard inside it, on the cycle it
-          # last drew, so it is safe to call either way.
-          if git diff --quiet -- data/floodwater.json data/flooded.json; then
-            echo "No new satellite pass; keeping the committed renders."
-          else
-            crecida animation --report reports/animation.txt
-            crecida mapframes --report reports/mapframes.txt
-            crecida film --report reports/film.txt
-          fi
+          # Both renders guard themselves on the cycle they last drew, so
+          # they are safe to call every day: on a day with no new pass they
+          # exit in a second having rendered nothing. The guard used to live
+          # here and asked git whether the source table had changed, which
+          # stopped working the moment the Earth Engine step started running
+          # for real, because the tables rewrite their fetched_on daily.
+          crecida mapframes --report reports/mapframes.txt
+          crecida film --report reports/film.txt
 
       # fetch -> load -> data tests -> export. A failed test exits non-zero
       # here, so the commit and deploy steps below are skipped and the
