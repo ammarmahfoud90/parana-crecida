@@ -429,3 +429,33 @@ def test_the_renders_are_not_rebuilt_every_day():
     assert cli.count("is already drawn; nothing to render") == 2, (
         "both the film and the map frames must guard on the cycle they drew"
     )
+
+
+def test_the_published_names_are_the_ones_a_reader_should_see():
+    """Accents included, on a site that is half in Spanish.
+
+    The roster has carried two spellings per gauge all along: an ASCII
+    name, because a Windows console cannot print "Itá Ibaté", and a
+    display name for readers. The corridor table froze the first, so every
+    table built from it reached the page folded.
+    """
+    published = SITE / "data/floodwater.json"
+    if not published.exists():
+        pytest.skip("nothing exported yet")
+
+    import sys
+
+    sys.path.insert(0, "src")
+    from parana_crecida import gauges as roster
+
+    payload = json.loads(published.read_text(encoding="utf-8"))
+    rows = payload["stretches"] + payload.get("withheld", [])
+    assert rows, "nothing published to check"
+
+    for row in rows:
+        for end in ("from", "to"):
+            gauge = roster.gauge(row[end])
+            assert row[f"{end}_name"] == gauge.label, (
+                f"{row['key']} shows {row[f'{end}_name']!r}, "
+                f"the roster says {gauge.label!r}"
+            )

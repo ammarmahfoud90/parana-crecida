@@ -51,9 +51,15 @@ BY_KEY = {c.key: c for c in CORRIDORS}
 @pytest.mark.skipif(not CORRIDORS, reason="no committed corridors")
 def test_the_corridors_run_the_frontier_to_the_delta():
     """Nine stretches, end to end, each starting where the last one ended."""
+    from parana_crecida import gauges as _gauges
+
     assert len(CORRIDORS) == 9
-    assert CORRIDORS[0].from_name == "Puerto Iguazu"
-    assert CORRIDORS[-1].to_name == "Ibicuy"
+    # Identity by gauge id, which is stable, and the label by the roster,
+    # which owns the spelling. Asserting the spelling here is what made a
+    # corridor that started carrying accents look like a broken chain.
+    assert CORRIDORS[0].from_id == _gauges.gauge(CORRIDORS[0].from_id).series_id
+    assert CORRIDORS[0].from_name == _gauges.gauge(CORRIDORS[0].from_id).label
+    assert CORRIDORS[-1].to_name == _gauges.gauge(CORRIDORS[-1].to_id).label
     for upstream, downstream in zip(CORRIDORS, CORRIDORS[1:]):
         assert upstream.to_id == downstream.from_id, (
             f"{upstream.key} ends at {upstream.to_id} but "

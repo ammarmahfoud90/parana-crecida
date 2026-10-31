@@ -8,7 +8,7 @@
  "stretches": [
   {
    "key": "puerto_iguazu_libertador",
-   "from_name": "Puerto Iguazu",
+   "from_name": "Puerto Iguazú",
    "to_name": "Libertador",
    "clear_scenes": 4,
    "previous": {
@@ -45,7 +45,7 @@
   {
    "key": "posadas_ita_ibate",
    "from_name": "Posadas",
-   "to_name": "Ita Ibate",
+   "to_name": "Itá Ibaté",
    "clear_scenes": 8,
    "previous": {
     "recall": 0.9,
@@ -62,7 +62,7 @@
   },
   {
    "key": "ita_ibate_corrientes",
-   "from_name": "Ita Ibate",
+   "from_name": "Itá Ibaté",
    "to_name": "Corrientes",
    "clear_scenes": 4,
    "previous": {
@@ -117,7 +117,7 @@
   {
    "key": "la_paz_parana",
    "from_name": "La Paz",
-   "to_name": "Parana",
+   "to_name": "Paraná",
    "clear_scenes": 10,
    "previous": {
     "recall": 0.63,
@@ -134,8 +134,8 @@
   },
   {
    "key": "parana_villa_constitucion",
-   "from_name": "Parana",
-   "to_name": "Villa Constitucion",
+   "from_name": "Paraná",
+   "to_name": "Villa Constitución",
    "clear_scenes": 2,
    "previous": {
     "recall": 0.61,

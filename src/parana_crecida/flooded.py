@@ -46,6 +46,8 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
+from . import gauges as _gauges
+
 log = logging.getLogger(__name__)
 
 DEFAULT_CORRIDORS = Path("data/corridors.json")
@@ -122,13 +124,24 @@ def load_corridors(path: Path | str = DEFAULT_CORRIDORS) -> list[Stretch]:
         log.warning("no corridors at %s", path)
         return []
     payload = json.loads(path.read_text(encoding="utf-8"))
+
+    # The corridor file froze the console spelling. Everything built from
+    # it ends up in front of a reader, so the name is resolved through the
+    # roster, which has carried the accented form all along. The lookup is
+    # on the gauge id, so the two cannot drift apart.
+    def shown(series_id: str, frozen: str) -> str:
+        try:
+            return _gauges.gauge(series_id).label
+        except KeyError:
+            return frozen
+
     return [
         Stretch(
             key=s["key"],
             from_id=str(s["from"]),
             to_id=str(s["to"]),
-            from_name=s["from_name"],
-            to_name=s["to_name"],
+            from_name=shown(str(s["from"]), s["from_name"]),
+            to_name=shown(str(s["to"]), s["to_name"]),
             river_km=float(s["river_km"]),
             centreline=s["centreline"],
             threshold_db=float(s.get("threshold_db", WATER_THRESHOLD_DB)),
