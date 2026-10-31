@@ -1,60 +1,60 @@
-flooded area - 2026-10-30T19:30:19-03:00
+flooded area - 2026-10-30T22:22:41-03:00
 
 source COPERNICUS/S1_GRD  threshold -16.0 dB
-window 2026-05-01 to 2026-10-28
+window 2026-05-02 to 2026-10-29
 
-  Puerto Iguazu -> Libertador  (189 km of river)
+  Puerto Iguazú -> Libertador  (189 km of river)
     corridor              7,979 km2
     JRC permanent water     148 km2
     2021 bajante            192 km2   <- the calibration check
-    15 full passes, latest 190 km2 on 2026-10-28, peak 191 km2
+    15 full passes, latest 190 km2 on 2026-10-29, peak 191 km2
 
   Libertador -> Posadas  (150 km of river)
     corridor              6,625 km2
     JRC permanent water     215 km2
     2021 bajante            318 km2   <- the calibration check
-    15 full passes, latest 341 km2 on 2026-10-28, peak 351 km2
+    15 full passes, latest 341 km2 on 2026-10-29, peak 351 km2
 
-  Posadas -> Ita Ibate  (163 km of river)
+  Posadas -> Itá Ibaté  (163 km of river)
     corridor              7,551 km2
     JRC permanent water     816 km2
     2021 bajante            784 km2   <- the calibration check
-    14 full passes, latest 2,401 km2 on 2026-10-28, peak 2,401 km2
+    14 full passes, latest 2,401 km2 on 2026-10-29, peak 2,401 km2
 
-  Ita Ibate -> Corrientes  (170 km of river)
+  Itá Ibaté -> Corrientes  (170 km of river)
     corridor              7,781 km2
     JRC permanent water     548 km2
     2021 bajante            587 km2   <- the calibration check
-    14 full passes, latest 1,354 km2 on 2026-10-28, peak 1,354 km2
+    14 full passes, latest 1,354 km2 on 2026-10-29, peak 1,354 km2
 
   Corrientes -> Goya  (212 km of river)
     corridor              9,474 km2
     JRC permanent water     521 km2
     2021 bajante            536 km2   <- the calibration check
-    15 full passes, latest 1,645 km2 on 2026-10-28, peak 1,645 km2
+    15 full passes, latest 1,645 km2 on 2026-10-29, peak 1,645 km2
 
   Goya -> La Paz  (218 km of river)
     corridor              9,501 km2
     JRC permanent water     536 km2
     2021 bajante            496 km2   <- the calibration check
-    15 full passes, latest 1,209 km2 on 2026-10-28, peak 1,209 km2
+    15 full passes, latest 1,209 km2 on 2026-10-29, peak 1,209 km2
 
-  La Paz -> Parana  (154 km of river)
+  La Paz -> Paraná  (154 km of river)
     corridor              7,103 km2
     JRC permanent water     556 km2
     2021 bajante            562 km2   <- the calibration check
-    15 full passes, latest 805 km2 on 2026-10-28, peak 1,019 km2
+    15 full passes, latest 805 km2 on 2026-10-29, peak 1,019 km2
 
-  Parana -> Villa Constitucion  (221 km of river)
+  Paraná -> Villa Constitución  (221 km of river)
     corridor              9,621 km2
     JRC permanent water     715 km2
     2021 bajante            738 km2   <- the calibration check
-    15 full passes, latest 1,128 km2 on 2026-10-28, peak 1,293 km2
+    15 full passes, latest 1,128 km2 on 2026-10-29, peak 1,293 km2
 
-  Villa Constitucion -> Ibicuy  (192 km of river)
+  Villa Constitución -> Ibicuy  (192 km of river)
     corridor              6,896 km2
     JRC permanent water     302 km2
     2021 bajante            277 km2   <- the calibration check
-    15 full passes, latest 804 km2 on 2026-10-28, peak 1,326 km2
+    15 full passes, latest 804 km2 on 2026-10-29, peak 1,326 km2
 
 flooded -> data/flooded.json
