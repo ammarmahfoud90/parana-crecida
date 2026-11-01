@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-01T15:00:19-03:00",
+ "generated_at": "2026-11-01T19:12:51-03:00",
  "last_data_day": "2026-10-31",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -754,10 +754,10 @@
    "to": "Goya"
   },
   "front": {
-   "gauge": "Corrientes",
-   "day": "2026-10-23",
+   "gauge": "Empedrado",
+   "day": "2026-10-28",
    "confirmed": false,
-   "river_km": 659.8
+   "river_km": 717.2
   },
   "water": {
    "km2": 9727.5,

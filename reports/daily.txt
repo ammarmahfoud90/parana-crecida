@@ -1,4 +1,4 @@
-export - 2026-11-01T15:00:19-03:00
+export - 2026-11-01T19:12:51-03:00
 
   [ok  ] rows_present: 17306 observation rows
   [ok  ] no_null_fields: 0 rows with a null field
