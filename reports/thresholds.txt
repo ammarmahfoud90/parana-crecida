@@ -1,4 +1,4 @@
-ina thresholds - 2026-10-31T22:08:33-03:00
+ina thresholds - 2026-11-01T14:59:52-03:00
 
   2026-11-01: HTTP 404, 195 bytes
   2026-10-31: HTTP 404, 195 bytes
