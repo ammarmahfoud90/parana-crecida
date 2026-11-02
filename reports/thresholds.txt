@@ -1,6 +1,6 @@
-ina thresholds - 2026-11-02T18:24:26-03:00
+ina thresholds - 2026-11-02T18:49:07-03:00
 
-  2026-11-02: 2695 KB -> reporte_diario_2026-11-02.pdf
+  2026-11-02: 2698 KB -> reporte_diario_2026-11-02.pdf
 parsed 25 rows from the report's threshold tables
 
 16 gauges in scope have official levels:

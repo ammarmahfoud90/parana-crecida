@@ -1,4 +1,4 @@
-flooded area - 2026-11-02T18:25:02-03:00
+flooded area - 2026-11-02T18:49:40-03:00
 
 source COPERNICUS/S1_GRD  threshold -16.0 dB
 window 2026-05-04 to 2026-10-31
