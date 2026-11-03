@@ -7014,7 +7014,7 @@ day,series_id,gauge,branch,river_km,level_m,percentile_for_day_of_year,flags
 2026-10-30,26294,San Fernando,estuary,,0.92,31.6,tide_affected unrouted
 2026-10-31,26294,San Fernando,estuary,,0.85,25.2,tide_affected unrouted
 2026-11-01,26294,San Fernando,estuary,,0.83,23.3,tide_affected unrouted
-2026-11-02,26294,San Fernando,estuary,,0.97,37.1,tide_affected unrouted
+2026-11-02,26294,San Fernando,estuary,,1.01,41.1,tide_affected unrouted
 2026-05-07,26296,Olivos,estuary,,1.2,75.0,tide_affected unrouted
 2026-05-08,26296,Olivos,estuary,,0.6,25.0,tide_affected unrouted
 2026-05-10,26296,Olivos,estuary,,1.4,85.0,tide_affected unrouted

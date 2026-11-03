@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-03T00:37:20-03:00",
+ "generated_at": "2026-11-03T16:45:30-03:00",
  "window": {
   "start": "2025-11-03",
   "end": "2026-11-03"
@@ -5241,7 +5241,7 @@
    "station": "Guaíra Porto",
    "river": "Paraná",
    "unit": "m3/s",
-   "value": 17500.0,
+   "value": 16900.0,
    "trend": "falling",
    "alert": 20000.0,
    "evacuation": 25000.0
@@ -5250,13 +5250,13 @@
    "station": "Represa Itaipú",
    "river": "Paraná",
    "unit": "m3/s",
-   "value": 18800.0,
+   "value": 18900.0,
    "trend": "falling",
    "alert": 20000.0,
    "evacuation": 25000.0
   }
  ],
- "report_date": "2026-11-02",
+ "report_date": "2026-11-03",
  "rainfall": {
   "source": "NASA/GPM_L3/IMERG_V07",
   "fetched_on": "2026-11-03",
@@ -5270,7 +5270,7 @@
     "key": "alto_parana",
     "area_km2": 834192,
     "recent_days": 7,
-    "recent_mm": 32.1,
+    "recent_mm": 31.5,
     "wettest_day": {
      "day": "2026-10-25",
      "mm": 23.46
@@ -5639,14 +5639,14 @@
      10.78,
      3.0,
      6.28,
-     5.17
+     4.59
     ]
    },
    {
     "key": "iguazu",
     "area_km2": 67536,
     "recent_days": 7,
-    "recent_mm": 19.2,
+    "recent_mm": 18.3,
     "wettest_day": {
      "day": "2026-10-24",
      "mm": 88.58
@@ -6015,15 +6015,15 @@
      6.46,
      0.67,
      0.33,
-     9.84
+     8.89
     ]
    }
   ]
  },
  "enso": {
-  "season": "JAS",
+  "season": "ASO",
   "year": 2026,
-  "anomaly": 2.16,
+  "anomaly": 2.46,
   "phase": "el_nino_very_strong",
   "source": "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
   "recent": [
@@ -6246,6 +6246,11 @@
     "season": "JAS",
     "year": 2026,
     "anomaly": 2.16
+   },
+   {
+    "season": "ASO",
+    "year": 2026,
+    "anomaly": 2.46
    }
   ]
  }
