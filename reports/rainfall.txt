@@ -1,10 +1,10 @@
-rainfall - 2026-11-02T22:05:18-03:00
+rainfall - 2026-11-03T00:29:30-03:00
 
 source NASA/GPM_L3/IMERG_V07
 window 2026-05-05 to 2026-11-01
 
   alto_parana     115 sub-basins    834,192 km2 (published 834,184)
-       181 days, max 23.5 mm/day, last 7 days 32.5 mm
+       181 days, max 23.5 mm/day, last 7 days 32.1 mm
   iguazu            9 sub-basins     67,536 km2 (published 67,537)
        181 days, max 88.6 mm/day, last 7 days 19.2 mm
 
