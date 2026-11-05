@@ -160,6 +160,11 @@ def main() -> None:
             print(f"{stretch.key:26s} no clear optical scene")
             continue
 
+        # Both masks now see the same window, start and end inclusive.
+        # They did not: floodwater._vh left filterDate end-exclusive while
+        # flooded._collection compensated, so the two methods were scored
+        # on 12 and 13 days of radar respectively and the head-to-head was
+        # not quite like for like.
         start = day - timedelta(days=PAIR_DAYS)
         end = day + timedelta(days=PAIR_DAYS)
 

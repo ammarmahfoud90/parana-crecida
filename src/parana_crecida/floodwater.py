@@ -120,12 +120,22 @@ SKILL = {
 
 
 def _vh(corridor, start: date, end: date):
+    """Dual-pol IW scenes over the corridor, ``start`` to ``end`` inclusive.
+
+    ``filterDate`` is end-exclusive, so the end date has to be advanced by
+    a day to include it. Without that the twelve-day window was eleven
+    days wide and excluded the very date each cycle is published under -
+    and because the windows step by exactly one repeat cycle, a relative
+    orbit whose pass fell on the excluded day was missing from *every*
+    cycle in the series rather than occasionally. ``flooded._collection``
+    has always compensated the same way.
+    """
     import ee
 
     return (
         ee.ImageCollection(S1)
         .filterBounds(corridor)
-        .filterDate(start.isoformat(), end.isoformat())
+        .filterDate(start.isoformat(), (end + timedelta(days=1)).isoformat())
         .filter(ee.Filter.eq("instrumentMode", "IW"))
         .filter(ee.Filter.listContains("transmitterReceiverPolarisation", "VH"))
         .select("VH")
