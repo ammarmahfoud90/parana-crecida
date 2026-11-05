@@ -602,3 +602,59 @@ def test_the_cycle_that_failed_in_the_published_record_is_now_rejected():
     # Including the record flood, which must not be mistaken for an outlier
     # just because it is far from the median.
     assert kept[-1]["water_km2"] == 9727.5
+
+
+# -- does the published measurement move with the river? -------------------
+
+
+def test_every_published_stretch_moves_with_the_river():
+    """The check a passing validation score does not give you.
+
+    An IoU says the mask agrees with optical water on one date. It does not
+    say the series that follows carries a flood. A reach whose area falls
+    as the river rises is measuring something that is not the river -
+    tide, wind, a reservoir held at a constant level - however well it
+    scored against a static reference.
+
+    This test existed for the superseded VV product and never for the live
+    one: `_stage_correlation` was only ever called from `export_flooded`,
+    so the mask that ships had no published relation to the gauge record at
+    all. It covers the live product now.
+
+    The bar catches a measurement pointing the wrong way, not a weak one.
+    Extent at a given stage depends on topography, channel-floodplain
+    connectivity, vegetation and whether the wave is rising or falling, so
+    a weak correlation is the expected result on some reaches and is
+    published as context rather than as corroboration.
+    """
+    published = Path("site/data/floodwater.json")
+    if not published.exists():
+        pytest.skip("nothing exported")
+    payload = json.loads(published.read_text(encoding="utf-8"))
+
+    checked = 0
+    for stretch in payload.get("stretches", []):
+        r = stretch.get("stage_correlation")
+        if r is None:
+            continue
+        checked += 1
+        assert -1.0 <= r <= 1.0, stretch["key"]
+        assert r > -0.2, (
+            f"{stretch['key']}: water area correlates {r:+.2f} with the stage "
+            f"at the gauge below it - it is measuring something that is not "
+            f"the flood, and it is being published"
+        )
+    if not checked:
+        pytest.skip("no stage correlations in the export; needs a store")
+
+
+def test_the_published_record_explains_what_the_correlation_is_for():
+    """So it is not read as the validation it is explicitly not."""
+    published = Path("site/data/floodwater.json")
+    if not published.exists():
+        pytest.skip("nothing exported")
+    payload = json.loads(published.read_text(encoding="utf-8"))
+    if not any("stage_correlation" in s for s in payload.get("stretches", [])):
+        pytest.skip("no stage correlations in the export")
+    note = (payload.get("stage_correlation_note") or "").lower()
+    assert "context, not validation" in note

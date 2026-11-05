@@ -3,8 +3,11 @@
  "note": "Open water from Sentinel-1 VH below -25 dB, bounded by height above nearest drainage. One threshold for the whole river, tuned against Sentinel-2 optical water during a flood rather than against the channel at low flow. water_km2 is all water; flood_km2 excludes the permanent channel.",
  "method": "vh-threshold/hand",
  "vh_threshold_db": -25.0,
+ "vh_floor_db": null,
  "hand_limit_m": 10.0,
  "window_days": 12,
+ "window": null,
+ "min_coverage": null,
  "skill": {
   "schema": 1,
   "note": "Both water masks scored against Sentinel-2 optical water on a flood date, inside the area the optical scene can see. Recall is water found, precision is water correctly called, IoU is the two together.",
@@ -170,7 +173,8 @@
  },
  "skill_floor": 0.45,
  "fetched_on": "2026-11-04",
- "corridor_km2": 65635,
+ "corridor_km2": null,
+ "corridor_note": null,
  "river_km": 1477.3,
  "withheld": [
   {
@@ -184,246 +188,13 @@
    "withheld": "never scored against optical water"
   }
  ],
- "river": [
-  {
-   "day": "2025-11-02",
-   "water_km2": 6905.6,
-   "flood_km2": 1617.5,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2025-11-14",
-   "water_km2": 6702.6,
-   "flood_km2": 1419.8,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2025-11-26",
-   "water_km2": 6167.1,
-   "flood_km2": 981.4,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2025-12-08",
-   "water_km2": 6319.6,
-   "flood_km2": 1063.0,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2025-12-20",
-   "water_km2": 5965.6,
-   "flood_km2": 739.2,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-01-01",
-   "water_km2": 6036.2,
-   "flood_km2": 837.6,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-01-13",
-   "water_km2": 5782.4,
-   "flood_km2": 633.6,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-01-25",
-   "water_km2": 5740.5,
-   "flood_km2": 560.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-02-06",
-   "water_km2": 5750.4,
-   "flood_km2": 547.2,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-02-18",
-   "water_km2": 5740.7,
-   "flood_km2": 565.9,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-03-02",
-   "water_km2": 5729.9,
-   "flood_km2": 570.9,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-03-14",
-   "water_km2": 5697.3,
-   "flood_km2": 561.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-03-26",
-   "water_km2": 5509.9,
-   "flood_km2": 383.6,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-04-07",
-   "water_km2": 5553.6,
-   "flood_km2": 433.7,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-04-19",
-   "water_km2": 5644.6,
-   "flood_km2": 499.9,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-05-01",
-   "water_km2": 5800.8,
-   "flood_km2": 657.5,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-05-13",
-   "water_km2": 5865.7,
-   "flood_km2": 684.4,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-05-25",
-   "water_km2": 6414.3,
-   "flood_km2": 1205.8,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-06-06",
-   "water_km2": 6120.3,
-   "flood_km2": 1034.8,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-06-18",
-   "water_km2": 5741.1,
-   "flood_km2": 573.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-06-30",
-   "water_km2": 5203.6,
-   "flood_km2": 733.7,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-07-12",
-   "water_km2": 7453.2,
-   "flood_km2": 2173.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-07-24",
-   "water_km2": 6684.5,
-   "flood_km2": 1447.7,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-08-05",
-   "water_km2": 6397.4,
-   "flood_km2": 1150.1,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-08-17",
-   "water_km2": 6617.2,
-   "flood_km2": 1306.8,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-08-29",
-   "water_km2": 6643.4,
-   "flood_km2": 1370.6,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-09-10",
-   "water_km2": 6650.7,
-   "flood_km2": 1347.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-09-22",
-   "water_km2": 6904.8,
-   "flood_km2": 1602.3,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-10-04",
-   "water_km2": 7201.6,
-   "flood_km2": 1871.7,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-10-16",
-   "water_km2": 6982.1,
-   "flood_km2": 1725.2,
-   "stretches": 8,
-   "complete": true
-  },
-  {
-   "day": "2026-10-28",
-   "water_km2": 9727.5,
-   "flood_km2": 4301.9,
-   "stretches": 8,
-   "complete": true
-  }
- ],
- "latest": {
-  "day": "2026-10-28",
-  "water_km2": 9727.5,
-  "flood_km2": 4301.9,
-  "stretches": 8,
-  "complete": true
- },
- "lowest": {
-  "day": "2026-06-30",
-  "water_km2": 5203.6,
-  "flood_km2": 733.7,
-  "stretches": 8,
-  "complete": true
- },
- "highest": {
-  "day": "2026-10-28",
-  "water_km2": 9727.5,
-  "flood_km2": 4301.9,
-  "stretches": 8,
-  "complete": true
- },
+ "stage_correlation_note": "How each stretch's water area moves with the stage at the gauge below it, over the published cycles. Context, not validation: extent at a given stage depends on topography, connectivity, vegetation and whether the wave is rising or falling, so a weak correlation is expected. A negative one means the reach is measuring something that is not the river.",
+ "river": [],
+ "river_unavailable": "the whole-river total is measured over the dissolved union of the corridors, which this record does not yet carry; the corridors overlap by 17.7% of their summed area, so the stretches below cannot be added up. Run `crecida floodwater` to measure it.",
+ "river_gaps": [],
+ "latest": null,
+ "lowest": null,
+ "highest": null,
  "stretches": [
   {
    "key": "puerto_iguazu_libertador",
@@ -534,7 +305,8 @@
    ],
    "iou": 0.83,
    "recall": 0.84,
-   "precision": 0.98
+   "precision": 0.98,
+   "stage_correlation": 0.3
   },
   {
    "key": "libertador_posadas",
@@ -645,7 +417,8 @@
    ],
    "iou": 0.9,
    "recall": 0.9,
-   "precision": 0.99
+   "precision": 0.99,
+   "stage_correlation": 0.12
   },
   {
    "key": "posadas_ita_ibate",
@@ -756,7 +529,8 @@
    ],
    "iou": 0.87,
    "recall": 0.92,
-   "precision": 0.94
+   "precision": 0.94,
+   "stage_correlation": 0.56
   },
   {
    "key": "ita_ibate_corrientes",
@@ -867,7 +641,8 @@
    ],
    "iou": 0.64,
    "recall": 0.76,
-   "precision": 0.8
+   "precision": 0.8,
+   "stage_correlation": 0.66
   },
   {
    "key": "corrientes_goya",
@@ -978,7 +753,8 @@
    ],
    "iou": 0.48,
    "recall": 0.69,
-   "precision": 0.61
+   "precision": 0.61,
+   "stage_correlation": 0.66
   },
   {
    "key": "goya_la_paz",
@@ -1089,7 +865,8 @@
    ],
    "iou": 0.53,
    "recall": 0.7,
-   "precision": 0.69
+   "precision": 0.69,
+   "stage_correlation": 0.78
   },
   {
    "key": "la_paz_parana",
@@ -1200,7 +977,8 @@
    ],
    "iou": 0.67,
    "recall": 0.8,
-   "precision": 0.8
+   "precision": 0.8,
+   "stage_correlation": 0.51
   },
   {
    "key": "parana_villa_constitucion",
@@ -1311,7 +1089,8 @@
    ],
    "iou": 0.61,
    "recall": 0.79,
-   "precision": 0.72
+   "precision": 0.72,
+   "stage_correlation": 0.66
   }
  ]
 }

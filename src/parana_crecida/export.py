@@ -524,13 +524,19 @@ def export_csv(
                     gauge.branch,
                     "" if node is None else round(node.river_km, 1),
                     round(value.value, 2),
+                    gauge.unit,
                     "" if pct is None else round(pct, 1),
                     " ".join(sorted(gauge.flags)),
                 ]
 
     written["river_daily.csv"] = _write_csv(
         out / "river_daily.csv",
-        ["day", "series_id", "gauge", "branch", "river_km", "level_m",
+        # `value` and `unit`, not `level_m`. The column was named for
+        # metres and carried m3/s for the five discharge series - 8,800 in
+        # a column whose name asserts it is a river height. A CSV is the
+        # copy that gets downloaded and analysed, so the header has to say
+        # what the number is.
+        ["day", "series_id", "gauge", "branch", "river_km", "value", "unit",
          "percentile_for_day_of_year", "flags"],
         river_rows(),
     )
@@ -590,7 +596,7 @@ def export_csv(
 
 
 def _stage_correlation(
-    store: Store, raw: dict, key: str
+    store: Store, raw: dict, key: str, field: str = "km2"
 ) -> float | None:
     """Correlation between a stretch's water area and its downstream gauge.
 
@@ -607,12 +613,12 @@ def _stage_correlation(
 
     corridor = next((c for c in fl.load_corridors() if c.key == key), None)
     source = next((s for s in raw.get("stretches", []) if s["key"] == key), None)
-    if corridor is None or source is None or not source.get("km2"):
+    if corridor is None or source is None or not source.get(field):
         return None
     levels = {v.day.isoformat(): v.value for v in store.series(corridor.to_id)}
     pairs = [
         (levels[day], km2)
-        for day, km2 in zip(source["days"], source["km2"])
+        for day, km2 in zip(source["days"], source[field])
         if day in levels
     ]
     if len(pairs) < 8:
@@ -887,6 +893,7 @@ def export_floodwater(
     source_path: Path | None = None,
     skill_path: Path | None = None,
     out_dir: Path = DEFAULT_SITE_DATA,
+    store: Store | None = None,
 ) -> ExportResult | None:
     """Publish the water surface measured by the validated mask.
 
@@ -948,6 +955,24 @@ def export_floodwater(
             continue
         stretches.append(row | {"iou": iou, "recall": score["now"]["recall"],
                                 "precision": score["now"]["precision"]})
+
+    # How each published stretch moves with the river, for the live mask.
+    #
+    # Every stage correlation this project has published belonged to the
+    # superseded VV product, because _stage_correlation was only ever
+    # called from export_flooded. So the mask that ships had no published
+    # relation to the gauge record at all - neither as corroboration nor
+    # as the explicit non-corroboration the project intends it to be.
+    #
+    # It is context, not validation: extent at a given stage depends on
+    # topography, channel-floodplain connectivity, vegetation and whether
+    # the wave is rising or falling, so a weak or reach-dependent
+    # correlation is the expected result and not a defect. What it does
+    # catch is a reach measuring something that is not the river at all.
+    if store is not None:
+        for stretch in stretches:
+            stretch["stage_correlation"] = _stage_correlation(
+                store, payload, stretch["key"], field="water_km2")
     if not stretches:
         log.info("nothing scored well enough to publish")
         return None
@@ -991,6 +1016,14 @@ def export_floodwater(
         "corridor_note": payload.get("union_note"),
         "river_km": round(sum(s.get("river_km") or 0 for s in stretches), 1),
         "withheld": withheld,
+        "stage_correlation_note": (
+            "How each stretch's water area moves with the stage at the gauge "
+            "below it, over the published cycles. Context, not validation: "
+            "extent at a given stage depends on topography, connectivity, "
+            "vegetation and whether the wave is rising or falling, so a weak "
+            "correlation is expected. A negative one means the reach is "
+            "measuring something that is not the river."
+        ),
         "river": river,
         "river_unavailable": unavailable,
         "river_gaps": (payload.get("river_gaps") or []) + rejected,

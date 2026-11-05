@@ -10,7 +10,7 @@
  },
  "note": "Open water from Sentinel-1 VV backscatter. Radar does not see water under vegetation, so flooded forest and wetland read as land and this is a floor, not a total.",
  "fetched_on": "2026-11-04",
- "stale_days": 0,
+ "stale_days": null,
  "window": {
   "start": "2026-05-06",
   "end": "2026-11-02"
@@ -628,5 +628,6 @@
     "to": []
    }
   }
- ]
+ ],
+ "superseded": "This is the per-stretch VV mask the site shipped with. Scored against Sentinel-2 optical water on a flood date it reaches an IoU of 0.59 where the VH mask in floodwater.json reaches 0.69, and it was replaced. No page reads this file. Its areas are not comparable with floodwater.json's and must not be quoted as current; what it is kept for is stage_correlation, which is the evidence behind the reaches that publish no figure."
 }

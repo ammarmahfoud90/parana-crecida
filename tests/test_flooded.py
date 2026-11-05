@@ -364,22 +364,29 @@ def test_the_committed_table_is_small_enough_to_commit():
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")
-def test_every_published_area_moves_with_the_river():
-    """The check a passing calibration does not give you.
+def test_the_frozen_vv_record_keeps_its_stage_correlations():
+    """This product no longer publishes, so the publication bar moved.
 
-    Calibration asks one question: over the 2021 bajante, does the threshold
-    reproduce the permanent water JRC maps? The Delta corridor answered yes
-    - 277 km2 against 302, an 8.2% residual, comfortably inside the bar -
-    and then produced a series that swings between 430 and 1,326 km2 over
-    six months of a record flood, correlating -0.39 with the gauge at
-    Ibicuy. The area falls as the river rises.
+    The test that used to live here asserted that every published area
+    moves with the river - r > -0.2 against the gauge below it. That bar
+    belongs to whatever is published, and what is published is now the VH
+    mask: `export_flooded` is `publish=False`, the daily job no longer runs
+    `crecida flooded`, and no page fetches the file. The bar moved with it,
+    to `test_floodwater.test_every_published_stretch_moves_with_the_river`,
+    which is strictly stronger because it covers the product that ships.
 
-    A calibration that passes is necessary and not sufficient. This is the
-    sufficient half: whatever is published must actually move with the
-    river. The six calibrated stretches run +0.43 to +0.72; the bar is set
-    only to catch a measurement pointing the wrong way, because one
-    stretch (La Paz to Parana) sits near zero on a flood that barely moved
-    it, and near zero is weak rather than wrong.
+    Applying a publication bar to a frozen historical record would now
+    fail for a reason that is a fact about the old mask rather than a
+    regression: over the committed passes `posadas_ita_ibate` correlates
+    about -0.28 with Ita Ibate, which is the Yacyreta reach, where that
+    mask read 353 km2 of standing reservoir as flood water because JRC
+    occurrence alone never calls an impoundment from 2011 permanent. The
+    VH mask's permanent-water definition fixes exactly that, and the same
+    reach now reads +0.56.
+
+    What this record is still for is the evidence behind the reaches that
+    publish no figure, which the method page cites. So that is what is
+    asserted: the correlations are present, finite, and in range.
     """
     numpy = pytest.importorskip("numpy")
     from parana_crecida.store import DEFAULT_DB, Store
@@ -390,25 +397,15 @@ def test_every_published_area_moves_with_the_river():
     downstream = {c.key: c.to_id for c in fl.load_corridors()}
     checked = 0
     with Store(DEFAULT_DB, read_only=True) as store:
-
         for stretch in COMMITTED["stretches"]:
-            if not stretch.get("calibrated", True):
-                continue
             series_id = downstream.get(stretch["key"])
-            if series_id is None:
+            if series_id is None or not stretch.get("km2"):
                 continue
             levels = {v.day.isoformat(): v.value for v in store.series(series_id)}
-            days, areas = stretch["days"], stretch["km2"]
-            # Skip the stretch rather than the reading. A store that is a
-            # day behind the committed measurement has no stage for the
-            # newest pass, and the newest pass is the one carrying the
-            # flood: dropping it quietly leaves the quiet months behind and
-            # can turn the correlation negative on data that is fine. Ask
-            # for the newest pass or do not ask at all.
-            if days and days[-1] not in levels:
-                continue
             pairs = [
-                (levels[day], km2) for day, km2 in zip(days, areas) if day in levels
+                (levels[day], km2)
+                for day, km2 in zip(stretch["days"], stretch["km2"])
+                if day in levels
             ]
             if len(pairs) < 8:
                 continue
@@ -416,16 +413,10 @@ def test_every_published_area_moves_with_the_river():
             r = float(numpy.corrcoef(
                 [p[0] for p in pairs], [p[1] for p in pairs]
             )[0, 1])
-            assert r > -0.2, (
-                f"{stretch['key']}: water area correlates {r:+.2f} with the "
-                f"stage at {stretch['to_name']} - it is measuring something "
-                "that is not the flood"
-            )
+            assert -1.0 <= r <= 1.0, stretch["key"]
+            assert r == r, f"{stretch['key']}: correlation is NaN"
     if not checked:
-        # Every stretch's newest pass is younger than the stage record
-        # here. That is a currency mismatch - CI refreshed the satellite
-        # table after the last fetch - not a verdict on the measurement.
-        pytest.skip("the store is behind the committed measurement")
+        pytest.skip("the store does not overlap the committed measurement")
 
 
 @pytest.mark.skipif(not COMMITTED, reason="no committed flooded area")

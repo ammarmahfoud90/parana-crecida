@@ -1411,7 +1411,7 @@ def export(
             # Written afterwards, the verdict quotes the previous run's
             # measurement, and on the day a method changes that is the
             # old method's number under the new method's heading.
-            surface = export_floodwater(result, out_dir=out)
+            surface = export_floodwater(result, out_dir=out, store=store)
             exported = export_river_today(store, loaded, result, out_dir=out, today=today)
             wave = export_wave(store, result, out_dir=out, today=today)
             drivers = export_drivers(store, result, out_dir=out, today=today)
