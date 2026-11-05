@@ -41,15 +41,20 @@
 
   <div id="error" class="err" role="alert" hidden></div>
 
+  <!-- Withheld, not broken: its own box, its own wording, no alert role. -->
+  <p class="warn measure" id="riverUnavailable" hidden></p>
+
   <!-- The finding, before any measurement: how much of the valley is wet,
        and how much wetter than the driest pass on the record. -->
   <div class="headline lede" id="headline" hidden>
     <span class="big" id="area">–</span>
     <span class="unit" id="areaCap"></span>
     <p class="say" id="areaNote"></p>
+    <p class="say" id="ageNote"></p>
     <p class="say" id="floodNote" hidden></p>
+    <p class="warn" id="sumWarning" hidden></p>
     <dl class="facts" id="meta" hidden>
-      <div><dt data-t="passLabel"></dt><dd id="passDay"></dd></div>
+      <div><dt data-t="passLabel"></dt><dd id="passWindow"></dd></div>
       <div><dt data-t="reachLabel"></dt><dd id="reach"></dd></div>
       <div><dt data-t="riseLabel"></dt><dd id="rise"></dd></div>
     </dl>
@@ -57,6 +62,8 @@
 
   <h2 class="section major" style="margin-top:34px" data-t="chartHeading"></h2>
   <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="chartLead"></p>
+  <p class="cap measure" id="chartEmpty" data-t="chartNone"
+     style="color:var(--ink-faint);font-size:.9rem" hidden></p>
   <div class="chartbox">
     <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
       <title id="chartTitle"></title>
@@ -99,12 +106,14 @@
     </table>
   </div>
   <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="skillWhat"></p>
+  <p class="warn measure" data-t="skillCaveat"></p>
 
   <h2 class="section major" style="margin-top:34px" data-t="limitsHeading"></h2>
   <ul class="limits measure">
     <li data-t="limitTrees"></li>
+    <li data-t="limitUrban"></li>
     <li data-t="limitWindow"></li>
-    <li data-t="limitGorge"></li>
+    <li data-t="limitDelta"></li>
     <li data-t="limitFloor"></li>
   </ul>
 
@@ -152,27 +161,36 @@ const T = {
     viewMap: "Mapa",
     viewToday: "El río hoy",
     viewMethod: "Método",
-    noticeStrong: "No es un pronóstico oficial.",
-    noticeBody: "Este sitio mide, no avisa. Para alertas y evacuaciones:",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Este sitio mide; no avisa, no pronostica y no es un mapa oficial de riesgo. Las alertas, las evacuaciones y los pronósticos oficiales los publica el Instituto Nacional del Agua:",
     officialLink: "Sistema de Alerta Hidrológico del INA",
 
     riverUnavailable: "La cifra del río entero no se está publicando: se mide una sola vez sobre la unión de los corredores, que se superponen, y esa medición todavía no está hecha. Los tramos de abajo sí: cada uno se mide sobre su propio corredor.",
-    areaCap: "km² del valle del Paraná bajo agua",
-    areaNote: (day, extra, low, lowDay) =>
-      `En la última pasada completa del satélite, cerrada el ${day}. Son ${extra} km² ` +
-      `más que en la pasada más seca del registro (${low} km², ${lowDay}).`,
+    areaCap: "km² de agua abierta detectada por radar",
+    areaNote: (from_, to, extra, low, lowDays) =>
+      `Compuesto de doce días del ${from_} al ${to}. Son ${extra} km² más que en ` +
+      `las pasadas más bajas del registro de un año (mediana ${low} km², sobre ${lowDays}).`,
     floodNote: (now, low, times) =>
       `Fuera del cauce permanente, que es el agua que normalmente no está ahí: ` +
-      `${now} km² hoy contra ${low} km² en esa misma pasada seca, ${times} veces más.`,
-    areaNoteFlat: (day) =>
-      `En la última pasada completa del satélite, cerrada el ${day}.`,
-    passLabel: "Última pasada",
+      `${now} km² en esta pasada contra ${low} km² en las más bajas, ${times} veces más. ` +
+      `Esta cifra no fue validada contra agua óptica; sí lo fue el agua total.`,
+    areaNoteFlat: (from_, to) =>
+      `Compuesto de doce días del ${from_} al ${to}.`,
+    ageNote: (n) =>
+      n <= 1 ? "Medición de ayer." :
+      `Medido hace ${n} días. Se actualiza cuando hay una pasada válida, ` +
+      `cada doce días como máximo, no a diario.`,
+    passLabel: "Ventana medida",
     reachLabel: "Tramo medido",
-    riseLabel: "Contra la pasada más seca",
-    reachValue: (km, n) => `${km} km de río, ${n} tramos`,
+    riseLabel: "Contra las pasadas más bajas",
+    windowValue: (from_, to) => `${from_} – ${to}`,
+    reachValue: (km, n) => `${km} km de río, ${n} tramos validados`,
+    sumWarning: "Esta cifra suma tramos cuyos corredores se superponen, así que cuenta dos veces el agua cercana a cada estación: alrededor de un 7% de más. La medición sobre la unión de los corredores la reemplaza en cuanto esté hecha.",
 
     chartHeading: "Un año de río, pasada por pasada",
-    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1. Una vuelta completa del satélite es lo que tarda en ver el río entero. La línea llena es toda el agua. La punteada deja afuera el cauce permanente, así que mide sólo lo que el río desbordó.",
+    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1, y la fecha es el cierre de esa ventana, no el día de una pasada. La línea llena es toda el agua abierta. La punteada deja afuera el cauce permanente. Un corte en la línea es un ciclo que no se pudo medir: no es agua cero.",
+    chartGap: "ciclo sin medición",
+    chartNone: "No hay serie del río entero para graficar mientras la cifra del río entero no se publique. Cada tramo sigue teniendo la suya, en «Superficie, tramo por tramo».",
     chartTitle: "Superficie de agua del río Paraná por pasada del satélite",
     chartDesc: (first, last, lo, hi) =>
       `Serie de superficie de agua entre ${first} y ${last}. El mínimo es ${lo} km² ` +
@@ -182,8 +200,8 @@ const T = {
 
     loopHeading: "El río entero, un año",
     loopCaption: (km, n, first, last) =>
-      `${km} km de Paraná, de Puerto Iguazú a Villa Constitución, en ${n} pasadas ` +
-      `del satélite entre ${first} y ${last}. El azul es el cauce permanente: agua ` +
+      `${km} km de Paraná, de Puerto Iguazú a Villa Constitución, en ${n} compuestos ` +
+      `de doce días entre ${first} y ${last}. Cada cuadro es una ventana, no un instante. El azul es el cauce permanente: agua ` +
       `que el JRC mapea como siempre presente, o que seguía ahí en la bajante de ` +
       `2021. Es una constante, no una medición. El naranja es el agua que el radar ` +
       `encontró más allá de ese cauce.`,
@@ -193,20 +211,21 @@ const T = {
 
     skillHeading: "Qué tan bien funciona la medición",
     skillLead: (against, n) =>
-      `Cada tramo medido contra agua óptica de Sentinel-2 del ${against}: ${n} ` +
-      `tramos con escena limpia. ` +
-      `Ahí el satélite óptico ve el agua directamente, así que es lo más cercano a ` +
-      `la verdad que hay. La última columna es lo que daba el método anterior en el ` +
-      `mismo tramo, el mismo día.`,
+      `Cada tramo medido contra agua óptica de Sentinel-2 alrededor del ${against}: ${n} ` +
+      `tramos con escena limpia. La referencia es una mediana de las escenas limpias ` +
+      `dentro de seis días a cada lado de esa fecha, no una foto de ese día. La última ` +
+      `columna es lo que daba el método anterior en el mismo tramo.`,
+    skillCaveat: "Tres límites van con estos números. El umbral se ajustó contra la misma fecha contra la que se lo puntúa, así que esto es qué tan bien ajusta y no una prueba independiente. Se puntúa el agua total, de la cual el cauce permanente es entre el 56% y el 93%, así que la mayor parte de la cifra mide si la máscara encuentra el río. Y el óptico tampoco ve bajo la vegetación, que es el error principal del radar: ninguno de estos números lo acota.",
     skillCaption: "Comparación de dos métodos de detección de agua por radar",
     skillMethod: "Tramo", skillRecall: "Hallada", skillPrecision: "Acertada", skillIou: "IoU",
     skillWas: "IoU antes", skillWhole: "Todo el río medido",
-    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos, y es el número que publica un paper. La literatura de mapeo de inundaciones llega a 0,7–0,9: los tramos de arriba están ahí adentro, los de abajo no. Un tramo que no llega a 0,45 no publica cifra. Tampoco uno que nunca se pudo medir contra el óptico.",
+    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos. Para comparar: en el banco de pruebas Sen1Floods11 los métodos de umbral como este llegan a un IoU de alrededor de 0,55 y las redes entrenadas a cerca de 0,73, así que 0,69 con un solo umbral global es un resultado razonable. Un tramo que no llega a 0,45 no publica cifra. Tampoco uno que nunca se pudo medir contra el óptico.",
 
     limitsHeading: "Lo que esta medición no puede hacer",
-    limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Es el cuarto del agua que falta, y ningún umbral lo recupera.",
+    limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Del agua que el óptico ve, el radar encuentra el 80%; cuánta hay bajo la vegetación no está medido, porque el óptico tampoco la ve. Ningún umbral lo recupera.",
     limitWindow: "Cada punto son doce días, no un instante. La franja que ve el satélite es más angosta que este tramo de río, así que una foto del río entero necesita una vuelta completa.",
-    limitGorge: "El Delta no publica número. Ahí no hubo escena óptica limpia para medir la máscara, y la superficie tampoco sigue a la altura de su estación: la correlación es negativa, porque lo que se mide es marea y viento sobre agua abierta.",
+    limitDelta: "El Delta no publica número. En la fecha de validación no hubo escena óptica limpia sobre el tramo, así que la máscara nunca se pudo medir ahí: no se sabe que esté mal, pero tampoco que esté bien.",
+    limitUrban: "Las superficies lisas y secas también se leen como agua: asfalto, suelo desnudo húmedo y, en una pasada, una ciudad entera cerca de Posadas. No hay máscara de zonas urbanas todavía.",
     limitFloor: "Todos los números son un piso, no un total.",
 
     alsoHeading: "Más sobre la superficie de agua",
@@ -238,28 +257,37 @@ const T = {
     viewMap: "Map",
     viewToday: "The river today",
     viewMethod: "Method",
-    noticeStrong: "This is not an official forecast.",
-    noticeBody: "This site measures; it does not warn. For alerts and evacuations:",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "This site measures; it does not warn, does not forecast, and is not an official risk map. Alerts, evacuations and official forecasts are published by Argentina's Instituto Nacional del Agua:",
     officialLink: "INA's hydrological alert system",
 
     riverUnavailable: "The whole-river figure is not being published: it is measured once over the union of the corridors, which overlap, and that measurement has not been made yet. The stretches below are unaffected — each is measured over its own corridor.",
-    areaCap: "km² of the Paraná valley under water",
-    areaNote: (day, extra, low, lowDay) =>
-      `In the satellite's last complete pass, closed on ${day}. That is ${extra} km² ` +
-      `more than the driest pass on the record (${low} km², ${lowDay}).`,
+    areaCap: "km² of open water detected by radar",
+    areaNote: (from_, to, extra, low, lowDays) =>
+      `A twelve-day composite, ${from_} to ${to}. That is ${extra} km² more than the ` +
+      `lowest passes in the one-year record (median ${low} km², over ${lowDays}).`,
     floodNote: (now, low, times) =>
       `Outside the permanent channel, which is the water that is not normally ` +
-      `there: ${now} km² today against ${low} km² on that same dry pass, ` +
-      `${times} times as much.`,
-    areaNoteFlat: (day) =>
-      `In the satellite's last complete pass, closed on ${day}.`,
-    passLabel: "Last pass",
+      `there: ${now} km² in this pass against ${low} km² in the lowest, ` +
+      `${times} times as much. This figure has not been validated against optical ` +
+      `water; the total water has.`,
+    areaNoteFlat: (from_, to) =>
+      `A twelve-day composite, ${from_} to ${to}.`,
+    ageNote: (n) =>
+      n <= 1 ? "Measured yesterday." :
+      `Measured ${n} days ago. Updated when a valid observation becomes ` +
+      `available, at most every twelve days, not daily.`,
+    passLabel: "Window measured",
     reachLabel: "Reach measured",
-    riseLabel: "Against the driest pass",
-    reachValue: (km, n) => `${km} km of river, ${n} stretches`,
+    riseLabel: "Against the lowest passes",
+    windowValue: (from_, to) => `${from_} – ${to}`,
+    reachValue: (km, n) => `${km} km of river, ${n} validated stretches`,
+    sumWarning: "This figure adds up stretches whose corridors overlap, so it counts the water near each gauge twice — about 7% too much. The measurement over the dissolved corridor union replaces it as soon as it has been made.",
 
     chartHeading: "A year of river, pass by pass",
-    chartLead: "Each point is a twelve-day Sentinel-1 composite. One full repeat cycle is how long the satellite takes to see the whole river. The solid line is all water. The dashed one leaves out the permanent channel, so it counts only what the river has spilled over.",
+    chartLead: "Each point is a twelve-day Sentinel-1 composite, and the date is when that window closes, not the day of a pass. The solid line is all open water. The dashed one leaves out the permanent channel. A break in the line is a cycle that could not be measured — it is not zero water.",
+    chartGap: "cycle not measured",
+    chartNone: "There is no whole-river series to chart while the whole-river figure is withheld. Each stretch still has its own, under “Surface, stretch by stretch”.",
     chartTitle: "Water surface of the Paraná by satellite pass",
     chartDesc: (first, last, lo, hi) =>
       `Water surface from ${first} to ${last}. The lowest pass is ${lo} km² and ` +
@@ -270,7 +298,8 @@ const T = {
     loopHeading: "The whole river, a year",
     loopCaption: (km, n, first, last) =>
       `${km} km of the Paraná, from Puerto Iguazú to Villa Constitución, over ${n} ` +
-      `satellite passes between ${first} and ${last}. The blue is the permanent ` +
+      `twelve-day composites between ${first} and ${last}. Each frame is a window, ` +
+      `not an instant. The blue is the permanent ` +
       `channel: water the JRC maps as always present, or still there through the ` +
       `2021 bajante. It is a constant, not a measurement. The orange is the water ` +
       `the radar found beyond it.`,
@@ -280,20 +309,21 @@ const T = {
 
     skillHeading: "How well the measurement works",
     skillLead: (against, n) =>
-      `Each stretch measured against Sentinel-2 optical water on ${against}: ${n} ` +
-      `stretches with a clear scene. Optical sees water directly, so it is the ` +
-      `closest thing to truth ` +
-      `available here. The last column is what the old method scored on the same ` +
-      `stretch on the same day.`,
+      `Each stretch measured against Sentinel-2 optical water around ${against}: ${n} ` +
+      `stretches with a clear scene. The reference is a median of the clear scenes ` +
+      `within six days either side of that date, not a picture of that day. The last ` +
+      `column is what the old method scored on the same stretch.`,
+    skillCaveat: "Three limits belong with these numbers. The threshold was tuned against the same date it is scored on, so this is goodness-of-fit rather than an independent test. What is scored is total water, of which the permanent channel is 56% to 93%, so most of the figure measures whether the mask can find the river. And optical cannot see under vegetation either, which is the radar's main error: none of these numbers bounds it.",
     skillCaption: "Comparison of two radar water-detection methods",
     skillMethod: "Stretch", skillRecall: "Found", skillPrecision: "Right", skillIou: "IoU",
     skillWas: "IoU before", skillWhole: "The whole measured river",
-    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together, and is the number a paper quotes. Published flood-mapping work reaches 0.7–0.9: the upper stretches sit inside that, the lower ones do not. A stretch that does not clear 0.45 publishes no figure. Nor does one that could never be measured against optical at all.",
+    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together. For scale: on the Sen1Floods11 benchmark, threshold methods like this one score around 0.55 IoU and trained networks around 0.73, so 0.69 from a single global threshold is a reasonable result. A stretch that does not clear 0.45 publishes no figure. Nor does one that could never be measured against optical at all.",
 
     limitsHeading: "What this measurement cannot do",
-    limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. That is the missing quarter of the water, and no threshold recovers it.",
+    limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. Of the water optical sees, the radar finds 80%; how much sits under vegetation is unmeasured, because optical cannot see it either. No threshold recovers it.",
     limitWindow: "Each point is twelve days, not an instant. The satellite's swath is narrower than this run of river, so a picture of the whole river needs a full repeat cycle.",
-    limitGorge: "The Delta publishes no figure. There was no clear optical scene there to score the mask against, and the surface does not track the stage at its gauge either: the correlation is negative, because what is being measured is tide and wind on open water.",
+    limitDelta: "The Delta publishes no figure. On the validation date there was no clear optical scene over the stretch, so the mask could never be scored there: it is not known to be wrong, but it is not known to be right either.",
+    limitUrban: "Smooth dry surfaces read as water too: tarmac, damp bare soil, and on one pass an entire city near Posadas. There is no settlement mask yet.",
     limitFloor: "Every number here is a floor, not a total.",
 
     alsoHeading: "More on the water surface",
@@ -332,6 +362,7 @@ function setLang(next) {
   try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
   const t = T[lang];
   document.documentElement.lang = t.htmlLang;
+  document.title = `${t.title} · ${lang === "es" ? "Crecida del Paraná" : "Paraná flood tracker"}`;
   for (const el of document.querySelectorAll("[data-t]")) {
     const v = t[el.dataset.t];
     if (typeof v === "string") el.textContent = v;
@@ -392,7 +423,7 @@ function longDay(iso) {
   }).format(new Date(iso + "T12:00:00"));
 }
 
-function drawChart(rows) {
+function drawChart(rows, data) {
   const t = T[lang];
   const svg = document.getElementById("chart");
   // Keep everything up to and including <desc>, which aria-labelledby points
@@ -432,10 +463,28 @@ function drawChart(rows) {
     fill: "var(--ink-faint)", "font-size": 11,
   }, t.axisKm2));
 
+  // Cycles that could not be measured are absent from the series, not
+  // zero - so the line must break at them rather than run straight from
+  // the cycle before to the cycle after, which would draw a measurement
+  // nobody made and hide that anything was missing. A cycle end more than
+  // one window after its predecessor is a gap.
+  const DAY = 86400000;
+  const gapAfter = (i) => {
+    if (i + 1 >= rows.length) return false;
+    const a = new Date(rows[i].day + "T12:00:00");
+    const b = new Date(rows[i + 1].day + "T12:00:00");
+    return (b - a) / DAY > (data.window_days || 12) * 1.5;
+  };
+
   const path = (values, dashed) => {
-    const d = values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+    const parts = values.map((v, i) => {
+      const point = `${x(i).toFixed(1)} ${y(v).toFixed(1)}`;
+      // Start a fresh subpath after a gap as well as at the beginning.
+      return `${i === 0 || gapAfter(i - 1) ? "M" : "L"}${point}`;
+    });
     const attrs = {
-      d, fill: "none", stroke: dashed ? "var(--evac)" : "var(--accent)",
+      d: parts.join(" "), fill: "none",
+      stroke: dashed ? "var(--evac)" : "var(--accent)",
       "stroke-width": dashed ? 2 : 2.6, "stroke-linejoin": "round",
     };
     if (dashed) attrs["stroke-dasharray"] = "5 4";
@@ -443,6 +492,21 @@ function drawChart(rows) {
   };
   path(water, false);
   path(rows.map((r) => r.flood_km2), true);
+
+  // And the gap is marked, so the break reads as "not measured" rather
+  // than as a rendering fault.
+  for (let i = 0; i < rows.length - 1; i += 1) {
+    if (!gapAfter(i)) continue;
+    const mid = (x(i) + x(i + 1)) / 2;
+    svg.appendChild(el("line", {
+      x1: mid, x2: mid, y1: TOP, y2: TOP + plotH,
+      stroke: "var(--ink-faint)", "stroke-width": 1, "stroke-dasharray": "2 3",
+    }));
+    svg.appendChild(el("text", {
+      x: mid, y: TOP + 10, "text-anchor": "middle",
+      fill: "var(--ink-faint)", "font-size": 10,
+    }, t.chartGap));
+  }
 
   for (let i = 0; i < rows.length; i += 1) {
     svg.appendChild(el("circle", {
@@ -466,7 +530,12 @@ function drawChart(rows) {
     }, dayLabel(rows[i].day)));
   }
 
-  const lowAt = water.indexOf(Math.min(...water));
+  // Annotate the published anchor, not the raw minimum. The headline
+  // quotes a median over several cycles - taking min() here instead put
+  // two different "lowest" figures on one page.
+  const anchorDay = data.lowest && data.lowest.day;
+  const anchorAt = anchorDay ? rows.findIndex((r) => r.day === anchorDay) : -1;
+  const lowAt = anchorAt >= 0 ? anchorAt : water.indexOf(Math.min(...water));
   const lastAt = rows.length - 1;
   for (const [index, key, anchor] of [[lowAt, "chartLow", "start"],
                                       [lastAt, "chartNow", "end"]]) {
@@ -534,20 +603,32 @@ function render(data) {
   const latest = data.latest, low = data.lowest;
 
   // The whole-river figure is withheld rather than summed from the
-  // stretches, which overlap. Say so instead of showing an empty page.
-  const notice = document.getElementById("error");
-  if (data.river_unavailable) {
-    notice.textContent = T[lang].riverUnavailable;
-    notice.hidden = false;
-  }
+  // stretches, which overlap. Say so instead of showing an empty page -
+  // and say it in its own box, because a figure deliberately not
+  // published is a different thing from data that failed to load.
+  const withheld = document.getElementById("riverUnavailable");
+  withheld.textContent = T[lang].riverUnavailable;
+  withheld.hidden = !data.river_unavailable;
+  document.getElementById("chartEmpty").hidden = rows.length > 0;
 
   if (latest) {
+    // Every figure is labelled with the window it was measured over, not
+    // just the day that window closes. The date on a cycle is a grid
+    // boundary; the measurement spans the twelve days behind it.
+    const from_ = windowStart(latest), to = latest.day;
     document.getElementById("area").textContent = num(Math.round(latest.water_km2));
     document.getElementById("areaCap").textContent = t.areaCap;
     document.getElementById("areaNote").textContent = low && low.day !== latest.day
-      ? t.areaNote(longDay(latest.day), num(Math.round(latest.water_km2 - low.water_km2)),
-                   num(Math.round(low.water_km2)), longDay(low.day))
-      : t.areaNoteFlat(longDay(latest.day));
+      ? t.areaNote(longDay(from_), longDay(to),
+                   num(Math.round(latest.water_km2 - low.water_km2)),
+                   num(Math.round(low.water_km2)), anchorDays(low))
+      : t.areaNoteFlat(longDay(from_), longDay(to));
+
+    // How old the measurement is, said plainly. The gauge pages carry an
+    // age and this did not, so a figure up to a fortnight old sat in the
+    // present tense beside readings from yesterday.
+    document.getElementById("ageNote").textContent = t.ageNote(daysSince(to));
+
     const beyond = document.getElementById("floodNote");
     if (low && low.flood_km2 > 0 && low.day !== latest.day) {
       beyond.textContent = t.floodNote(
@@ -557,19 +638,52 @@ function render(data) {
     } else {
       beyond.hidden = true;
     }
+
+    // A total summed from overlapping corridors says so. Once the union
+    // measurement lands, rows carry `stretches` as a list and this goes.
+    const summed = document.getElementById("sumWarning");
+    summed.textContent = t.sumWarning;
+    summed.hidden = Array.isArray(latest.stretches);
+
     document.getElementById("headline").hidden = false;
 
-    document.getElementById("passDay").textContent = longDay(latest.day);
-    document.getElementById("reach").textContent =
-      t.reachValue(num(Math.round(riverKm(data))), latest.stretches);
+    document.getElementById("passWindow").textContent =
+      t.windowValue(dayLabel(from_), dayLabel(to));
+    document.getElementById("reach").textContent = t.reachValue(
+      num(Math.round(riverKm(data))),
+      Array.isArray(latest.stretches) ? latest.stretches.length : latest.stretches);
     document.getElementById("rise").textContent = low
       ? `+${num(Math.round(((latest.water_km2 / low.water_km2) - 1) * 100))}%`
       : "–";
     document.getElementById("meta").hidden = false;
   }
 
-  drawChart(rows);
+  drawChart(rows, data);
   if (data.skill) drawSkill(data.skill);
+}
+
+// The twelve days a cycle covers. Rows measured over the corridor union
+// carry their own window_start; older rows carry only the closing date, so
+// the window is reconstructed from it rather than left unsaid.
+function windowStart(row) {
+  if (row.window_start) return row.window_start;
+  const end = new Date(row.day + "T12:00:00");
+  end.setDate(end.getDate() - 11);
+  return end.toISOString().slice(0, 10);
+}
+
+function daysSince(iso) {
+  const then = new Date(iso + "T12:00:00"), now = new Date();
+  return Math.max(0, Math.round((now - then) / 86400000));
+}
+
+// The anchor is a median over several cycles, so it is quoted as the span
+// it was taken from rather than as one date that happened to be lowest.
+function anchorDays(anchor) {
+  const days = anchor.over_cycles || [anchor.day];
+  return days.length === 1
+    ? longDay(days[0])
+    : `${dayLabel(days[0])} – ${dayLabel(days[days.length - 1])}`;
 }
 
 function riverKm(data) {

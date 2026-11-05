@@ -199,6 +199,7 @@ function setLang(next) {
   try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
   const t = T[lang];
   document.documentElement.lang = t.htmlLang;
+  document.title = `${t.title} · ${lang === "es" ? "Crecida del Paraná" : "Paraná flood tracker"}`;
   for (const el of document.querySelectorAll("[data-t]")) {
     const value = t[el.dataset.t];
     if (typeof value === "string") el.textContent = value;

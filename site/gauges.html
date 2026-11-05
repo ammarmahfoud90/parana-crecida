@@ -127,8 +127,13 @@ const T = {
       provisional
         ? `El río dejó de subir en ${gauge} el ${day}`
         : `El pico pasó por ${gauge} el ${day}`,
-    evidenceWater: (km2, ratio, km) =>
-      `El radar mide ${km2} km² de agua sobre ${km} km de río, ${ratio} veces la pasada más seca`,
+    evidenceWater: (km2, km, from_, to, age) =>
+      `El radar midió ${km2} km² de agua abierta sobre ${km} km de río en el ` +
+      `compuesto del ${from_} al ${to}` +
+      (age <= 1 ? "" : `, hace ${age} días`),
+    evidenceWaterRatio: (ratio, days) =>
+      `${ratio} veces las pasadas más bajas del registro de un año (${days})`,
+    evidenceWaterStale: "La medición satelital se actualiza cuando hay una pasada válida, no a diario.",
     evidenceAsOf: (day) => `Medido hasta el ${day}`,
     evidenceSeeWave: "ver la onda",
     evidenceSeeFlood: "ver desde el espacio",
@@ -206,8 +211,13 @@ const T = {
       provisional
         ? `The river stopped rising at ${gauge} on ${day}`
         : `The crest passed ${gauge} on ${day}`,
-    evidenceWater: (km2, ratio, km) =>
-      `Radar measures ${km2} km² of water over ${km} km of river, ${ratio} times the driest pass`,
+    evidenceWater: (km2, km, from_, to, age) =>
+      `Radar measured ${km2} km² of open water over ${km} km of river in the ` +
+      `composite from ${from_} to ${to}` +
+      (age <= 1 ? "" : `, ${age} days ago`),
+    evidenceWaterRatio: (ratio, days) =>
+      `${ratio} times the lowest passes in the one-year record (${days})`,
+    evidenceWaterStale: "The satellite measurement is updated when a valid observation becomes available, not daily.",
     evidenceAsOf: (day) => `Measured to ${day}`,
     evidenceSeeWave: "see the wave",
     evidenceSeeFlood: "see it from space",
@@ -281,7 +291,7 @@ function setLang(next) {
   try { localStorage.setItem("crecida.lang", next); } catch (e) { /* ignore */ }
   const t = T[lang];
   document.documentElement.lang = t.htmlLang;
-  document.title = t.title;
+  document.title = `${t.title} · ${lang === "es" ? "Crecida del Paraná" : "Paraná flood tracker"}`;
   for (const el of document.querySelectorAll("[data-t]")) {
     const value = t[el.dataset.t];
     if (typeof value === "string") el.textContent = value;
@@ -459,6 +469,17 @@ function gaugeItem(g) {
 // wanting a table of thirty-seven readings, and every part of the sentence
 // carries the number it came from so the claim can be checked rather than
 // taken.
+function minusDays(iso, n) {
+  const d = new Date(iso + "T12:00:00");
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+function daysSince(iso) {
+  const then = new Date(iso + "T12:00:00"), now = new Date();
+  return Math.max(0, Math.round((now - then) / 86400000));
+}
+
 function renderVerdict(v) {
   const t = T[lang];
   // This page formats with longDate and num; the shorter helpers the wave
@@ -503,10 +524,24 @@ function renderVerdict(v) {
       "wave.html", t.evidenceSeeWave]);
   }
   if (v.water) {
-    items.push([
-      t.evidenceWater(whole(v.water.km2), ratio(v.water.ratio),
-                      whole(v.water.river_km || 0)),
-      "index.html", t.evidenceSeeFlood]);
+    // Date it, window it, and age it, the way the gauge readings on this
+    // page already are. A twelve-day composite up to a fortnight old was
+    // reading as a present-tense fact next to yesterday's river heights.
+    const w = v.water;
+    const from_ = w.window_start || minusDays(w.day, 11);
+    const age = daysSince(w.day);
+    let line = t.evidenceWater(whole(w.km2), whole(w.river_km || 0),
+                               day(from_), day(w.day), age);
+    // The multiple is quoted against the cycles it was taken over, not
+    // against one pass that happened to be lowest.
+    if (w.ratio && w.driest_day) {
+      const over = w.driest_over && w.driest_over.length > 1
+        ? `${day(w.driest_over[0])} – ${day(w.driest_over[w.driest_over.length - 1])}`
+        : day(w.driest_day);
+      line += `. ${t.evidenceWaterRatio(ratio(w.ratio), over)}`;
+    }
+    if (age > 1) line += `. ${t.evidenceWaterStale}`;
+    items.push([line, "index.html", t.evidenceSeeFlood]);
   }
   if (v.as_of) items.push([t.evidenceAsOf(day(v.as_of)), null, null]);
 
