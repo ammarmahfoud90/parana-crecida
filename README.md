@@ -15,8 +15,19 @@ water rather than against the channel at low flow, a single threshold for the wh
 river reaches 0.69 (recall 0.80, precision 0.82). Per stretch it runs from 0.90 at
 the top of the river to 0.48 below Corrientes, so the per-stretch table is the one
 to read: `data/mask_skill.json`, rebuilt by `scripts/validate_mask.py`. Published
-flood-mapping work reaches 0.7–0.9, so this is a working instrument and not a
-finished one.
+flood-mapping work on comparable thresholding methods reaches about 0.55 IoU on the
+Sen1Floods11 benchmark, with trained networks near 0.73, so 0.69 from a single global
+threshold is a reasonable instrument and not a finished one.
+
+Three limits belong with that number and are easy to lose. The threshold was **tuned
+on the same date it is scored against** (2026-10-22, in both `tune_mask.py` and
+`validate_mask.py`), so 0.69 is a goodness-of-fit and not an out-of-sample score — and
+the per-stretch value from that same fit is what decides which reaches publish at all.
+The mask is scored on *total* water, of which the permanent channel is 56–93% of the
+positive class, so most of the figure measures whether the mask can find a river whose
+location JRC already supplies. And `flood_km2`, the figure the product is named for,
+has never been scored. `AUDIT/03_validation_and_area.md` specifies the held-out design
+that would replace this; it has not been run.
 
 The gauge record is the ground truth behind it, and a product of its own: INA's
 daily stage for the main-stem gauges, day-of-year percentiles, Log-Pearson III
@@ -24,9 +35,21 @@ return periods, and travel times between gauges fitted from the record. Data com
 from INA's a5 API (`alerta.ina.gob.ar/a5`).
 
 **What is deliberately not here:** arrival dates (built, measured at a 23% hit rate
-with a 9-day median error, and withdrawn), area for the gorge above Posadas and for
-the Delta (the measurement does not track the river there), and any claim that the
-numbers are totals. Radar cannot see water under trees, so every figure is a floor.
+with a 9-day median error, and withdrawn); area for the Delta, where no clear optical
+scene existed on the validation date, so the mask could never be scored there; and any
+claim that the numbers are totals. Radar cannot see water under trees, so every figure
+is a floor, and how far below the truth is unmeasured, because the optical reference
+is blind in the same place.
+
+The gorge above Posadas *does* publish, and used not to. No per-stretch VV threshold
+would fit it, which was read as radar shadow on the valley walls; scored against
+optical water it is the best two reaches on the river, at 0.83 and 0.90, and height
+above nearest drainage handles the shadow directly. What failed the old test was the
+old test.
+
+**The exact production method, and what is superseded, is in
+[docs/METHOD.md](docs/METHOD.md).** Where this README disagrees with it, that file is
+right.
 
 ## Two packages
 
@@ -86,7 +109,6 @@ crecida climatology       # day-of-year reference curves for every gauge
 crecida oni               # NOAA's Oceanic Nino Index
 crecida rainfall          # basin rainfall from Earth Engine (needs a credential)
 crecida flooded           # flooded area from Sentinel-1 (needs a credential)
-crecida animation         # render the flood as a loop (needs a credential)
 crecida mapframes         # georeferenced overlays for the map (needs a credential)
 crecida thresholds        # parse INA's alert/evacuation levels into data/
 crecida fetch             # top up the cached series from the a5 API
@@ -351,9 +373,13 @@ more than 10.
 
 ## The water surface
 
-`site/index.html` is the product: how much of the valley is under water across
-1,477 km of river, one figure per 12-day repeat cycle, with the whole year as an
-animation. `site/flood.html` is the same measurement stretch by stretch. A gauge
+`site/index.html` is the product: how much of the valley is under water across the
+reaches that publish, one figure per 12-day repeat cycle, with the whole year as an
+animation. Lengths quoted for that run of river differ by a few per cent depending on
+what is being measured — 1,440.5 km between the first and last gauge in
+`data/parana_chain.json`, 1,477.3 km as the sum of the corridor centreline lengths in
+`data/corridors.json`, which is what the page shows — so the page states the second
+and this is why. `site/flood.html` is the same measurement stretch by stretch. A gauge
 says how high the river is at one point; it says nothing about how wide, and on a
 floodplain tens of kilometres across that is the question.
 
@@ -369,7 +395,14 @@ and `scripts/validate_mask.py` rebuilds it. The section below on the fixed
 threshold describes the superseded method and is kept for the argument, not as a
 description of what runs.
 
-### Why the threshold is fixed, not Otsu
+### Superseded: the per-stretch VV method
+
+Everything from here to the end of this section describes the method the site shipped
+with and no longer uses. It is kept for the arguments, which still hold, and for the
+measurements that retired it. The figures in it are **not** the published ones: the
+live mask is VH, and `docs/METHOD.md` has it.
+
+#### Why the threshold is fixed, not Otsu
 
 The textbook recipe is Otsu's method. It does not work here, and it fails in a way
 that looks like success. Over this corridor:
@@ -390,7 +423,7 @@ maps 521 km² of permanent water in the same corridor. A test asserts that
 agreement, so if the method drifts the suite says so rather than the site quietly
 publishing a wrong number.
 
-### Only full passes count
+#### Only full passes count
 
 A Sentinel-1 pass crosses part of the corridor; the rest has no data, and
 unobserved ground reduces to zero water, which reads as the river shrinking.
@@ -398,7 +431,11 @@ Coverage per date here is either about 99.7% or about 23–40%, with nothing in
 between, so partial passes are dropped. Full coverage comes round every 12 days,
 and that is the real sampling rate.
 
-### What it shows
+#### What it showed
+
+These are the superseded VV method's figures, on a six-month window, kept because the
+finding about area and stage survives the change of mask even though the numbers do
+not. The live series is a year long and is in `site/data/floodwater.json`.
 
 Through May to mid-October the area sits between 490 and 824 km² while the stage
 wanders between 2.3 and 5.3 m. Then on 25 October, with Corrientes at 7.36 m and
@@ -410,11 +447,17 @@ that is the finding rather than a problem: below about 5 m the river stays in it
 channel and the floodplain does not respond at all. Area and stage are not two
 measurements of the same thing.
 
-### The loop
+#### The loop
 
-`crecida animation` renders one frame per satellite pass into
-`site/media/flood.gif` -- twenty real observations of the same 212 km of river,
-played in order. Nothing is modelled or interpolated.
+This described `crecida animation`, which rendered `site/media/flood.gif` from the
+−16 dB VV default — not even the calibrated per-stretch values — with JRC occurrence
+alone as the permanent channel, so it would have drawn the Yacyretá reservoir as flood
+water in every frame. Its output never existed in the repository, no page referenced
+it, and it was in no workflow. It was deleted on 2026-11-05.
+
+What ships is `crecida film` → `site/media/river.gif`: 1,477 km of river, one frame per
+12-day cycle, a year of them, on the live mask and the same publishing rule as the
+figures. Nothing is modelled or interpolated.
 
 Two choices make it readable. The backdrop is **static**, the median backscatter
 over the whole period rather than each pass's own image: speckle and soil moisture
@@ -854,8 +897,18 @@ measurement there and not enough of it to see a river in.
 
 So the correlation is now computed for every stretch and published beside
 the area, including for the stretches that publish no area, because it is
-the evidence for those refusals. The Delta's -0.44 is the number that
-decided it, and a reader should be able to see the number that decided it.
+the evidence for those refusals.
+
+That correlation is recomputed from the store on every run, so it moves as the record
+grows: it has been published as -0.44 here, as -0.39 on the method page, and stood at
+-0.23 when the audit checked. Quoting a frozen value as a current measurement is the
+mistake; what matters is the sign, and it has stayed negative. The live value is the
+`stage_correlation` field in `data/flooded.json`, and a reader should be able to see
+the number that decided it rather than a number that once did.
+
+The Delta's refusal today rests on something else in any case: on the validation date
+there was no clear optical scene over that reach, so the mask could never be scored
+there. Not known to be wrong; not known to be right.
 
 ## What a river level actually tells you about flooded area
 
