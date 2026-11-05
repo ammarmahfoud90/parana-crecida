@@ -180,3 +180,33 @@ def test_river_today_is_in_river_order(store):
     rows = store.river_today()
     assert [r.river_order for r in rows] == sorted(r.river_order for r in rows)
     assert rows[0].name == "Puerto Iguazú"
+
+
+def test_a_store_built_before_the_unit_column_still_opens(tmp_path):
+    """CREATE TABLE IF NOT EXISTS does not add a column to an existing table.
+
+    A store built before `unit` arrived had no unit, and every query that
+    read one failed outright - which is every validation run against an
+    existing local database.
+    """
+    import duckdb
+
+    path = tmp_path / "old.duckdb"
+    con = duckdb.connect(str(path))
+    con.execute(
+        "CREATE TABLE gauge (series_id VARCHAR PRIMARY KEY, name VARCHAR,"
+        " display VARCHAR, branch VARCHAR, tier INTEGER, flags VARCHAR,"
+        " note VARCHAR, river_order INTEGER)"
+    )
+    con.execute("INSERT INTO gauge VALUES ('26261','Corrientes','Corrientes',"
+                "'main',1,'','',0)")
+    con.close()
+
+    with Store(path) as store:
+        assert store.con.execute(
+            "SELECT unit FROM gauge WHERE series_id = '26261'"
+        ).fetchone()[0] == "m"
+        # And a reload puts the real value back.
+        store.load_gauges()
+        held = dict(store.con.execute("SELECT series_id, unit FROM gauge").fetchall())
+        assert held["26652"] == "m3/s"

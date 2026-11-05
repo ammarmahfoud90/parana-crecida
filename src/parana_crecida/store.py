@@ -140,6 +140,13 @@ class Store(AbstractContextManager["Store"]):
         self.con.execute(
             "ALTER TABLE gauge ADD COLUMN IF NOT EXISTS display VARCHAR DEFAULT ''"
         )
+        # CREATE TABLE IF NOT EXISTS does not add a column to a table that
+        # already exists, so a store built before the unit column arrived
+        # has no unit and every query that reads one fails outright. The
+        # value is reinstated by the next load_gauges().
+        self.con.execute(
+            "ALTER TABLE gauge ADD COLUMN IF NOT EXISTS unit VARCHAR DEFAULT 'm'"
+        )
 
     def close(self) -> None:
         self.con.close()
