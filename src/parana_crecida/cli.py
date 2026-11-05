@@ -1467,7 +1467,8 @@ def export(
         rep.say(f"{rows} rows -> {out / 'csv' / name}")
     rep.say(f"{ahead.gauges} arrival projections -> {ahead.path}")
     rep.say(f"{river.gauges} anchors on the river line -> {river.path}")
-    rep.say(f"{water.gauges} river stretches -> {water.path}")
+    if water is not None:
+        rep.say(f"{water.gauges} river stretches -> {water.path}")
     rep.say(f"{drivers.gauges} driver gauges -> {drivers.path}")
     rep.say(f"{wave.gauges} chain gauges -> {wave.path}")
     rep.say(f"{exported.gauges} gauges -> {exported.path}")

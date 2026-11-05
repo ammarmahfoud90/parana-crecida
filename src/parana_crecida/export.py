@@ -1009,16 +1009,63 @@ def export_flooded(
     out_dir: Path = DEFAULT_SITE_DATA,
     now: datetime | None = None,
     today: date | None = None,
-) -> ExportResult:
-    """Validate-then-write the flooded-area view, behind the same gate.
+    publish: bool = False,
+) -> ExportResult | None:
+    """The superseded per-stretch VV view. **It does not publish.**
 
-    Like rainfall, the measurement itself is frozen: it needs Earth Engine.
-    The gauge levels alongside it come from the store, so the page can put
-    area and stage on the same dates - which is the comparison that makes
-    either number mean anything.
+    This is the method the site shipped with: a fixed VV threshold per
+    stretch, calibrated so that the mask reproduced JRC permanent water
+    during the 2021 bajante. Scored against Sentinel-2 optical water on a
+    flood date it reaches an IoU of 0.59 where the VH mask reaches 0.69,
+    and it was replaced.
+
+    It nonetheless went on running in the daily job, committing
+    ``data/flooded.json`` and writing ``site/data/flooded.json`` - a file
+    no page fetches and which is served at a public URL carrying a
+    different area for the same stretch on a nearby date: 1,644.7 km2
+    against the live mask's 1,691.9. Two published figures for one
+    quantity, by two methods, with nothing saying which is which.
+
+    So it is withheld by default, the same way the exposure and
+    area-against-stage records are, and for the same reason: the code and
+    the measurement are worth keeping, and publishing them is not.
+
+    What is kept, deliberately: ``flooded.water_mask`` is still what
+    ``scripts/validate_mask.py`` scores the new mask against, so the
+    head-to-head comparison stays reproducible; and the committed
+    ``data/flooded.json`` stays as a frozen record, because its
+    per-stretch stage correlations are the evidence behind the Delta's
+    refusal and the method page cites them.
     """
     from .flooded import DEFAULT_TABLE as FLOOD_TABLE
     from .flooded import load_table, stale_days, summarise
+
+    if not publish:
+        # A file already served at a public URL cannot be un-served by
+        # ceasing to write it, so an existing one is stamped rather than
+        # left looking current. Deleting it would take the per-stretch
+        # stage correlations with it, and the method page cites them as the
+        # evidence behind the Delta's refusal.
+        path = out_dir / FLOODED
+        if path.exists():
+            stale = _maybe_json(path) or {}
+            if not stale.get("superseded"):
+                stale["superseded"] = (
+                    "This is the per-stretch VV mask the site shipped with. "
+                    "Scored against Sentinel-2 optical water on a flood date "
+                    "it reaches an IoU of 0.59 where the VH mask in "
+                    "floodwater.json reaches 0.69, and it was replaced. No "
+                    "page reads this file. Its areas are not comparable with "
+                    "floodwater.json's and must not be quoted as current; "
+                    "what it is kept for is stage_correlation, which is the "
+                    "evidence behind the reaches that publish no figure."
+                )
+                stale["stale_days"] = None
+                write_json(path, stale)
+                log.info("stamped %s as superseded", path)
+        log.info("the superseded VV view is not published; "
+                 "see parana_crecida.export.export_flooded")
+        return None
 
     if not result.ok:
         names = ", ".join(c.name for c in result.failures)

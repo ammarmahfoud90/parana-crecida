@@ -94,7 +94,14 @@ jobs:
           # it the headline figure freezes while the gauge pages go on
           # updating, and the freshness gate below starts failing.
           crecida floodwater --report reports/floodwater.txt
-          crecida flooded --report reports/flooded.txt
+          # `crecida flooded` is not run. It rebuilt the superseded
+          # per-stretch VV mask every day, committed data/flooded.json and
+          # published site/data/flooded.json - a file no page fetches,
+          # served at a public URL carrying a different area for the same
+          # stretch on a nearby date. The module stays: it is what
+          # scripts/validate_mask.py scores the live mask against, and the
+          # committed table is the frozen evidence behind the reaches that
+          # publish no figure.
           # Both renders guard themselves on the cycle they last drew, so
           # they are safe to call every day: on a day with no new pass they
           # exit in a second having rendered nothing. The guard used to live
@@ -114,7 +121,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/flooded.json data/floodwater.json data/mask_skill.json site/media reports
+          git add site/data data/ina_thresholds.csv data/report_snapshot.json data/oni.json data/rainfall.json data/floodwater.json data/mask_skill.json site/media reports
           if git diff --staged --quiet; then
             echo "nothing changed"
           else
