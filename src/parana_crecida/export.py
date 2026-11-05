@@ -779,8 +779,55 @@ def _anchor_cycles(river: list[dict]) -> dict:
     }
 
 
-def _river_series(payload: dict, publishing: set[str]) -> tuple[list[dict], str | None]:
-    """The union-measured river series, or nothing and the reason why.
+#: Share of the series' own median channel detection below which a cycle is
+#: not believed. The permanent channel is a fixed mask over a river that is
+#: wet in every cycle, so water detected inside it should be close to
+#: constant - and across the published record it is, to 1.5%. One cycle sat
+#: 14% below, having lost half the permanent channel of two adjacent
+#: corridors at once, which is what an unobserved swath looks like and not
+#: what a river does. That cycle became the published "driest pass on the
+#: record" and the front page measured two comparisons against it.
+#:
+#: This is the plausibility test the superseded pipeline wrote and never
+#: reached: flooded.MIN_PLAUSIBLE_FRACTION was only consumed by
+#: area_series(floor_km2=...) while build() went through composite_series,
+#: so it has never run. Same reasoning, applied where the series is
+#: assembled, and against the series' own median rather than against JRC.
+MIN_CHANNEL_FRACTION = 0.9
+
+
+def _implausible(rows: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Split a river series into believable cycles and rejected ones.
+
+    Judged on water detected *inside* the permanent channel, which is
+    ``water_km2 - flood_km2``. That quantity has no business moving: the
+    channel mask is fixed geometry over a river that never leaves it. A
+    cycle that cannot find the river did not measure the flood either.
+    """
+    if len(rows) < 3:
+        return rows, []
+    channel = sorted(r["water_km2"] - r["flood_km2"] for r in rows)
+    median = channel[len(channel) // 2]
+    if median <= 0:
+        return rows, []
+    kept, rejected = [], []
+    for row in rows:
+        share = (row["water_km2"] - row["flood_km2"]) / median
+        if share < MIN_CHANNEL_FRACTION:
+            rejected.append({
+                "day": row["day"],
+                "reason": "channel detection implausible",
+                "channel_share_of_median": round(share, 3),
+            })
+        else:
+            kept.append(row)
+    return kept, rejected
+
+
+def _river_series(
+    payload: dict, publishing: set[str]
+) -> tuple[list[dict], list[dict], str | None]:
+    """The union-measured river series, what it rejected, and why not.
 
     A stored row is used only when it was measured over the same set of
     stretches that publishes now, so a change to the publishing rule cannot
@@ -789,7 +836,7 @@ def _river_series(payload: dict, publishing: set[str]) -> tuple[list[dict], str 
     """
     rows = payload.get("river")
     if not rows:
-        return [], (
+        return [], [], (
             "the whole-river total is measured over the dissolved union of the "
             "corridors, which this record does not yet carry; the corridors "
             "overlap by 17.7% of their summed area, so the stretches below "
@@ -797,12 +844,23 @@ def _river_series(payload: dict, publishing: set[str]) -> tuple[list[dict], str 
         )
     usable = [r for r in rows if set(r.get("stretches") or []) == publishing]
     if not usable:
-        return [], (
+        return [], [], (
             "the whole-river total was measured over a different set of "
             "stretches from the one publishing now, so it does not describe "
             "this reach. Run `crecida floodwater` to measure it again."
         )
-    return sorted(usable, key=lambda r: r["day"]), None
+    kept, rejected = _implausible(sorted(usable, key=lambda r: r["day"]))
+    for bad in rejected:
+        log.warning("cycle %s rejected: channel detection at %.0f%% of the "
+                    "series median", bad["day"],
+                    100 * bad["channel_share_of_median"])
+    if not kept:
+        return [], rejected, (
+            "no cycle in this record found enough of the river's own permanent "
+            "channel to be believed. Something is wrong with the mask or with "
+            "the coverage, not with the river."
+        )
+    return kept, rejected, None
 
 
 def _mask_skill(path: Path | None = None) -> dict:
@@ -901,7 +959,8 @@ def export_floodwater(
     # be 7% too high is worse than an absent one, and the stretches below
     # are unaffected: each is measured over its own corridor, which is the
     # geometry its validation score belongs to.
-    river, unavailable = _river_series(payload, {s["key"] for s in stretches})
+    river, rejected, unavailable = _river_series(
+        payload, {s["key"] for s in stretches})
     anchors = _anchor_cycles(river)
 
     out = {
@@ -922,7 +981,7 @@ def export_floodwater(
         "withheld": withheld,
         "river": river,
         "river_unavailable": unavailable,
-        "river_gaps": payload.get("river_gaps") or [],
+        "river_gaps": (payload.get("river_gaps") or []) + rejected,
         **anchors,
         "stretches": stretches,
     }

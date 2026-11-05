@@ -214,3 +214,86 @@ def test_a_whole_series_out_of_range_still_blocks(store, cache):
 
     assert not result.ok
     assert "values_in_sane_range" in {c.name for c in result.failures}
+
+
+# -- the measured water record, which had no data tests at all -------------
+
+
+def water(tmp_path, stretches, river=None):
+    import json as _json
+
+    path = tmp_path / "floodwater.json"
+    payload = {"schema": 3, "stretches": stretches}
+    if river is not None:
+        payload["river"] = river
+    path.write_text(_json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def named(checks):
+    return {c.name: c for c in checks}
+
+
+def test_an_absent_water_record_warns_and_does_not_block(tmp_path):
+    """The Earth Engine step does not run without a credential.
+
+    The gauge pages must not be taken down because the satellite record
+    has not been built yet.
+    """
+    from parana_crecida.validate import water_checks
+
+    checks = water_checks(tmp_path / "nothing.json")
+    assert not any(c.blocking for c in checks)
+    assert named(checks)["water_record_present"].passed is False
+
+
+def test_a_ragged_water_series_blocks(tmp_path):
+    """days, water and flood are parallel arrays and must stay aligned.
+
+    Where they drift, every figure after the drift is attributed to the
+    wrong date, and nothing downstream would notice.
+    """
+    from parana_crecida.validate import water_checks
+
+    checks = named(water_checks(water(tmp_path, [{
+        "key": "upper", "corridor_km2": 9000,
+        "days": ["2026-10-04", "2026-10-16"],
+        "water_km2": [100.0], "flood_km2": [50.0],
+    }])))
+    assert checks["water_series_aligned"].blocking
+
+
+def test_more_flood_than_water_blocks(tmp_path):
+    """Flood water is all water minus a fixed mask, so it cannot exceed it."""
+    from parana_crecida.validate import water_checks
+
+    checks = named(water_checks(water(tmp_path, [{
+        "key": "upper", "corridor_km2": 9000, "days": ["2026-10-04"],
+        "water_km2": [100.0], "flood_km2": [140.0],
+    }])))
+    assert checks["flood_within_water"].blocking
+
+
+def test_more_water_than_corridor_blocks(tmp_path):
+    """A corridor cannot hold more water than it has ground."""
+    from parana_crecida.validate import water_checks
+
+    checks = named(water_checks(water(tmp_path, [{
+        "key": "upper", "corridor_km2": 90, "days": ["2026-10-04"],
+        "water_km2": [100.0], "flood_km2": [50.0],
+    }])))
+    assert checks["water_within_corridor"].blocking
+
+
+def test_a_sound_water_record_passes(tmp_path):
+    from parana_crecida.validate import water_checks
+
+    checks = water_checks(water(
+        tmp_path,
+        [{"key": "upper", "corridor_km2": 9000,
+          "days": ["2026-10-04", "2026-10-16"],
+          "water_km2": [100.0, 110.0], "flood_km2": [50.0, 55.0]}],
+        river=[{"day": "2026-10-16", "water_km2": 95.0, "flood_km2": 45.0,
+                "stretches": ["upper"]}],
+    ))
+    assert all(c.passed for c in checks), [c.detail for c in checks if not c.passed]

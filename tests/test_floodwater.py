@@ -211,15 +211,24 @@ def test_no_published_figure_rests_on_a_single_cycle(tmp_path):
         river=union([100.0, 260.0, 270.0, 280.0, 300.0], ["upper", "lower"],
                     days=[*DAYS, "2026-10-16", "2026-10-28"]),
     )
+    # Two guards compose here. The collapsed cycle found a third of the
+    # channel, so the plausibility test rejects it outright and it never
+    # reaches the anchor; and the anchor is a median over three cycles
+    # rather than the single extreme, so it would have survived the cycle
+    # even if the first guard had let it through.
+    assert [r["day"] for r in payload["river"]] == DAYS[1:] + [
+        "2026-10-16", "2026-10-28",
+    ]
+    assert [g["day"] for g in payload["river_gaps"]] == ["2026-09-10"]
+    assert payload["river_gaps"][0]["reason"] == "channel detection implausible"
+
     low = payload["lowest"]
-    # The three lowest are 100, 260 and 270; the anchor is their median, so
-    # the one collapsed cycle sets the window without setting the figure.
     assert low["water_km2"] != 100.0, "the anchor took the one failed cycle"
-    assert low["water_km2"] == 260.0
+    assert low["water_km2"] == 270.0
     assert len(low["over_cycles"]) == ANCHOR_CYCLES
-    # The cycles behind the anchor travel with it, the rejected one included,
-    # so a reader can see what the comparison rests on.
-    assert low["over_cycles"] == ["2026-09-10", "2026-09-22", "2026-10-04"]
+    # The cycles behind the anchor travel with it, so a reader can see what
+    # the comparison rests on.
+    assert low["over_cycles"] == ["2026-09-22", "2026-10-04", "2026-10-16"]
     # And the high end is anchored the same way.
     assert payload["highest"]["water_km2"] == 280.0
     assert len(payload["highest"]["over_cycles"]) == ANCHOR_CYCLES
@@ -547,3 +556,49 @@ def test_a_gap_carries_its_reason():
     assert 'gap("corridor not fully observed"' in source
     # The coverage test is applied before the area is believed.
     assert source.index("min_coverage") < source.index('row["days"].append')
+
+
+def test_the_cycle_that_failed_in_the_published_record_is_now_rejected():
+    """The real one, by its real numbers.
+
+    The published series ran 31 cycles. Water detected inside the permanent
+    channel - water_km2 minus flood_km2 - held at 5,219 km2 with a standard
+    deviation of 76, which is 1.5%, because the channel mask is fixed
+    geometry over a river that never leaves it. One cycle read 4,470: a
+    750 km2 deficit at z = -9.8, confined to two adjacent corridors that
+    lost half and a quarter of their channel while the other six moved by
+    under 2%. A 20 km-wide corridor does not lose half its channel for
+    twelve days.
+
+    That cycle was published as the driest pass on the record, and the
+    front page measured both of its comparisons against it.
+    """
+    from parana_crecida.export import _implausible
+
+    # The published record, (water_km2, flood_km2) per cycle.
+    published = [
+        (6905.6, 1617.5), (6702.6, 1419.8), (6167.1, 981.4), (6319.6, 1063.0),
+        (5965.6, 739.2), (6036.2, 837.6), (5782.4, 633.6), (5740.5, 560.3),
+        (5750.4, 547.2), (5740.7, 565.9), (5729.9, 570.9), (5697.3, 561.3),
+        (5509.9, 383.6), (5553.6, 433.7), (5644.6, 499.9), (5800.8, 657.5),
+        (5865.7, 684.4), (6414.3, 1205.8), (6120.3, 1034.8), (5741.1, 573.3),
+        (5203.6, 733.7),  # 2026-06-30
+        (7453.2, 2173.3), (6684.5, 1447.7), (6397.4, 1150.1), (6617.2, 1306.8),
+        (6643.4, 1370.6), (6650.7, 1347.3), (6904.8, 1602.3), (7201.6, 1871.7),
+        (6982.1, 1725.2), (9727.5, 4301.9),
+    ]
+    rows = [
+        {"day": f"c{i:02d}", "water_km2": w, "flood_km2": f}
+        for i, (w, f) in enumerate(published)
+    ]
+
+    kept, rejected = _implausible(rows)
+
+    assert [r["day"] for r in rejected] == ["c20"], (
+        "the cycle that lost 750 km2 of permanent channel is the one and only "
+        "cycle this test must reject"
+    )
+    assert len(kept) == 30
+    # Including the record flood, which must not be mistaken for an outlier
+    # just because it is far from the median.
+    assert kept[-1]["water_km2"] == 9727.5

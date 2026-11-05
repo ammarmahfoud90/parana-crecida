@@ -16,9 +16,11 @@ are the subject, not an error.
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass, field
 from datetime import date
+from pathlib import Path
 
 from .store import Store
 
@@ -106,6 +108,99 @@ class ValidationResult:
         return out
 
 
+#: The measured water record, checked alongside the gauge record.
+DEFAULT_WATER = Path("data/floodwater.json")
+
+
+def water_checks(path: Path | str | None = None) -> list[Check]:
+    """Data tests on the satellite record, which had none.
+
+    Every check in :func:`validate` queries the gauge store, and
+    ``export_floodwater`` is gated on the result - so the satellite
+    product, which is what the site leads with, passed the gate
+    unconditionally regardless of what it contained. The cycle in which the
+    mask lost half the permanent channel of two adjacent corridors was
+    exported as ``complete: true`` with every reach reporting.
+
+    These are the structural tests only: that the series line up, that
+    flood water is a subset of all water, and that no reach reports more
+    water than its corridor holds. Whether a given cycle is believable is a
+    judgement about one row rather than about the file, and it is made where
+    the series is assembled - see ``export._implausible``.
+
+    An absent record is not a failure. The Earth Engine step does not run
+    without a credential, and the gauge pages must not be taken down
+    because the satellite record has not been built yet.
+    """
+    path = Path(path) if path is not None else DEFAULT_WATER
+    if not path.exists():
+        return [Check("water_record_present", WARN, False,
+                      f"no measured water record at {path}")]
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return [Check("water_record_readable", ERROR, False,
+                      f"{path} could not be read: {error}")]
+
+    stretches = payload.get("stretches") or []
+    checks = [Check("water_record_present", WARN, bool(stretches),
+                    f"{len(stretches)} stretches measured")]
+    if not stretches:
+        return checks
+
+    ragged, over_corridor, negative_flood = [], [], []
+    for row in stretches:
+        key = row.get("key", "?")
+        days = row.get("days") or []
+        water = row.get("water_km2") or []
+        flood = row.get("flood_km2") or []
+        if not (len(days) == len(water) == len(flood)):
+            ragged.append(f"{key}: {len(days)}/{len(water)}/{len(flood)}")
+            continue
+        extent = row.get("corridor_km2") or 0
+        for day, total, beyond in zip(days, water, flood):
+            if beyond > total + 1e-6:
+                negative_flood.append(f"{key}@{day}: {beyond} > {total}")
+            if extent and total > extent + 1e-6:
+                over_corridor.append(f"{key}@{day}: {total} > {extent}")
+
+    checks.append(Check(
+        "water_series_aligned", ERROR, not ragged,
+        "every stretch's days, water and flood series are the same length"
+        if not ragged
+        else f"{len(ragged)} stretches have series of different lengths",
+        tuple(ragged),
+    ))
+    # Flood water is all water minus a fixed mask, so it cannot exceed it.
+    # Where it does, the subtraction has gone wrong rather than the river.
+    checks.append(Check(
+        "flood_within_water", ERROR, not negative_flood,
+        "flood water never exceeds all water"
+        if not negative_flood
+        else f"{len(negative_flood)} cycles report more flood than water",
+        tuple(negative_flood[:10]),
+    ))
+    # A corridor cannot hold more water than it has ground.
+    checks.append(Check(
+        "water_within_corridor", ERROR, not over_corridor,
+        "no stretch reports more water than its corridor holds"
+        if not over_corridor
+        else f"{len(over_corridor)} cycles exceed their corridor",
+        tuple(over_corridor[:10]),
+    ))
+    # The whole-river figure has to come from the union measurement; the
+    # corridors overlap by 17.7% of their summed area, so a record without
+    # it cannot produce a river-wide total at all.
+    checks.append(Check(
+        "river_measured_over_the_union", WARN, bool(payload.get("river")),
+        "the whole river is measured over the dissolved corridor union"
+        if payload.get("river")
+        else "no union measurement; no whole-river total will publish",
+    ))
+    return checks
+
+
 def _unit_expr() -> str:
     """SQL for a gauge's unit, since the observation table does not store it."""
     return "CASE WHEN g.flags LIKE '%flow%' THEN 'm3/s' ELSE 'm' END"
@@ -117,8 +212,9 @@ def validate(
     today: date | None = None,
     fresh_days: int = FRESH_DAYS,
     required_tier: int = 1,
+    water_path: Path | str | None = None,
 ) -> ValidationResult:
-    """Run every data test against the store."""
+    """Run every data test: the gauge store, and the measured water record."""
     today = today or date.today()
     result = ValidationResult()
     con = store.con
@@ -377,6 +473,13 @@ def validate(
             f"{official} gauges have official alert or evacuation levels",
         )
     )
+
+    # -- the measured water record ----------------------------------------
+    # The satellite product is what the site leads with and it had no data
+    # tests at all: every check above queries the gauge store, and
+    # export_floodwater is gated on the result, so the water record passed
+    # unconditionally regardless of what it held.
+    result.checks.extend(water_checks(water_path))
 
     return result
 
