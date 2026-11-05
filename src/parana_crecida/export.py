@@ -353,7 +353,7 @@ def export_river_stage(
         )
 
     clim = Climatology.load(climatology_path or Path("data/climatology_parana.json"))
-    payload = rs.build(store, clim, today=today)
+    payload = rs.build(store, clim, today=today, suspect=result.suspect)
     payload["generated_at"] = (now or datetime.now(DEFAULT_TZ)).isoformat(
         timespec="seconds"
     )
@@ -495,10 +495,27 @@ def export_csv(
     out = out_dir / CSV_DIR
     written: dict[str, int] = {}
 
+    # Readings this run's validation called impossible. A severity that
+    # cannot change an outcome is a comment: 78.91 m at Libertador was
+    # detected, correctly classified as an isolated glitch rather than
+    # grounds for blocking the export, and then published here anyway,
+    # with a day-of-year percentile of 100 attached to it.
+    suspect = result.suspect
+    dropped = 0
+
     def river_rows():
+        nonlocal dropped
         for gauge in roster.GAUGES:
             node = nodes.get(gauge.series_id)
             for value in store.series(gauge.series_id, since=start):
+                if (gauge.series_id, value.day.isoformat()) in suspect:
+                    log.warning(
+                        "left out of river_daily.csv: %s %s = %g, outside the "
+                        "range its unit allows",
+                        gauge.series_id, value.day, value.value,
+                    )
+                    dropped += 1
+                    continue
                 pct = clim.percentile_of(gauge.series_id, value.day, value.value)
                 yield [
                     value.day.isoformat(),
@@ -566,6 +583,9 @@ def export_csv(
     )
 
     log.info("csv: %s", ", ".join(f"{k} {v} rows" for k, v in written.items()))
+    if dropped:
+        log.warning("%d reading(s) left out as out of range; see the warnings "
+                    "above for which", dropped)
     return written
 
 

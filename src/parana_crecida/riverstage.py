@@ -193,10 +193,18 @@ def build(
     *,
     window_days: int = WINDOW_DAYS,
     today: date | None = None,
+    suspect: set[tuple[str, str]] | None = None,
 ) -> dict[str, object]:
-    """The daily percentile at every gauge, plus the line to paint."""
+    """The daily percentile at every gauge, plus the line to paint.
+
+    ``suspect`` is the set of ``(series_id, day)`` readings this run's
+    validation called impossible. They are left out rather than painted:
+    one 78.91 m reading at a gauge whose series tops out near 20 m sets the
+    colour scale, and the percentile it is given is 100 by construction.
+    """
     today = today or date.today()
     start = today - timedelta(days=window_days)
+    suspect = suspect or set()
 
     line = centreline_with_km()
     breaks = dam_positions(line)
@@ -214,7 +222,10 @@ def build(
         gauge = roster.BY_ID.get(series_id)
         if gauge is None or gauge.flags & EXCLUDE:
             continue
-        values = store.series(series_id, since=start)
+        values = [
+            v for v in store.series(series_id, since=start)
+            if (series_id, v.day.isoformat()) not in suspect
+        ]
         if not values:
             continue
         collected.append((

@@ -64,9 +64,26 @@ class Check:
 
 @dataclass
 class ValidationResult:
-    """Every check from one validation pass."""
+    """Every check from one validation pass.
+
+    ``suspect`` holds the individual ``(series_id, day)`` readings that a
+    warning-level check rejected, and it exists because a severity that
+    cannot change an outcome is a comment. One reading of 78.91 m at
+    Libertador - against a series that otherwise tops out near 20 - was
+    detected here, correctly classified as an isolated glitch in INA's
+    archive rather than grounds for taking the site down, and then
+    published anyway, in the downloadable CSV, ranked at the 100th
+    percentile for its day of the year. The warning went to a log file
+    nobody reads and the value went to the page.
+
+    So the export now asks for this set and leaves those readings out. The
+    distinction the severity was making is preserved: a whole series out of
+    range still blocks the export, and a single bad row still does not -
+    it is simply no longer published.
+    """
 
     checks: list[Check] = field(default_factory=list)
+    suspect: set[tuple[str, str]] = field(default_factory=set)
 
     @property
     def ok(self) -> bool:
@@ -211,6 +228,17 @@ def validate(
             """,
             [unit, low, high, low, high],
         ).fetchall()
+        # The rows themselves, so the export can leave them out rather than
+        # publish a value this check has just called impossible.
+        for series_id, day in con.execute(
+            f"""
+            SELECT o.series_id, o.day
+            FROM observation o JOIN gauge g USING (series_id)
+            WHERE {_unit_expr()} = ? AND (o.value < ? OR o.value > ?)
+            """,
+            [unit, low, high],
+        ).fetchall():
+            result.suspect.add((str(series_id), day.isoformat()))
         for series_id, bad, total, latest_bad in found:
             share = 100.0 * bad / total
             label = f"{series_id} ({unit}): {bad}/{total} rows ({share:.2g}%)"

@@ -167,3 +167,50 @@ def test_lines_mark_failures_and_warnings(store, cache):
     text = "\n".join(validate(store, today=TODAY).lines())
     assert "[ok  ]" in text
     assert "[warn]" in text
+
+
+def test_an_isolated_outlier_is_named_so_the_export_can_leave_it_out(store, cache):
+    """A severity that cannot change an outcome is a comment.
+
+    One reading of 78.91 m at Libertador - against a series that otherwise
+    tops out near 20 - was detected here, correctly classified as a glitch
+    in INA's archive rather than grounds for taking the site down, and then
+    published: in the downloadable CSV, with a day-of-year percentile of
+    100 attached, and on the map's daily colour.
+
+    The check keeps its judgement. One bad row in twenty thousand still
+    warns rather than blocks. What changes is that the row is named, so the
+    export can drop it instead of publishing a value this check has just
+    called impossible.
+    """
+    series = plausible(n=400)
+    series[120] = DailyValue(day=series[120].day, value=78.91)
+    loaded(store, cache, values=series)
+
+    result = validate(store, today=TODAY)
+
+    # Still a warning, not a block: the series as a whole is fine.
+    assert result.ok
+    assert "no_isolated_outliers" in {c.name for c in result.warnings}
+
+    # And the reading itself is identified, exactly.
+    assert result.suspect == {("26261", series[120].day.isoformat())}
+
+
+def test_a_clean_store_marks_nothing_suspect(store, cache):
+    loaded(store, cache)
+    assert validate(store, today=TODAY).suspect == set()
+
+
+def test_a_whole_series_out_of_range_still_blocks(store, cache):
+    """The distinction the severity was making has to survive.
+
+    Discharge filed as stage mislabels every day, so it blocks. Naming the
+    rows must not turn that into a quiet exclusion of the entire series.
+    """
+    loaded(store, cache, values=plausible(n=400, base=9000.0))
+
+    result = validate(store, today=TODAY)
+
+    assert not result.ok
+    assert "values_in_sane_range" in {c.name for c in result.failures}
