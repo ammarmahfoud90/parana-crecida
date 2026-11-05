@@ -92,7 +92,31 @@ BAJANTE_YEAR = 2021
 #: Backscatter below which VH is water. One number for the whole river,
 #: tuned against Sentinel-2 water on a flood date rather than against the
 #: channel at low flow.
+#:
+#: **Not changed, and the reason is worth recording.** Published practice
+#: puts the optimum higher: the Sentinel-1 Global Backscatter Model reports
+#: -22.9 dB as the Bayesian-optimal VH water threshold and notes that
+#: thermal noise becomes observable below about -22 dB, and ESA's IW noise
+#: floor is specified at -22 dB or better with cross-polarisation the more
+#: noise-affected channel. So -25 dB is 2 to 3 dB below the published
+#: optimum and close to the instrument's own floor over part of the swath.
+#:
+#: It stays where it is because moving it would change every published
+#: figure on the strength of a literature value rather than a measurement
+#: of this river, and the only scoring this project has is in-sample on one
+#: date. It is a candidate for the held-out sweep in AUDIT/03, not for a
+#: change here.
 VH_THRESHOLD_DB = -25.0
+
+#: And a floor, which is a different thing from the threshold.
+#:
+#: ``vh.lt(-25)`` admitted everything down to the band's bottom, so
+#: residual GRD border noise and thermal-denoising artefacts - which land
+#: in exactly that range - counted as water. Earth Engine's own worked
+#: example for this collection masks pixels below -30 dB as edge noise
+#: before using the image. This is that, not a retuning: no pixel between
+#: -30 and -25 dB changes class.
+VH_FLOOR_DB = -30.0
 
 #: Metres above the nearest drainage beyond which standing water is not
 #: credible. Ten was the best of 10, 15 and 25 and the difference between
@@ -167,7 +191,11 @@ def water_mask(corridor, start: date, end: date):
         .clip(corridor)
     )
     hand = ee.Image(HAND).select("hnd")
-    return vh.lt(VH_THRESHOLD_DB).And(hand.lte(HAND_LIMIT_M))
+    return (
+        vh.lt(VH_THRESHOLD_DB)
+        .And(vh.gt(VH_FLOOR_DB))
+        .And(hand.lte(HAND_LIMIT_M))
+    )
 
 
 def permanent_water():
@@ -573,13 +601,15 @@ def rebuild(
                        "every km2 of it channel. union_corridor_km2 is the "
                        "area of that union; the stretches' own corridor_km2 "
                        "must not be added together."),
-        "note": ("Open water from Sentinel-1 VH below -25 dB, bounded by height "
+        "note": ("Open water from Sentinel-1 VH below -25 dB and above the "
+                 "-30 dB noise floor, bounded by height "
                  "above nearest drainage. One threshold for the whole river, "
                  "tuned against Sentinel-2 optical water during a flood rather "
                  "than against the channel at low flow. water_km2 is all water; "
                  "flood_km2 excludes the permanent channel."),
         "method": "vh-threshold/hand",
         "vh_threshold_db": VH_THRESHOLD_DB,
+        "vh_floor_db": VH_FLOOR_DB,
         "hand_limit_m": HAND_LIMIT_M,
         "window_days": window_days,
         "window": ("Window ends are grid dates, not acquisition dates: the "

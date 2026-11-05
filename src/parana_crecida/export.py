@@ -968,6 +968,7 @@ def export_floodwater(
         "note": payload.get("note"),
         "method": payload.get("method"),
         "vh_threshold_db": payload.get("vh_threshold_db"),
+        "vh_floor_db": payload.get("vh_floor_db"),
         "hand_limit_m": payload.get("hand_limit_m"),
         "window_days": payload.get("window_days"),
         "window": payload.get("window"),
