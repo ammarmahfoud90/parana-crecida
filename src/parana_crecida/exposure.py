@@ -3,8 +3,20 @@
 **This does not publish, and here is the measurement that stopped it.**
 
 Tried three times, on three different water masks, and failed the same way
-each time. On the validated VH mask, over 31 repeat cycles from November
-2025 to October 2026:
+each time. The column below is attributed in this docstring to "the
+validated VH mask", and that attribution cannot be checked: the code in
+this module builds its mask with ``flooded.water_mask`` at each stretch's
+VV threshold and subtracts JRC occurrence alone - the superseded method,
+with the permanent-water definition that read the Yacyreta reservoir as
+flood. Whatever produced these figures, it is not what is written here.
+
+The numbers are kept because the refusal they earned stands on its shape
+rather than on their precision - a city appearing on one pass, and a
+people-count that falls while the flood triples - but they must be
+re-measured on the live mask before any of them is quoted again, and this
+module must be brought onto that mask first.
+
+Over 31 repeat cycles from November 2025 to October 2026:
 
     2025-11-02       755          2026-06-06    48,959
     2026-01-13       460          2026-07-12     3,452

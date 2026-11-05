@@ -165,7 +165,6 @@ def render(
     # Leaflet wants [[south, west], [north, east]].
     bounds = [[min(lats), min(lons)], [max(lats), max(lons)]]
 
-    calibrated = {s.key for s in stretches}
     out_dir.mkdir(parents=True, exist_ok=True)
     frames: list[MapFrame] = []
     for index in range(cycles - 1, -1, -1):
@@ -217,21 +216,30 @@ def render(
                 # The total covers the stretches drawn, and those are the
                 # stretches that were scored. Anything withheld is absent
                 # from the frame, so it cannot slip into the sum.
-                "total_km2": (
-                    round(sum(v for k, v in f.km2.items() if k in calibrated), 1)
-                    if f.km2 else None
-                ),
+                # Every stretch in f.km2 is one that cleared the skill
+                # floor, so there is nothing left to filter: the old
+                # `if k in calibrated` was a no-op named after a retired
+                # rule. The total is still a sum over overlapping
+                # corridors and is marked as such.
+                "total_km2": (round(sum(f.km2.values()), 1) if f.km2 else None),
+                "total_overlaps": True,
             }
             for f in frames
         ],
         "stretches": [
             {
+                # `calibrated` and `threshold_db` are not published here.
+                # They described the superseded per-stretch VV mask, and
+                # this file is drawn with the VH mask - so it was stating
+                # "calibrated": false and "threshold_db": -17.0 for the two
+                # gorge reaches, which both publish and are not measured
+                # with a VV threshold at all. What decides whether a reach
+                # is drawn is riverfilm.published_keys(), i.e. the IoU
+                # against optical water, and that is in floodwater.json.
                 "key": s.key,
-                "calibrated": s.calibrated,
                 "from_name": s.from_name,
                 "to_name": s.to_name,
                 "river_km": s.river_km,
-                "threshold_db": s.threshold_db,
                 "centreline": s.centreline,
             }
             for s in stretches

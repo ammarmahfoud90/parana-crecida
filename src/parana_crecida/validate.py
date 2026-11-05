@@ -39,9 +39,17 @@ SANE_RANGES: dict[str, tuple[float, float]] = {
     "m3/s": (0.0, 200_000.0),
 }
 
-#: Above this share of a series being out of range, the series itself is
-#: wrong rather than merely carrying a bad reading, and the export is blocked.
-OUT_OF_RANGE_SHARE = 1.0
+#: Above this **percentage** of a series being out of range, the series
+#: itself is wrong rather than merely carrying a bad reading, and the
+#: export is blocked. One bad row in twenty thousand is a glitch in INA's
+#: archive; a whole series outside its unit's range means the series is not
+#: what we think it is - discharge filed as stage, say.
+#:
+#: Named a "share" and compared against `100.0 * bad / total`, so it reads
+#: as 100% - which would mean the check could never fire - while behaving
+#: as 1%. The behaviour is the one that was wanted; only the name was
+#: wrong.
+OUT_OF_RANGE_PERCENT = 1.0
 
 #: Warn if the newest reading anywhere is older than this.
 FRESH_DAYS = 7
@@ -344,7 +352,7 @@ def validate(
         for series_id, bad, total, latest_bad in found:
             share = 100.0 * bad / total
             label = f"{series_id} ({unit}): {bad}/{total} rows ({share:.2g}%)"
-            if latest_bad or share > OUT_OF_RANGE_SHARE:
+            if latest_bad or share > OUT_OF_RANGE_PERCENT:
                 blocking.append(label + (", including the latest" if latest_bad else ""))
             else:
                 isolated.append(label)

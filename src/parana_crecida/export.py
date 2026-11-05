@@ -693,9 +693,20 @@ def export_exposure(
 
     The first version of this counted 97,498 people under water near
     Posadas on a single June day - the thresholded VV mask had read a city
-    of smooth tarmac as a lake. The change-detection mask cannot: a street
-    is dark in August and dark in June, so it never drops, so it is never
-    flooded. That is the clearest argument for the method there is.
+    of smooth tarmac as a lake.
+
+    This used to say that the change-detection mask cannot do that, a
+    street being dark in August and dark in June, and called it the
+    clearest argument for the method there is. Change detection was
+    rejected, so that argument now defends nothing that runs: the live mask
+    is an absolute VH threshold, which has no structural defence against a
+    smooth dry surface falling below it. ``exposure`` records the same
+    failure on a VH mask - "a different band, the same city, the same
+    failure" - so this is measured, not hypothetical.
+
+    What would actually defend it is a settlement mask, which does not
+    exist yet. Until it does, the sensible thing is what happens here:
+    nothing publishes.
     """
     from . import exposure as ex
 
