@@ -103,6 +103,20 @@ HAND_LIMIT_M = 10.0
 #: One Sentinel-1 repeat cycle.
 WINDOW_DAYS = 12
 
+#: Share of the corridor that has to be observed before a cycle publishes a
+#: figure. A pass that crosses only part of the corridor leaves the rest
+#: with no data, and unobserved ground contributes no area - which reads as
+#: the river shrinking rather than as a measurement that was not made.
+#:
+#: The superseded pipeline tested exactly this and dropped a window below
+#: 0.95 (``flooded.MIN_COVERAGE``). Dropping the test when the band changed
+#: was a mistake: the method page went on asserting that twelve-day
+#: composites "cover the whole corridor every time", which is the property
+#: the test used to verify rather than something VH guarantees. One cycle
+#: in the published series lost half the permanent channel of two adjacent
+#: corridors, which is what an unobserved swath looks like.
+MIN_COVERAGE = 0.95
+
 #: The score this was tuned to, kept here so the page can quote it and a
 #: future change has to beat it.
 #: A fallback only. The real table is measured by scripts/validate_mask.py
@@ -221,6 +235,71 @@ def area_km2(corridor, mask) -> float | None:
     return None if value is None else float(value) / 1e6
 
 
+def observed_km2(corridor, start: date, end: date) -> float | None:
+    """How much of the corridor the radar actually saw over the window.
+
+    The denominator every published figure has been missing. ``water_mask``
+    leaves unobserved pixels masked and ``area_km2`` sums only unmasked
+    ones, so a corridor observed in half gives a valid-looking number that
+    is low by the area of the gap, with nothing in the output to say so.
+
+    Reduced at 200 m rather than 60: this is a coverage fraction, not an
+    area figure, and a coarser grid is far cheaper over a corridor this
+    size. The superseded pipeline used the same scale for the same reason.
+    """
+    import ee
+
+    mosaic = _vh(corridor, start, end).mosaic().clip(corridor)
+    stats = (
+        mosaic.mask()
+        .rename("seen")
+        .multiply(ee.Image.pixelArea())
+        .reduceRegion(
+            reducer=ee.Reducer.sum(), geometry=corridor,
+            scale=200, maxPixels=1e10, bestEffort=True,
+        )
+        .getInfo()
+    )
+    value = (stats or {}).get("seen")
+    return None if value is None else float(value) / 1e6
+
+
+def acquisitions(corridor, start: date, end: date) -> dict:
+    """What the window was actually built from.
+
+    The series has always published a window end and nothing about the
+    passes inside it, so the real cadence per reach could not be recovered
+    from the product at all - the dates look like a regular twelve-day
+    sequence because they are a grid, not because the satellite flew one.
+
+    Relative orbit and platform are recorded rather than filtered on.
+    Backscatter over water falls with incidence angle while over land it
+    is flat, so one absolute threshold across several viewing geometries is
+    not one physical criterion; and the constellation changed inside the
+    published record. Neither is fixed by a metadata field, but neither can
+    be measured without one, and filtering would change every published
+    figure before the change had been validated.
+    """
+    import ee
+
+    scenes = _vh(corridor, start, end)
+    got = ee.Dictionary({
+        "days": scenes.aggregate_array("system:time_start")
+        .map(lambda t: ee.Date(t).format("YYYY-MM-dd")).distinct().sort(),
+        "scenes": scenes.size(),
+        "orbits": scenes.aggregate_array("relativeOrbitNumber_start").distinct().sort(),
+        "passes": scenes.aggregate_array("orbitProperties_pass").distinct().sort(),
+        "platforms": scenes.aggregate_array("platform_number").distinct().sort(),
+    }).getInfo()
+    return {
+        "acq_days": list(got.get("days") or []),
+        "scenes": int(got.get("scenes") or 0),
+        "orbits": [int(o) for o in (got.get("orbits") or []) if o is not None],
+        "passes": list(got.get("passes") or []),
+        "platforms": [p for p in (got.get("platforms") or []) if p is not None],
+    }
+
+
 def series(
     corridor,
     *,
@@ -288,6 +367,7 @@ def rebuild(
     last: date,
     window_days: int = WINDOW_DAYS,
     keep: int = KEEP_CYCLES,
+    min_coverage: float = MIN_COVERAGE,
 ) -> dict:
     """Measure the cycles that are missing and leave the rest alone.
 
@@ -313,7 +393,8 @@ def rebuild(
                 "key": stretch.key, "from": stretch.from_id, "to": stretch.to_id,
                 "from_name": stretch.from_name, "to_name": stretch.to_name,
                 "river_km": stretch.river_km, "corridor_km2": None,
-                "days": [], "water_km2": [], "flood_km2": [], "gaps": [],
+                "days": [], "water_km2": [], "flood_km2": [],
+                "observation": [], "gaps": [],
             }
             rows.append(row)
             by_key[stretch.key] = row
@@ -323,38 +404,74 @@ def rebuild(
             row["corridor_km2"] = round(
                 float(corridor.area(1000).divide(1e6).getInfo()))
 
-        attempted = list(row["days"]) + list(row.get("gaps") or [])
+        attempted = list(row["days"]) + [
+            g["day"] for g in (row.get("gaps") or []) if g.get("day")
+        ]
         for end in _grid(attempted, last, window_days):
             start = end - timedelta(days=window_days - 1)
+
+            def gap(reason: str, **extra) -> None:
+                """Record a window that produced no publishable figure.
+
+                A gap is an attempt, so the grid anchor moves past it and
+                the series does not stall; and it is published, so a reader
+                and the freshness check can both see that a cycle is
+                missing rather than inferring a dry river from a dip.
+                """
+                log.warning("%s %s: %s; recorded as a gap",
+                            stretch.key, end, reason)
+                row.setdefault("gaps", []).append(
+                    {"day": end.isoformat(), "reason": reason, **extra})
+
             try:
+                seen = observed_km2(corridor, start, end)
                 water = area_km2(corridor, water_mask(corridor, start, end))
                 flood = area_km2(corridor, flood_only(corridor, start, end))
+                provenance = acquisitions(corridor, start, end)
             except Exception as error:  # pragma: no cover - Earth Engine
                 log.warning("%s %s: %s", stretch.key, end, error)
                 continue
-            if water is None or flood is None:
-                # Nothing observed over this corridor in this window. It is
-                # recorded as a gap rather than as zero water, and the gap
-                # counts toward the grid anchor so the series can move past
-                # an unobservable window instead of stalling on it forever.
-                log.warning("%s %s: nothing observed; recorded as a gap",
-                            stretch.key, end)
-                row.setdefault("gaps", []).append(end.isoformat())
+
+            if water is None or flood is None or seen is None:
+                gap("nothing observed")
                 continue
+
+            # The coverage test the superseded pipeline had and this one
+            # lost. Checked before the area is believed, not after.
+            extent = row.get("corridor_km2") or 0
+            coverage = (seen / extent) if extent else None
+            if coverage is not None and coverage < min_coverage:
+                gap("corridor not fully observed",
+                    coverage=round(coverage, 3), seen_km2=round(seen, 1),
+                    scenes=provenance["scenes"])
+                continue
+
             row["days"].append(end.isoformat())
             row["water_km2"].append(round(water, 1))
             row["flood_km2"].append(round(flood, 1))
-            log.info("%s %s: %.0f km2 water, %.0f beyond the channel",
-                     stretch.key, end, water, flood)
+            row.setdefault("observation", []).append({
+                "window_start": start.isoformat(),
+                "window_end": end.isoformat(),
+                "seen_km2": round(seen, 1),
+                "coverage": None if coverage is None else round(coverage, 3),
+                **provenance,
+            })
+            log.info("%s %s: %.0f km2 water, %.0f beyond the channel, "
+                     "%d scene(s) on %s, %.0f%% of the corridor observed",
+                     stretch.key, end, water, flood, provenance["scenes"],
+                     ",".join(provenance["acq_days"]) or "no dated scene",
+                     100 * (coverage or 0))
 
         # Trim from the front, keeping every series the same length.
-        for field in ("days", "water_km2", "flood_km2"):
-            row[field] = row[field][-keep:]
+        for field in ("days", "water_km2", "flood_km2", "observation"):
+            row[field] = (row.get(field) or [])[-keep:]
         # Gaps are trimmed to the span the series still covers, so a gap
         # older than the published window stops being reported while a gap
         # inside it stays visible.
         if row["days"]:
-            row["gaps"] = [g for g in (row.get("gaps") or []) if g >= row["days"][0]]
+            row["gaps"] = [
+                g for g in (row.get("gaps") or []) if g.get("day", "") >= row["days"][0]
+            ]
 
     payload.update({
         "schema": 2,
@@ -367,6 +484,19 @@ def rebuild(
         "vh_threshold_db": VH_THRESHOLD_DB,
         "hand_limit_m": HAND_LIMIT_M,
         "window_days": window_days,
+        "window": ("Window ends are grid dates, not acquisition dates: the "
+                   "grid is a sequence of 12-day bins whose phase comes from "
+                   "whenever this series was first built. Each cycle's "
+                   "observation block carries the window start and end, the "
+                   "acquisition dates inside it, the scene count, the relative "
+                   "orbits and the platforms."),
+        "min_coverage": min_coverage,
+        "coverage_note": ("A cycle publishes a figure only where at least "
+                          f"{min_coverage:.0%} of the corridor was observed. "
+                          "Below that it is recorded in the stretch's gaps "
+                          "list with its reason, because unobserved ground "
+                          "contributes no area and would read as a river that "
+                          "had shrunk."),
         "permanent_water": ("JRC occurrence > 90, or JRC yearly water class 3 "
                             f"in the {BAJANTE_YEAR} bajante"),
         "skill": SKILL,

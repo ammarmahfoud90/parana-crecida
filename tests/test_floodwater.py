@@ -318,7 +318,7 @@ def test_a_gap_moves_the_grid_on_rather_than_stalling_it():
     from parana_crecida.floodwater import _grid
 
     measured = ["2026-10-04", "2026-10-16"]
-    gap = "2026-10-28"
+    gap = "2026-10-28"  # rebuild() stores {"day": ..., "reason": ...}
 
     # On measurements alone the grid offers the gap again, for ever.
     assert _grid(measured, _date(2026, 11, 9), 12) == [
@@ -395,3 +395,49 @@ def test_nothing_observed_is_not_zero_water():
     finally:
         if sys.modules.get("ee") is FakeEE:
             del sys.modules["ee"]
+
+
+def test_a_cycle_records_what_it_was_measured_from():
+    """Window ends are grid dates; the acquisitions have to be recorded.
+
+    The published series has always carried a window end and nothing about
+    the passes inside it, so the real cadence per reach could not be
+    recovered from the product: the dates look like a regular twelve-day
+    sequence because they are a grid, not because the satellite flew one.
+    """
+    import inspect
+
+    from parana_crecida import floodwater as fw
+
+    assert fw.MIN_COVERAGE == 0.95
+
+    # acquisitions() must return every field the series needs to describe
+    # its own provenance, and must read the metadata rather than assume it.
+    source = inspect.getsource(fw.acquisitions)
+    for field in ("acq_days", "scenes", "orbits", "passes", "platforms"):
+        assert f'"{field}"' in source, field
+    for prop in ("relativeOrbitNumber_start", "orbitProperties_pass",
+                 "platform_number", "system:time_start"):
+        assert prop in source, prop
+
+    # And rebuild() must store that block against the cycle, with the
+    # window it covers, not just the end date it is published under.
+    stored = inspect.getsource(fw.rebuild)
+    assert '"window_start": start.isoformat()' in stored
+    assert '"window_end": end.isoformat()' in stored
+    assert '"seen_km2"' in stored and '"coverage"' in stored
+    assert "**provenance," in stored
+
+
+def test_a_gap_carries_its_reason():
+    """A gap is published, not swallowed, and says why it is a gap."""
+    import inspect
+
+    from parana_crecida import floodwater as fw
+
+    source = inspect.getsource(fw.rebuild)
+    assert '"reason": reason' in source
+    assert 'gap("nothing observed")' in source
+    assert 'gap("corridor not fully observed"' in source
+    # The coverage test is applied before the area is believed.
+    assert source.index("min_coverage") < source.index('row["days"].append')
