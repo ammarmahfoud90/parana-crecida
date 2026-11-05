@@ -27,7 +27,7 @@ daily job's Earth Engine step, which is skipped when no credential is set.
 | 4 | `COPERNICUS/S1_GRD`, IW mode, dual-pol scenes carrying VH, `[start, end]` **inclusive** | `floodwater._vh()` |
 | 5 | `.mosaic()` over the window, `focal_median` at **50 m**, clipped to the corridor | `flooded.SPECKLE_RADIUS_M` |
 | 6 | Water where VH < **−25 dB** *and* VH > **−30 dB** *and* MERIT HAND ≤ **10 m** | `floodwater.VH_THRESHOLD_DB`, `VH_FLOOR_DB`, `HAND_LIMIT_M`, band `hnd` of `MERIT/Hydro/v1_0_1` |
-| 7 | Permanent channel: JRC GSW `occurrence > 90` **or** `YearlyHistory` `waterClass == 3` in **2021** | `floodwater.permanent_water()` |
+| 7 | Permanent channel: `JRC/GSW1_4/GlobalSurfaceWater` `occurrence > 90` **or** `JRC/GSW1_4/YearlyHistory` `waterClass == 3` in **2021** | `floodwater.permanent_water()` |
 | 8 | Observed area, from the mosaic's own mask, at 200 m | `floodwater.observed_km2()` |
 | 9 | Acquisition dates, scene count, relative orbits, pass directions, platforms | `floodwater.acquisitions()` |
 | 10 | A cycle below **95%** observed is recorded as a gap, not an area | `floodwater.MIN_COVERAGE` |

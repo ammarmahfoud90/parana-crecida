@@ -151,8 +151,8 @@ const T = {
     frontWhyNoDates: "Acá no hay fechas de llegada. Se construyeron y se midieron: sobre el registro desde 1998, el pico real cayó dentro de la ventana proyectada el 23% de las veces, con un error mediano de 9 días sobre viajes de pocos días a dos semanas. Un error del tamaño de la cosa que se quiere predecir no es un pronóstico. Los tiempos de viaje medidos están abajo, que es lo que los datos sí sostienen.",
     anchorLine: (name, day, provisional) =>
       provisional
-        ? `El río dejó de subir en ${name} el ${day}, pero todavía no bajó lo suficiente como para dar el pico por pasado. Si ése resulta ser el pico, el registro dice que llegaría así:`
-        : `El pico pasó por ${name} el ${day}. Según el registro, llegaría río abajo así:`,
+        ? `El río dejó de subir en ${name} el ${day}, pero todavía no bajó lo suficiente como para dar el pico por pasado.`
+        : `El pico pasó por ${name} el ${day} y ahora baja por el río.`,
     pctNow: (p) => `percentil ${fmt(p, 0)}`,
     skillNote: (inside, scored, pct, median, baseline, flat) =>
       `Esto no es un pronóstico: es lo que tardaron las crecidas anteriores. Medido sobre el registro desde 1998, el pico real cayó dentro de esta ventana ${inside} de ${scored} veces (${pct}%), con un error mediano de ${median} días. Sin usar los tiempos de viaje, el error mediano sería de ${baseline} días. Y el pico del Paraná se queda a menos de 10 cm de su máximo durante ${flat} días, así que "el día del pico" tampoco está definido más fino que eso. Tómelo como un orden de magnitud, no como una fecha.`,
@@ -200,8 +200,8 @@ const T = {
     frontWhyNoDates: "There are no arrival dates here. They were built and then measured: over the record since 1998 the real crest fell inside the projected window 23% of the time, with a median error of 9 days on journeys of a few days to a fortnight. An error the size of the thing being predicted is not a forecast. The measured travel times are below, which is what the data does support.",
     anchorLine: (name, day, provisional) =>
       provisional
-        ? `The river stopped rising at ${name} on ${day}, but has not yet fallen far enough to call the crest past. If that turns out to be the crest, the record says it would arrive like this:`
-        : `The crest passed ${name} on ${day}. Going by the record, it would arrive downstream like this:`,
+        ? `The river stopped rising at ${name} on ${day}, but has not yet fallen far enough to call the crest past.`
+        : `The crest passed ${name} on ${day} and is now working its way downstream.`,
     pctNow: (p) => `${fmt(p, 0)}th percentile`,
     skillNote: (inside, scored, pct, median, baseline, flat) =>
       `This is not a forecast: it is how long past floods took. Measured over the record since 1998, the actual crest fell inside this window ${inside} times out of ${scored} (${pct}%), with a median error of ${median} days. Without the travel times at all, the median error would be ${baseline} days. And a Paraná crest stays within 10 cm of its peak for ${flat} days, so "the day of the crest" is not defined any finer than that either. Treat it as an order of magnitude, not a date.`,

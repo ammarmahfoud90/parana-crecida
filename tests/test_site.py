@@ -459,3 +459,112 @@ def test_the_published_names_are_the_ones_a_reader_should_see():
                 f"{row['key']} shows {row[f'{end}_name']!r}, "
                 f"the roster says {gauge.label!r}"
             )
+
+
+# -- what a reader has to be able to see -----------------------------------
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_every_page_retitles_itself_when_the_language_changes(page):
+    """Five of seven never did.
+
+    An English page served a Spanish tab title under <html lang="en">,
+    which is what a screen reader announces and what a bookmark keeps.
+    """
+    text = page.read_text(encoding="utf-8")
+    assert "document.title" in text, (
+        f"{page.name} never sets document.title, so the tab keeps the "
+        f"Spanish title on the English page"
+    )
+    assert "documentElement.lang" in text
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_every_page_carries_a_description_and_a_viewport(page):
+    text = page.read_text(encoding="utf-8")
+    assert 'name="viewport"' in text, f"{page.name} has no viewport meta"
+    assert 'name="description"' in text, f"{page.name} has no description"
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_every_local_asset_a_page_names_exists(page):
+    """A missing stylesheet or image is invisible until somebody looks."""
+    text = page.read_text(encoding="utf-8")
+    refs = re.findall(r'(?:src|href)="([^"#?]+)"', text)
+    for ref in refs:
+        if ref.startswith(("http://", "https://", "mailto:", "data:")):
+            continue
+        assert (SITE / ref).exists(), f"{page.name} names {ref}, which is absent"
+
+
+def test_the_pages_that_publish_a_measurement_show_its_window_and_age():
+    """A measurement with no date is unfalsifiable.
+
+    The satellite figure was the one number on the site without one: on
+    gauges.html it read "Radar measures ..." in the present tense, beside
+    gauge readings labelled three ways, for a composite up to a fortnight
+    old.
+    """
+    for name in ("index.html", "flood.html", "gauges.html"):
+        text = (SITE / name).read_text(encoding="utf-8")
+        assert "ageNote" in text or "evidenceWaterStale" in text, (
+            f"{name} publishes a satellite figure with no age"
+        )
+        assert "composite" in text.lower() or "compuesto" in text.lower(), (
+            f"{name} does not say the figure is a composite"
+        )
+
+
+def test_no_page_calls_a_cycle_date_the_date_of_a_pass():
+    """It is a grid boundary. The window is what was measured."""
+    for name in ("index.html", "flood.html"):
+        text = (SITE / name).read_text(encoding="utf-8")
+        assert "passLabel: \"Last pass\"" not in text, (
+            f"{name} still labels the cycle end as the last pass"
+        )
+        assert "Window measured" in text and "Ventana medida" in text
+
+
+def test_the_index_distinguishes_a_withheld_total_from_a_broken_one():
+    """They used to share the box with role="alert"."""
+    text = (SITE / "index.html").read_text(encoding="utf-8")
+    assert 'id="riverUnavailable"' in text
+
+    # Two elements, not one: the alert box is for failures and must not be
+    # reused for a refusal. Read each element's own opening tag.
+    def opening_tag(marker):
+        start = text.rindex("<", 0, text.index(marker))
+        return text[start:text.index(">", start) + 1]
+
+    assert 'role="alert"' in opening_tag('id="error"')
+    assert 'role="alert"' not in opening_tag('id="riverUnavailable"'), (
+        "the withheld-total notice is announced as an urgent alert"
+    )
+
+
+def test_the_chart_breaks_rather_than_drawing_across_a_gap():
+    """A cycle nobody measured must not be rendered as a straight line."""
+    text = (SITE / "index.html").read_text(encoding="utf-8")
+    assert "gapAfter" in text, "the chart does not detect gaps"
+    assert "chartGap" in text, "a gap in the chart is not labelled"
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_no_page_promises_a_forecast(page):
+    """The project withdrew its arrival dates. The pages have to agree."""
+    text = page.read_text(encoding="utf-8").lower()
+    # Affirmative phrasings only. "There are no arrival dates here", which
+    # is how wave.html explains the withdrawal, has to stay sayable.
+    for claim in ("llegaría el pico", "llegaría así", "llegaría río abajo",
+                  "would arrive like this", "would arrive downstream",
+                  "expected arrival"):
+        assert claim not in text, f"{page.name} still offers: {claim}"
+
+
+@pytest.mark.parametrize("page", PAGES, ids=lambda p: p.name)
+def test_every_page_links_to_the_official_alert_system(page):
+    """Kept deliberately: it is the thing a reader in trouble needs."""
+    text = page.read_text(encoding="utf-8")
+    assert "alerta.ina.gob.ar" in text, (
+        f"{page.name} does not link to INA's alert system"
+    )

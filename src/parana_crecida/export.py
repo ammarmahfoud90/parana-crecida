@@ -1085,6 +1085,18 @@ def export_flooded(
     from .flooded import DEFAULT_TABLE as FLOOD_TABLE
     from .flooded import load_table, stale_days, summarise
 
+    # The gate first, always. Stamping is still a write to the published
+    # directory, and nothing may change there while the data tests are
+    # failing - a gate that blocks and then edits the site is worse than no
+    # gate, because the page goes wrong and the run goes red together,
+    # which reads as one fault.
+    if not result.ok:
+        names = ", ".join(c.name for c in result.failures)
+        raise ExportBlocked(
+            f"{len(result.failures)} data test(s) failed ({names}); "
+            "nothing was exported and the last good data stands"
+        )
+
     if not publish:
         # A file already served at a public URL cannot be un-served by
         # ceasing to write it, so an existing one is stamped rather than
