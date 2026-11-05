@@ -1,0 +1,43 @@
+{
+ "schema": 1,
+ "note": "What the production mask's parameters were chosen against. Nothing in this file may be used to evaluate the mask: an evaluation that reuses a tuning date or a tuning reach measures how well the parameters fit the data they were fitted to. tests/test_tuning_manifest.py enforces that.",
+ "why": "The project had no record of this, and the absence was itself the defect. tune_mask.py and validate_mask.py both default to --day 2026-10-22, the tuning swept three of the nine reaches, and the per-reach IoU from that same fit is what decides which reaches publish an area at all. So the published 0.69 is a goodness-of-fit, the 0.45 publication floor inherits the leakage, and neither was stated anywhere.",
+ "parameters": {
+  "vh_threshold_db": -25.0,
+  "hand_limit_m": 10.0,
+  "vh_floor_db": -30.0
+ },
+ "reproducible": false,
+ "reproducible_note": "The chosen values cannot be reproduced from committed code as it stood when they were set. scripts/tune_mask.py swept VH at -20, -22 and -24 while -25 was written into floodwater.py in the same commit, so the chosen value was outside the swept range; HAND was never swept at all, though floodwater.py asserts that 10 m 'was the best of 10, 15 and 25'; and the script raised AttributeError from 73a539c until 2026-11-05 because it called floodwater.dry_reference, which that commit removed. The sweep has since been repaired and extended to cover both parameters and the production value, but that does not retrospectively justify the numbers in use. VH_FLOOR_DB was not tuned: it rejects the instrument noise floor and changes no pixel between -30 and -25 dB.",
+ "tuning": {
+  "dates": ["2026-10-22"],
+  "date_window_days": 6,
+  "reaches": [
+   "corrientes_goya",
+   "goya_la_paz",
+   "parana_villa_constitucion"
+  ],
+  "reach_note": "These are the three worst-scoring reaches on the river, at 0.48, 0.53 and 0.61. The parameters are global, so fitting them on the hard cases makes the whole product in-sample, not just these three.",
+  "reference": "Sentinel-2 MNDWI > 0, median of the clear scenes within six days either side, inside the footprint those scenes could see",
+  "script": "scripts/tune_mask.py"
+ },
+ "scoring": {
+  "dates": ["2026-10-22"],
+  "reaches": "all nine; eight had a clear optical scene",
+  "script": "scripts/validate_mask.py",
+  "output": "data/mask_skill.json",
+  "in_sample": true,
+  "in_sample_note": "The same date as the tuning, and three of the same reaches. Any figure derived from data/mask_skill.json - including the per-reach IoU, the river-wide 0.69 and the SKILL_FLOOR decision - is in-sample and must be published as such.",
+  "scored_quantity": "total water",
+  "not_scored": [
+   "flood_km2, which is the figure the product is named for",
+   "the fraction of each corridor outside the optical footprint, which runs from 16% to 98%",
+   "water under vegetation, which the optical reference cannot see either"
+  ]
+ },
+ "held_out": {
+  "dates": [],
+  "reaches": [],
+  "note": "Empty. No out-of-sample evaluation has been run. AUDIT/03_validation_and_area.md section A2 specifies the design: a JRC monthly-history set over 1984-2021 for zero temporal leakage, held-out single-date Sentinel-2 and Landsat for currency, and leave-one-out folds for the parameters. Adding a date or reach here asserts that it played no part in choosing the parameters above."
+ }
+}
