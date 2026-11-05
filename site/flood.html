@@ -50,6 +50,7 @@
     <span class="big" id="area">–</span>
     <span class="unit" id="areaCap"></span>
     <p class="say" id="areaNote"></p>
+    <p class="say" id="ageNote"></p>
     <dl class="facts" id="meta" hidden>
       <div><dt data-t="reachLabel"></dt><dd id="reach"></dd></div>
       <div><dt data-t="passLabel"></dt><dd id="passDay"></dd></div>
@@ -70,6 +71,8 @@
 
   <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem;margin-top:18px"
      id="skillLine"></p>
+  <p class="cap measure" data-t="skillCaveat"
+     style="color:var(--ink-soft);font-size:.9rem"></p>
   <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="floorNote"></p>
 
   <section id="withheld" hidden>
@@ -117,17 +120,20 @@ const T = {
     skipLink: "Saltar al contenido",
     viewSpace: "Desde el espacio", viewMap: "Mapa",
     viewToday: "El río hoy", viewMethod: "Método",
-    noticeStrong: "No es un pronóstico oficial.",
-    noticeBody: "Este sitio mide, no avisa. Para alertas y evacuaciones:",
+    noticeStrong: "Esto no es un sistema de alerta.",
+    noticeBody: "Este sitio mide; no avisa, no pronostica y no es un mapa oficial de riesgo. Las alertas, las evacuaciones y los pronósticos oficiales los publica el Instituto Nacional del Agua:",
     officialLink: "Sistema de Alerta Hidrológico del INA",
 
     pickLabel: "Tramo:",
-    areaCap: "km² de agua en este tramo",
-    areaNote: (day, extra, low, lowDay) =>
-      `En la pasada cerrada el ${day}. Son ${extra} km² más que en la pasada más ` +
-      `seca del registro (${low} km², ${lowDay}).`,
-    areaNoteFlat: (day) => `En la pasada cerrada el ${day}.`,
-    reachLabel: "Largo del tramo", passLabel: "Última pasada",
+    areaCap: "km² de agua abierta detectada por radar en este tramo",
+    areaNote: (from_, to, extra, low, lowDay) =>
+      `Compuesto de doce días del ${from_} al ${to}. Son ${extra} km² más que en la ` +
+      `pasada más baja del registro de un año (${low} km², ${lowDay}).`,
+    areaNoteFlat: (from_, to) => `Compuesto de doce días del ${from_} al ${to}.`,
+    ageNote: (n) =>
+      n <= 1 ? "Medición de ayer." :
+      `Medido hace ${n} días. Se actualiza cuando hay una pasada válida, no a diario.`,
+    reachLabel: "Largo del tramo", passLabel: "Ventana medida",
     scoreLabel: "IoU contra agua óptica",
     reachValue: (km) => `${km} km`,
 
@@ -138,6 +144,7 @@ const T = {
     keyWater: "Toda el agua", keyFlood: "Sin el cauce permanente",
     axisKm2: "km²",
 
+    skillCaveat: "El umbral se ajustó contra esa misma fecha, así que esto es qué tan bien ajusta y no una prueba independiente; y se puntúa el agua total, de la cual el cauce permanente es la mayor parte. El agua fuera del cauce, que es la línea punteada de arriba, no se puntuó.",
     skillLine: (iou, recall, precision) =>
       `Este tramo se midió contra agua óptica de Sentinel-2 en una fecha de ` +
       `crecida: encontró el ${recall}% del agua que el óptico ve, y el ${precision}% ` +
@@ -171,17 +178,20 @@ const T = {
     skipLink: "Skip to content",
     viewSpace: "From space", viewMap: "Map",
     viewToday: "The river today", viewMethod: "Method",
-    noticeStrong: "This is not an official forecast.",
-    noticeBody: "This site measures; it does not warn. For alerts and evacuations:",
+    noticeStrong: "This is not an alert system.",
+    noticeBody: "This site measures; it does not warn, does not forecast, and is not an official risk map. Alerts, evacuations and official forecasts are published by Argentina's Instituto Nacional del Agua:",
     officialLink: "INA's hydrological alert system",
 
     pickLabel: "Stretch:",
-    areaCap: "km² of water on this stretch",
-    areaNote: (day, extra, low, lowDay) =>
-      `In the pass closed on ${day}. That is ${extra} km² more than the driest ` +
+    areaCap: "km² of open water detected by radar on this stretch",
+    areaNote: (from_, to, extra, low, lowDay) =>
+      `A twelve-day composite, ${from_} to ${to}. That is ${extra} km² more than the lowest ` +
       `pass on the record (${low} km², ${lowDay}).`,
-    areaNoteFlat: (day) => `In the pass closed on ${day}.`,
-    reachLabel: "Length of reach", passLabel: "Last pass",
+    areaNoteFlat: (from_, to) => `A twelve-day composite, ${from_} to ${to}.`,
+    ageNote: (n) =>
+      n <= 1 ? "Measured yesterday." :
+      `Measured ${n} days ago. Updated when a valid observation becomes available, not daily.`,
+    reachLabel: "Length of reach", passLabel: "Window measured",
     scoreLabel: "IoU against optical water",
     reachValue: (km) => `${km} km`,
 
@@ -192,6 +202,7 @@ const T = {
     keyWater: "All water", keyFlood: "Without the permanent channel",
     axisKm2: "km²",
 
+    skillCaveat: "The threshold was tuned against that same date, so this is goodness-of-fit rather than an independent test; and what is scored is total water, of which the permanent channel is most. The water beyond the channel - the dashed line above - was not scored.",
     skillLine: (iou, recall, precision) =>
       `This stretch was scored against Sentinel-2 optical water on a flood date: ` +
       `it found ${recall}% of the water optical sees, and ${precision}% of what it ` +
@@ -396,6 +407,18 @@ function drawWithheld(rows) {
   document.getElementById("withheld").hidden = rows.length === 0;
 }
 
+// A cycle covers the twelve days behind the date it is published under.
+function minusDays(iso, n) {
+  const d = new Date(iso + "T12:00:00");
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+function daysSince(iso) {
+  const then = new Date(iso + "T12:00:00"), now = new Date();
+  return Math.max(0, Math.round((now - then) / 86400000));
+}
+
 function render(data) {
   const t = T[lang];
   const stretches = data.stretches || [];
@@ -413,15 +436,19 @@ function render(data) {
     const last = water.length - 1;
     document.getElementById("area").textContent = num(Math.round(water[last]));
     document.getElementById("areaCap").textContent = t.areaCap;
+    const windowStart = minusDays(days[last], 11);
+    document.getElementById("ageNote").textContent = t.ageNote(daysSince(days[last]));
     document.getElementById("areaNote").textContent = lowAt === last
-      ? t.areaNoteFlat(longDay(days[last]))
-      : t.areaNote(longDay(days[last]), num(Math.round(water[last] - water[lowAt])),
+      ? t.areaNoteFlat(longDay(windowStart), longDay(days[last]))
+      : t.areaNote(longDay(windowStart), longDay(days[last]),
+                   num(Math.round(water[last] - water[lowAt])),
                    num(Math.round(water[lowAt])), longDay(days[lowAt]));
     document.getElementById("headline").hidden = false;
 
     document.getElementById("reach").textContent =
       t.reachValue(num(Math.round(stretch.river_km || 0)));
-    document.getElementById("passDay").textContent = longDay(days[last]);
+    document.getElementById("passDay").textContent =
+      `${dayLabel(windowStart)} – ${dayLabel(days[last])}`;
     document.getElementById("score").textContent =
       stretch.iou === undefined ? "–" : num(stretch.iou, 2);
     document.getElementById("meta").hidden = false;
