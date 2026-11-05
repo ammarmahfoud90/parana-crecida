@@ -267,6 +267,10 @@ def payload(verdict: Verdict, *, track: dict | None = None,
                 "flood_km2": latest.get("flood_km2"),
                 "driest_day": lowest["day"],
                 "driest_km2": lowest["water_km2"],
+                # The cycles the comparison rests on, not just the middle
+                # one. A ratio against a single pass is a ratio against
+                # whatever that pass happened to miss.
+                "driest_over": lowest.get("over_cycles"),
                 "river_km": flooded.get("river_km"),
                 "stretches": len(flooded.get("stretches") or []),
             }

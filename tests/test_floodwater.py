@@ -47,14 +47,32 @@ DAYS = ["2026-09-10", "2026-09-22", "2026-10-04"]
 GOOD = round(SKILL_FLOOR + 0.2, 2)
 
 
-def write_source(tmp_path: Path, stretches: list[dict]) -> Path:
+def write_source(
+    tmp_path: Path, stretches: list[dict], river: list[dict] | None = None
+) -> Path:
     path = tmp_path / "source.json"
-    path.write_text(json.dumps({
-        "schema": 2, "note": "n", "method": "vh-threshold/hand",
+    payload = {
+        "schema": 3, "note": "n", "method": "vh-threshold/hand",
         "vh_threshold_db": -25.0, "hand_limit_m": 10.0, "window_days": 12,
-        "fetched_on": "2026-10-30", "stretches": stretches,
-    }), encoding="utf-8")
+        "min_coverage": 0.95, "fetched_on": "2026-10-30",
+        "stretches": stretches,
+    }
+    if river is not None:
+        payload["river"] = river
+        payload["union_corridor_km2"] = 8000
+        payload["union_note"] = "measured over the dissolved union"
+    path.write_text(json.dumps(payload), encoding="utf-8")
     return path
+
+
+def union(water, keys, days=None):
+    """A river series as floodwater.rebuild measures it: over the union."""
+    return [
+        {"day": day, "window_start": day, "water_km2": value,
+         "flood_km2": round(value / 2, 1), "seen_km2": 7900.0,
+         "coverage": 0.99, "stretches": sorted(keys)}
+        for day, value in zip(days or DAYS, water)
+    ]
 
 
 def write_skill(tmp_path: Path, scores: dict[str, float | None]) -> Path:
@@ -84,48 +102,136 @@ def row(key: str, water: list[float], days: list[str] | None = None) -> dict:
     }
 
 
-def run(tmp_path, stretches, scores):
+def run(tmp_path, stretches, scores, river=None):
     export_floodwater(
         Passing(),
-        source_path=write_source(tmp_path, stretches),
+        source_path=write_source(tmp_path, stretches, river),
         skill_path=write_skill(tmp_path, scores),
         out_dir=tmp_path,
     )
     return json.loads((tmp_path / "floodwater.json").read_text(encoding="utf-8"))
 
 
-def test_the_river_total_is_the_sum_of_the_published_stretches(tmp_path):
+def test_the_river_total_is_not_the_sum_of_the_published_stretches(tmp_path):
+    """The corridors overlap, so the sum counts the same channel twice.
+
+    Each corridor is a 20 km buffer around a centreline, and neighbouring
+    centrelines meet at a gauge - so every adjacent pair overlaps in a
+    20 km-radius region centred on the river. Over the eight reaches that
+    publish that is 9,889 km2, 17.7% of their summed area, all of it main
+    channel. The whole-river figure is measured once over the dissolved
+    union, and the sum is never used.
+    """
+    payload = run(
+        tmp_path,
+        [row("upper", [100.0, 110.0, 120.0]), row("lower", [200.0, 210.0, 220.0])],
+        {"upper": GOOD, "lower": GOOD},
+        river=union([260.0, 280.0, 300.0], ["upper", "lower"]),
+    )
+    # The union is smaller than the sum, and it is the union that publishes.
+    assert [r["water_km2"] for r in payload["river"]] == [260.0, 280.0, 300.0]
+    assert payload["latest"]["water_km2"] == 300.0
+    assert payload["corridor_km2"] == 8000
+    assert payload["river_unavailable"] is None
+
+
+def test_without_a_union_measurement_no_whole_river_total_publishes(tmp_path):
+    """A figure known to be 17.7% too high is worse than an absent one.
+
+    No arithmetic recovers the union from the per-stretch figures, so a
+    record that predates the union measurement publishes the stretches and
+    refuses the total, with the reason attached.
+    """
     payload = run(tmp_path,
                   [row("upper", [100.0, 110.0, 120.0]), row("lower", [200.0, 210.0, 220.0])],
                   {"upper": GOOD, "lower": GOOD})
-    assert [r["water_km2"] for r in payload["river"]] == [300.0, 320.0, 340.0]
-    assert all(r["complete"] for r in payload["river"])
+    assert payload["river"] == []
+    assert payload["latest"] is None and payload["lowest"] is None
+    assert "union" in payload["river_unavailable"]
+    assert "crecida floodwater" in payload["river_unavailable"]
+    # The stretches are unaffected: each is measured over its own corridor.
+    assert [s["key"] for s in payload["stretches"]] == ["upper", "lower"]
 
 
-def test_a_cycle_missing_a_stretch_is_not_counted_as_a_drop(tmp_path):
-    """A gap must read as a gap, not as the river falling."""
+def test_a_union_total_for_a_different_reach_is_refused(tmp_path):
+    """The publishing set can change; a stale total must not survive it.
+
+    If a reach drops below the skill floor, a total measured while it was
+    still in describes a different river. The set travels with the
+    measurement and has to match.
+    """
     payload = run(
         tmp_path,
-        [row("upper", [100.0, 110.0, 120.0]),
-         row("lower", [200.0, 220.0], days=[DAYS[0], DAYS[2]])],
+        [row("upper", [100.0, 110.0, 120.0]), row("lower", [200.0, 210.0, 220.0])],
         {"upper": GOOD, "lower": GOOD},
+        river=union([260.0, 280.0, 300.0], ["upper", "lower", "delta"]),
     )
-    middle = next(r for r in payload["river"] if r["day"] == DAYS[1])
-    assert middle["complete"] is False
-    assert middle["stretches"] == 1
-    # The incomplete cycle is published, so a reader can see the gap, but it
-    # can never be the headline or the low-water mark.
+    assert payload["river"] == []
+    assert "different set of stretches" in payload["river_unavailable"]
+
+
+def test_a_gap_reads_as_a_gap_not_as_the_river_falling(tmp_path):
+    """A cycle nobody could measure must be absent, never low.
+
+    Summing stretches made this a live hazard: a stretch that did not
+    report counted as zero and the river appeared to drop. The union
+    measurement removes that arithmetic, and the gap survives as a gap -
+    floodwater records it with a reason rather than publishing a figure
+    over ground it did not see.
+    """
+    payload = run(
+        tmp_path,
+        [row("upper", [100.0, 110.0, 120.0]), row("lower", [200.0, 210.0, 220.0])],
+        {"upper": GOOD, "lower": GOOD},
+        # The middle cycle was not measurable, so it is simply not there.
+        river=union([260.0, 300.0], ["upper", "lower"], days=[DAYS[0], DAYS[2]]),
+    )
+    assert [r["day"] for r in payload["river"]] == [DAYS[0], DAYS[2]]
+    # No zero was invented for the missing cycle.
+    assert 0.0 not in [r["water_km2"] for r in payload["river"]]
     assert payload["latest"]["day"] == DAYS[2]
-    assert payload["lowest"]["complete"] is True
-    assert payload["highest"]["complete"] is True
+
+
+def test_no_published_figure_rests_on_a_single_cycle(tmp_path):
+    """The driest pass on the record was one pass, and it had failed.
+
+    The published low was a cycle in which the mask lost half the permanent
+    channel of two adjacent corridors - a 9.8-sigma outlier in a quantity
+    otherwise stable to 1.5% - and the front page measured both of its
+    comparisons against it. min() over a series with one bad row is not a
+    statistic, so each anchor is a median over several cycles and carries
+    the cycles it came from.
+    """
+    from parana_crecida.export import ANCHOR_CYCLES
+
+    payload = run(
+        tmp_path,
+        [row("upper", [100.0, 110.0, 120.0]), row("lower", [200.0, 210.0, 220.0])],
+        {"upper": GOOD, "lower": GOOD},
+        river=union([100.0, 260.0, 270.0, 280.0, 300.0], ["upper", "lower"],
+                    days=[*DAYS, "2026-10-16", "2026-10-28"]),
+    )
+    low = payload["lowest"]
+    # The three lowest are 100, 260 and 270; the anchor is their median, so
+    # the one collapsed cycle sets the window without setting the figure.
+    assert low["water_km2"] != 100.0, "the anchor took the one failed cycle"
+    assert low["water_km2"] == 260.0
+    assert len(low["over_cycles"]) == ANCHOR_CYCLES
+    # The cycles behind the anchor travel with it, the rejected one included,
+    # so a reader can see what the comparison rests on.
+    assert low["over_cycles"] == ["2026-09-10", "2026-09-22", "2026-10-04"]
+    # And the high end is anchored the same way.
+    assert payload["highest"]["water_km2"] == 280.0
+    assert len(payload["highest"]["over_cycles"]) == ANCHOR_CYCLES
 
 
 def test_a_stretch_that_was_never_scored_is_withheld(tmp_path):
     """Plausible is not measured. The Delta is the reason this exists."""
     payload = run(tmp_path,
                   [row("upper", [100.0, 110.0, 120.0]), row("delta", [900.0, 900.0, 900.0])],
-                  {"upper": GOOD})
-    assert [r["water_km2"] for r in payload["river"]] == [100.0, 110.0, 120.0]
+                  {"upper": GOOD},
+                  river=union([95.0, 105.0, 115.0], ["upper"]))
+    assert [r["water_km2"] for r in payload["river"]] == [95.0, 105.0, 115.0]
     assert [s["key"] for s in payload["stretches"]] == ["upper"]
     assert [w["key"] for w in payload["withheld"]] == ["delta"]
     assert "optical" in payload["withheld"][0]["withheld"]

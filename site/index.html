@@ -156,6 +156,7 @@ const T = {
     noticeBody: "Este sitio mide, no avisa. Para alertas y evacuaciones:",
     officialLink: "Sistema de Alerta Hidrológico del INA",
 
+    riverUnavailable: "La cifra del río entero no se está publicando: se mide una sola vez sobre la unión de los corredores, que se superponen, y esa medición todavía no está hecha. Los tramos de abajo sí: cada uno se mide sobre su propio corredor.",
     areaCap: "km² del valle del Paraná bajo agua",
     areaNote: (day, extra, low, lowDay) =>
       `En la última pasada completa del satélite, cerrada el ${day}. Son ${extra} km² ` +
@@ -241,6 +242,7 @@ const T = {
     noticeBody: "This site measures; it does not warn. For alerts and evacuations:",
     officialLink: "INA's hydrological alert system",
 
+    riverUnavailable: "The whole-river figure is not being published: it is measured once over the union of the corridors, which overlap, and that measurement has not been made yet. The stretches below are unaffected — each is measured over its own corridor.",
     areaCap: "km² of the Paraná valley under water",
     areaNote: (day, extra, low, lowDay) =>
       `In the satellite's last complete pass, closed on ${day}. That is ${extra} km² ` +
@@ -525,8 +527,19 @@ function drawSkill(skill) {
 
 function render(data) {
   const t = T[lang];
-  const rows = (data.river || []).filter((r) => r.complete);
+  // Every row here is one measurement over the dissolved union of the
+  // corridors, so there is no longer a "complete" flag to filter on: a
+  // cycle that could not be measured in full is absent rather than low.
+  const rows = data.river || [];
   const latest = data.latest, low = data.lowest;
+
+  // The whole-river figure is withheld rather than summed from the
+  // stretches, which overlap. Say so instead of showing an empty page.
+  const notice = document.getElementById("error");
+  if (data.river_unavailable) {
+    notice.textContent = T[lang].riverUnavailable;
+    notice.hidden = false;
+  }
 
   if (latest) {
     document.getElementById("area").textContent = num(Math.round(latest.water_km2));

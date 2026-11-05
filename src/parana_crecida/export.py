@@ -720,6 +720,71 @@ def export_exposure(
 SKILL_FLOOR = 0.45
 
 
+#: How many of the lowest cycles the "driest pass" comparison is taken over.
+#: One was not enough. The published low was a single cycle in which the
+#: mask lost half the permanent channel of two adjacent corridors - a
+#: 9.8-sigma outlier in a quantity otherwise stable to 1.5% - and the front
+#: page's "+87%" and "5.9 times as much" were both measured against it.
+#: ``min`` over a series with one bad row is not a statistic. Three cycles
+#: and the median of them survives one such failure; it does not survive
+#: two, which is what the coverage test in floodwater is now for.
+ANCHOR_CYCLES = 3
+
+
+def _anchor_cycles(river: list[dict]) -> dict:
+    """``latest``, ``lowest`` and ``highest``, none of them a single cycle.
+
+    ``lowest`` and ``highest`` are the median of the ``ANCHOR_CYCLES``
+    lowest and highest cycles rather than the extreme one, and each carries
+    the days it was taken from so a reader can see what it rests on.
+    """
+    if not river:
+        return {"latest": None, "lowest": None, "highest": None}
+
+    def anchor(rows: list[dict]) -> dict:
+        taken = rows[:ANCHOR_CYCLES]
+        middle = taken[len(taken) // 2]
+        return {
+            "day": middle["day"],
+            "water_km2": middle["water_km2"],
+            "flood_km2": middle["flood_km2"],
+            "over_cycles": [r["day"] for r in sorted(taken, key=lambda r: r["day"])],
+        }
+
+    by_water = sorted(river, key=lambda r: r["water_km2"])
+    return {
+        "latest": river[-1],
+        "lowest": anchor(by_water),
+        "highest": anchor(list(reversed(by_water))),
+    }
+
+
+def _river_series(payload: dict, publishing: set[str]) -> tuple[list[dict], str | None]:
+    """The union-measured river series, or nothing and the reason why.
+
+    A stored row is used only when it was measured over the same set of
+    stretches that publishes now, so a change to the publishing rule cannot
+    leave a whole-river total standing for a reach that no longer belongs
+    in it.
+    """
+    rows = payload.get("river")
+    if not rows:
+        return [], (
+            "the whole-river total is measured over the dissolved union of the "
+            "corridors, which this record does not yet carry; the corridors "
+            "overlap by 17.7% of their summed area, so the stretches below "
+            "cannot be added up. Run `crecida floodwater` to measure it."
+        )
+    usable = [r for r in rows if set(r.get("stretches") or []) == publishing]
+    if not usable:
+        return [], (
+            "the whole-river total was measured over a different set of "
+            "stretches from the one publishing now, so it does not describe "
+            "this reach. Run `crecida floodwater` to measure it again."
+        )
+    return sorted(usable, key=lambda r: r["day"]), None
+
+
 def _mask_skill(path: Path | None = None) -> dict:
     path = path or Path("data/mask_skill.json")
     if not path.exists():
@@ -798,32 +863,26 @@ def export_floodwater(
         log.info("nothing scored well enough to publish")
         return None
 
-    # One row per cycle, across the river.
-    by_day: dict[str, dict[str, float]] = {}
-    for stretch in stretches:
-        days = stretch.get("days") or []
-        water = stretch.get("water_km2") or []
-        flood = stretch.get("flood_km2") or []
-        for index, day in enumerate(days):
-            if index >= len(water):
-                continue
-            row = by_day.setdefault(day, {"water_km2": 0.0, "flood_km2": 0.0, "stretches": 0})
-            row["water_km2"] += water[index]
-            row["flood_km2"] += flood[index] if index < len(flood) else 0.0
-            row["stretches"] += 1
-
-    full = len(stretches)
-    river = [
-        {
-            "day": day,
-            "water_km2": round(row["water_km2"], 1),
-            "flood_km2": round(row["flood_km2"], 1),
-            "stretches": int(row["stretches"]),
-            "complete": int(row["stretches"]) == full,
-        }
-        for day, row in sorted(by_day.items())
-    ]
-    complete = [r for r in river if r["complete"]]
+    # The river-wide series, taken from the union measurement rather than
+    # summed across stretches.
+    #
+    # The corridors are 20 km buffers around centrelines that meet at a
+    # gauge, so each neighbouring pair overlaps in a 20 km-radius region
+    # centred on the river - 9,889 km2 over the eight that publish, 17.7%
+    # of their summed area, all of it channel. Adding the per-stretch
+    # figures counted that ground twice, in the headline, in the map frame
+    # captions and in the film captions alike. Two of those agreeing with
+    # each other was once read as a cross-check; they agreed because they
+    # made the same mistake.
+    #
+    # There is no arithmetic that recovers the union figure from the
+    # per-stretch ones, so where the union has not been measured this
+    # publishes no river-wide total at all and says why. A figure known to
+    # be 7% too high is worse than an absent one, and the stretches below
+    # are unaffected: each is measured over its own corridor, which is the
+    # geometry its validation score belongs to.
+    river, unavailable = _river_series(payload, {s["key"] for s in stretches})
+    anchors = _anchor_cycles(river)
 
     out = {
         "schema": payload.get("schema", 2),
@@ -832,23 +891,28 @@ def export_floodwater(
         "vh_threshold_db": payload.get("vh_threshold_db"),
         "hand_limit_m": payload.get("hand_limit_m"),
         "window_days": payload.get("window_days"),
+        "window": payload.get("window"),
+        "min_coverage": payload.get("min_coverage"),
         "skill": skill or payload.get("skill") or fw.SKILL,
         "skill_floor": SKILL_FLOOR,
         "fetched_on": payload.get("fetched_on"),
-        "corridor_km2": sum(s.get("corridor_km2") or 0 for s in stretches),
+        "corridor_km2": payload.get("union_corridor_km2"),
+        "corridor_note": payload.get("union_note"),
         "river_km": round(sum(s.get("river_km") or 0 for s in stretches), 1),
         "withheld": withheld,
         "river": river,
-        "latest": complete[-1] if complete else None,
-        "lowest": min(complete, key=lambda r: r["water_km2"]) if complete else None,
-        "highest": max(complete, key=lambda r: r["water_km2"]) if complete else None,
+        "river_unavailable": unavailable,
+        "river_gaps": payload.get("river_gaps") or [],
+        **anchors,
         "stretches": stretches,
     }
     path = out_dir / FLOODWATER
     write_json(path, out)
+    if unavailable:
+        log.warning("no whole-river total: %s", unavailable)
     log.info(
-        "exported %d stretches over %d cycles (%d complete), %d withheld -> %s",
-        len(stretches), len(river), len(complete), len(withheld), path,
+        "exported %d stretches, %d union-measured cycles, %d withheld -> %s",
+        len(stretches), len(river), len(withheld), path,
     )
     return ExportResult(
         path=path,

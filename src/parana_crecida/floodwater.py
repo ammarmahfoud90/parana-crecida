@@ -235,6 +235,29 @@ def area_km2(corridor, mask) -> float | None:
     return None if value is None else float(value) / 1e6
 
 
+def union_geometry(stretches):
+    """One geometry covering every corridor, with the overlaps dissolved.
+
+    The corridors are 20 km buffers around centrelines that meet at a
+    gauge, so each neighbouring pair overlaps in a 20 km-radius region
+    centred on the river - between 1,328 and 1,651 km2 per junction, and
+    9,889 km2 over the eight that publish, which is 17.7% of their summed
+    area. Every km2 of that overlap holds main channel.
+
+    So a river-wide figure cannot be the sum of the per-stretch figures,
+    and was: the headline, the map frame captions and the film captions all
+    added up areas measured over ground that two corridors both claim. The
+    per-stretch numbers are still measured over whole corridors, because
+    that is the geometry they were validated on; the river-wide number is
+    measured here, once, over the union.
+    """
+    import ee
+
+    return ee.Geometry.MultiPolygon(
+        [fl.corridor_geometry(s) for s in stretches]
+    ).dissolve(maxError=1000)
+
+
 def observed_km2(corridor, start: date, end: date) -> float | None:
     """How much of the corridor the radar actually saw over the window.
 
@@ -473,8 +496,83 @@ def rebuild(
                 g for g in (row.get("gaps") or []) if g.get("day", "") >= row["days"][0]
             ]
 
+    # -- the river, measured once over the dissolved union ----------------
+    #
+    # Not the sum of the rows above. See union_geometry for why: the
+    # corridors overlap by 9,889 km2 and every km2 of it is channel.
+    #
+    # Measured over the union of the stretches that publish, which is the
+    # same set the map and the film draw, and the set is stored with each
+    # row so a later change to the publishing rule cannot leave a total
+    # standing for a reach that no longer belongs in it.
+    from .riverfilm import published_keys
+
+    keys = sorted(published_keys())
+    publishing = [s for s in fl.load_corridors() if s.key in keys]
+    river = payload.get("river") or []
+    union = union_geometry(publishing)
+    union_km2 = round(float(union.area(1000).divide(1e6).getInfo()))
+
+    attempted = [r["day"] for r in river] + [
+        g["day"] for g in (payload.get("river_gaps") or []) if g.get("day")
+    ]
+    for end in _grid(attempted, last, window_days):
+        start = end - timedelta(days=window_days - 1)
+        try:
+            seen = observed_km2(union, start, end)
+            water = area_km2(union, water_mask(union, start, end))
+            flood = area_km2(union, flood_only(union, start, end))
+        except Exception as error:  # pragma: no cover - Earth Engine
+            log.warning("river %s: %s", end, error)
+            continue
+        reason = None
+        coverage = None
+        if water is None or flood is None or seen is None:
+            reason = "nothing observed"
+        else:
+            coverage = seen / union_km2 if union_km2 else None
+            if coverage is not None and coverage < min_coverage:
+                reason = "river not fully observed"
+        if reason:
+            log.warning("river %s: %s; recorded as a gap", end, reason)
+            payload.setdefault("river_gaps", []).append({
+                "day": end.isoformat(), "reason": reason,
+                "coverage": None if coverage is None else round(coverage, 3),
+            })
+            continue
+        river.append({
+            "day": end.isoformat(),
+            "window_start": start.isoformat(),
+            "water_km2": round(water, 1),
+            "flood_km2": round(flood, 1),
+            "seen_km2": round(seen, 1),
+            "coverage": None if coverage is None else round(coverage, 3),
+            "stretches": keys,
+        })
+        log.info("river %s: %.0f km2 water, %.0f beyond the channel, "
+                 "%.0f%% of %d km2 observed",
+                 end, water, flood, 100 * (coverage or 0), union_km2)
+
+    river = river[-keep:]
+    if river:
+        payload["river_gaps"] = [
+            g for g in (payload.get("river_gaps") or [])
+            if g.get("day", "") >= river[0]["day"]
+        ]
+
     payload.update({
-        "schema": 2,
+        "schema": 3,
+        "river": river,
+        "union_corridor_km2": union_km2,
+        "union_keys": keys,
+        "union_note": ("river[] is measured once over the dissolved union of "
+                       "the publishing corridors, not summed from the "
+                       "stretches. The corridors are 20 km buffers that meet "
+                       "at a gauge, so neighbours overlap by 1,328-1,651 km2 "
+                       "each - 9,889 km2 in all, 17.7% of their summed area, "
+                       "every km2 of it channel. union_corridor_km2 is the "
+                       "area of that union; the stretches' own corridor_km2 "
+                       "must not be added together."),
         "note": ("Open water from Sentinel-1 VH below -25 dB, bounded by height "
                  "above nearest drainage. One threshold for the whole river, "
                  "tuned against Sentinel-2 optical water during a flood rather "
