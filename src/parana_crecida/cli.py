@@ -912,9 +912,16 @@ def rainfall(
 )
 @click.option("--max-age-days", default=3, show_default=True)
 @click.option("--max-rain-age-days", default=10, show_default=True)
+@click.option(
+    "--max-water-age-days", default=20, show_default=True,
+    help="How old the newest satellite measurement may be. A cycle lands "
+         "every 12 days and takes a day or two to reach Earth Engine, so "
+         "14 is normal and 20 leaves room for one missed run.",
+)
 @report_option
 def freshness(
-    site_data: Path, max_age_days: int, max_rain_age_days: int, report: Path | None
+    site_data: Path, max_age_days: int, max_rain_age_days: int,
+    max_water_age_days: int, report: Path | None
 ) -> None:
     """Fail if what is published has gone stale.
 
@@ -984,24 +991,89 @@ def freshness(
                     f"{max_age_days} allowed"
                 )
 
-    # The water surface, which is the product. It was the superseded
-    # flooded.json until the mask was replaced; a staleness gate pointed at
-    # a file nothing publishes any more is a green light for an empty page.
+    # The water surface, which is the product.
+    #
+    # This used to test `fetched_on`, and `fetched_on` is bumped on every
+    # successful run whether or not a cycle was measured - deliberately, so
+    # that "checked today, the newest pass is still last week's" counts as
+    # a current answer. The cost is that the gate could not tell eight days
+    # from eighty: it read 1 day old while the newest measurement was 8 and
+    # heading for 14, and a reach that stopped advancing would never have
+    # shown up, because per-cycle Earth Engine failures are logged and not
+    # re-raised.
+    #
+    # So both are tested. `fetched_on` answers "did anything look?" and the
+    # newest cycle answers "when was the river last measured?", which is
+    # the question a reader is actually asking.
+    today = datetime.now(DEFAULT_TZ).date()
+
+    def age_of(value: object) -> int | None:
+        try:
+            return (today - date.fromisoformat(str(value))).days
+        except (TypeError, ValueError):
+            return None
+
     water = site_data / "floodwater.json"
     if water.exists():
         flood = _json.loads(water.read_text(encoding="utf-8")) or {}
         if flood.get("stretches"):
-            fetched = flood.get("fetched_on")
-            stale = None
-            if fetched:
-                stale = (datetime.now(DEFAULT_TZ).date()
-                         - date.fromisoformat(fetched)).days
-            rep.say(f"water:      {fetched} ({stale} days old)")
-            if stale is None or stale > max_rain_age_days:
+            looked = age_of(flood.get("fetched_on"))
+            rep.say(f"water run:  {flood.get('fetched_on')} ({looked} days old)")
+            if looked is None or looked > max_rain_age_days:
                 problems.append(
-                    f"the water surface is {stale} days old, over the "
-                    f"{max_rain_age_days} allowed"
+                    f"the water record was last touched {looked} days ago, "
+                    f"over the {max_rain_age_days} allowed"
                 )
+
+            series = flood.get("river") or []
+            newest = series[-1]["day"] if series else None
+            measured = age_of(newest)
+            rep.say(f"water pass: {newest} ({measured} days old, "
+                    f"{len(series)} cycles)")
+            if not series:
+                # Not stale, but not publishable either: the whole-river
+                # figure is withheld and the page says so.
+                rep.say("            no whole-river total is being published: "
+                        f"{flood.get('river_unavailable')}")
+                problems.append(
+                    "no whole-river total is published; the union measurement "
+                    "is missing or does not match the publishing reaches"
+                )
+            elif measured is None or measured > max_water_age_days:
+                problems.append(
+                    f"the newest satellite measurement is {measured} days "
+                    f"old, over the {max_water_age_days} allowed; a cycle "
+                    "should land every 12 days"
+                )
+            for gap in flood.get("river_gaps") or []:
+                rep.say(f"            gap {gap.get('day')}: {gap.get('reason')}")
+
+    # The renders, which carry no staleness field of their own and were
+    # gated by nothing. They guard themselves on the cycle they last drew,
+    # so they cannot be ahead of the series - but they can silently fall
+    # behind it, and the map's water overlay is the second most prominent
+    # thing on the site.
+    for name, label, field in (
+        ("map_frames.json", "map frames", "generated_for"),
+        ("river_film.json", "film      ", "generated_for"),
+        ("track.json", "crest     ", "as_of"),
+    ):
+        path = site_data / name
+        if not path.exists():
+            # Absent is a different thing from stale, and this command is
+            # for stale. The renders need an Earth Engine credential, which
+            # a deployment may legitimately not have; the page shows no
+            # overlay and says so rather than the run going red for ever.
+            rep.say(f"{label}: not published")
+            continue
+        payload = _json.loads(path.read_text(encoding="utf-8")) or {}
+        drawn = age_of(payload.get(field))
+        rep.say(f"{label}: {payload.get(field)} ({drawn} days old)")
+        if drawn is None or drawn > max_water_age_days:
+            problems.append(
+                f"{name} is {drawn} days old, over the "
+                f"{max_water_age_days} allowed"
+            )
 
     rep.say()
     if problems:

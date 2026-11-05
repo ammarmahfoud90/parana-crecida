@@ -303,3 +303,70 @@ def test_freshness_fails_when_a_map_layer_is_not_published(runner, tmp_path):
     assert result.exit_code != 0
     assert "map layers missing" in result.output
     assert "gauges.geojson" in result.output
+
+
+def test_freshness_fails_when_the_newest_measurement_is_old(runner, tmp_path):
+    """fetched_on answers "did anything look?", not "when was it measured?".
+
+    rebuild() bumps fetched_on on every successful run whether or not a
+    cycle was added - deliberately - so the old gate read 1 day old while
+    the newest satellite measurement was 8 days old and heading for 14. It
+    could not tell eight days from eighty, and a reach that stopped
+    advancing would never have surfaced, because per-cycle Earth Engine
+    failures are logged and not re-raised.
+    """
+    import json as _json
+
+    site = write_site(tmp_path)
+    (site / "floodwater.json").write_text(_json.dumps({
+        "fetched_on": date.today().isoformat(),      # looked today
+        "stretches": [{"key": "upper"}],
+        "river": [{"day": (date.today() - timedelta(days=90)).isoformat(),
+                   "water_km2": 100.0, "flood_km2": 50.0}],
+    }), encoding="utf-8")
+
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "newest satellite measurement" in result.output
+
+
+def test_freshness_fails_when_no_whole_river_total_publishes(runner, tmp_path):
+    """An absent total is honest, and still has to reach somebody."""
+    import json as _json
+
+    site = write_site(tmp_path)
+    (site / "floodwater.json").write_text(_json.dumps({
+        "fetched_on": date.today().isoformat(),
+        "stretches": [{"key": "upper"}],
+        "river": [],
+        "river_unavailable": "no union measurement yet",
+    }), encoding="utf-8")
+
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "no whole-river total" in result.output
+
+
+def test_freshness_fails_on_a_stale_render(runner, tmp_path):
+    """The map's water overlay was gated by nothing at all."""
+    import json as _json
+
+    site = write_site(tmp_path)
+    (site / "map_frames.json").write_text(_json.dumps({
+        "generated_for": (date.today() - timedelta(days=60)).isoformat(),
+    }), encoding="utf-8")
+
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code != 0
+    assert "map_frames.json" in result.output
+
+
+def test_freshness_tolerates_renders_that_were_never_built(runner, tmp_path):
+    """They need an Earth Engine credential a deployment may not have.
+
+    Absent is a different thing from stale, and this command is for stale.
+    """
+    site = write_site(tmp_path)
+    result = runner.invoke(main, ["freshness", "--site-data", str(site)])
+    assert result.exit_code == 0, result.output
+    assert "map frames: not published" in result.output
