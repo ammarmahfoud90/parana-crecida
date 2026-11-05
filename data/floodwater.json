@@ -1,6 +1,6 @@
 {
- "schema": 2,
- "note": "Open water from Sentinel-1 VH below -25 dB, bounded by height above nearest drainage. One threshold for the whole river, tuned against Sentinel-2 optical water during a flood rather than against the channel at low flow. water_km2 is all water; flood_km2 excludes the permanent channel.",
+ "schema": 3,
+ "note": "Open water from Sentinel-1 VH below -25 dB and above the -30 dB noise floor, bounded by height above nearest drainage. One threshold for the whole river, tuned against Sentinel-2 optical water during a flood rather than against the channel at low flow. water_km2 is all water; flood_km2 excludes the permanent channel.",
  "method": "vh-threshold/hand",
  "vh_threshold_db": -25.0,
  "hand_limit_m": 10.0,
@@ -18,7 +18,7 @@
    "iou": 0.59
   }
  },
- "fetched_on": "2026-11-04",
+ "fetched_on": "2026-11-05",
  "stretches": [
   {
    "key": "puerto_iguazu_libertador",
@@ -126,7 +126,9 @@
     17.3,
     23.8,
     26.8
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "libertador_posadas",
@@ -234,7 +236,9 @@
     11.5,
     35.3,
     26.1
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "posadas_ita_ibate",
@@ -342,7 +346,9 @@
     166.3,
     155.7,
     630.3
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "ita_ibate_corrientes",
@@ -450,7 +456,9 @@
     193.3,
     187.3,
     796.3
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "corrientes_goya",
@@ -558,7 +566,9 @@
     115.0,
     214.4,
     1043.4
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "goya_la_paz",
@@ -666,7 +676,9 @@
     313.2,
     301.2,
     801.0
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "la_paz_parana",
@@ -774,7 +786,9 @@
     303.7,
     185.8,
     286.9
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "parana_villa_constitucion",
@@ -882,7 +896,9 @@
     751.4,
     621.7,
     691.1
-   ]
+   ],
+   "observation": [],
+   "gaps": []
   },
   {
    "key": "villa_constitucion_ibicuy",
@@ -990,8 +1006,587 @@
     232.4,
     381.5,
     390.0
+   ],
+   "observation": [],
+   "gaps": []
+  }
+ ],
+ "permanent_water": "JRC occurrence > 90, or JRC yearly water class 3 in the 2021 bajante",
+ "river_gaps": [],
+ "river": [
+  {
+   "day": "2025-11-08",
+   "window_start": "2025-10-28",
+   "water_km2": 2826.1,
+   "flood_km2": 1087.2,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2025-11-20",
+   "window_start": "2025-11-09",
+   "water_km2": 2497.5,
+   "flood_km2": 556.1,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2025-12-02",
+   "window_start": "2025-11-21",
+   "water_km2": 2489.6,
+   "flood_km2": 828.4,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2025-12-14",
+   "window_start": "2025-12-03",
+   "water_km2": 2415.2,
+   "flood_km2": 575.9,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2025-12-26",
+   "window_start": "2025-12-15",
+   "water_km2": 2387.3,
+   "flood_km2": 376.4,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-01-07",
+   "window_start": "2025-12-27",
+   "water_km2": 2719.7,
+   "flood_km2": 708.6,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-01-19",
+   "window_start": "2026-01-08",
+   "water_km2": 2310.2,
+   "flood_km2": 375.6,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-01-31",
+   "window_start": "2026-01-20",
+   "water_km2": 2175.2,
+   "flood_km2": 349.3,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-02-12",
+   "window_start": "2026-02-01",
+   "water_km2": 2219.1,
+   "flood_km2": 412.3,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-02-24",
+   "window_start": "2026-02-13",
+   "water_km2": 2331.2,
+   "flood_km2": 339.2,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-03-08",
+   "window_start": "2026-02-25",
+   "water_km2": 2347.9,
+   "flood_km2": 379.3,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-03-20",
+   "window_start": "2026-03-09",
+   "water_km2": 2295.8,
+   "flood_km2": 398.9,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-04-01",
+   "window_start": "2026-03-21",
+   "water_km2": 2280.7,
+   "flood_km2": 254.1,
+   "seen_km2": 55674.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-04-13",
+   "window_start": "2026-04-02",
+   "water_km2": 2241.5,
+   "flood_km2": 305.6,
+   "seen_km2": 55674.1,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-04-25",
+   "window_start": "2026-04-14",
+   "water_km2": 2493.4,
+   "flood_km2": 360.1,
+   "seen_km2": 55674.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-05-07",
+   "window_start": "2026-04-26",
+   "water_km2": 2560.9,
+   "flood_km2": 452.4,
+   "seen_km2": 55674.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-05-19",
+   "window_start": "2026-05-08",
+   "water_km2": 2455.0,
+   "flood_km2": 622.4,
+   "seen_km2": 55674.4,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-05-31",
+   "window_start": "2026-05-20",
+   "water_km2": 2256.1,
+   "flood_km2": 572.6,
+   "seen_km2": 55674.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-06-12",
+   "window_start": "2026-06-01",
+   "water_km2": 2525.8,
+   "flood_km2": 499.7,
+   "seen_km2": 55674.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-06-24",
+   "window_start": "2026-06-13",
+   "water_km2": 2247.5,
+   "flood_km2": 446.2,
+   "seen_km2": 55673.7,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-07-06",
+   "window_start": "2026-06-25",
+   "water_km2": 3849.6,
+   "flood_km2": 1701.1,
+   "seen_km2": 55674.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-07-18",
+   "window_start": "2026-07-07",
+   "water_km2": 3325.5,
+   "flood_km2": 1297.6,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-07-30",
+   "window_start": "2026-07-19",
+   "water_km2": 2735.9,
+   "flood_km2": 740.6,
+   "seen_km2": 55673.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-08-11",
+   "window_start": "2026-07-31",
+   "water_km2": 3135.7,
+   "flood_km2": 900.6,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-08-23",
+   "window_start": "2026-08-12",
+   "water_km2": 2955.6,
+   "flood_km2": 832.4,
+   "seen_km2": 55673.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-09-04",
+   "window_start": "2026-08-24",
+   "water_km2": 2699.6,
+   "flood_km2": 667.2,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-09-16",
+   "window_start": "2026-09-05",
+   "water_km2": 3413.9,
+   "flood_km2": 1270.9,
+   "seen_km2": 55673.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-09-28",
+   "window_start": "2026-09-17",
+   "water_km2": 3206.8,
+   "flood_km2": 1391.7,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-10-10",
+   "window_start": "2026-09-29",
+   "water_km2": 3319.7,
+   "flood_km2": 1169.9,
+   "seen_km2": 55673.1,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-10-22",
+   "window_start": "2026-10-11",
+   "water_km2": 3764.4,
+   "flood_km2": 1753.6,
+   "seen_km2": 55672.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-11-03",
+   "window_start": "2026-10-23",
+   "water_km2": 4538.6,
+   "flood_km2": 2775.9,
+   "seen_km2": 55673.4,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
    ]
   }
  ],
- "permanent_water": "JRC occurrence > 90, or JRC yearly water class 3 in the 2021 bajante"
+ "union_corridor_km2": 55836,
+ "union_keys": [
+  "corrientes_goya",
+  "goya_la_paz",
+  "ita_ibate_corrientes",
+  "la_paz_parana",
+  "libertador_posadas",
+  "parana_villa_constitucion",
+  "posadas_ita_ibate",
+  "puerto_iguazu_libertador"
+ ],
+ "union_note": "river[] is measured once over the dissolved union of the publishing corridors, not summed from the stretches. The corridors are 20 km buffers that meet at a gauge, so neighbours overlap by 1,328-1,651 km2 each - 9,889 km2 in all, 17.7% of their summed area, every km2 of it channel. union_corridor_km2 is the area of that union; the stretches' own corridor_km2 must not be added together.",
+ "vh_floor_db": -30.0,
+ "window": "Window ends are grid dates, not acquisition dates: the grid is a sequence of 12-day bins whose phase comes from whenever this series was first built. Each cycle's observation block carries the window start and end, the acquisition dates inside it, the scene count, the relative orbits and the platforms.",
+ "min_coverage": 0.95,
+ "coverage_note": "A cycle publishes a figure only where at least 95% of the corridor was observed. Below that it is recorded in the stretch's gaps list with its reason, because unobserved ground contributes no area and would read as a river that had shrunk."
 }

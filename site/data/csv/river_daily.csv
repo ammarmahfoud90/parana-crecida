@@ -2337,7 +2337,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-01,26690,Confluencia,main,,26267.9,m3/s,94.4,bad_snap flow
 2026-11-02,26690,Confluencia,main,,25210.3,m3/s,95.1,bad_snap flow
 2026-11-03,26690,Confluencia,main,,25789.9,m3/s,96.1,bad_snap flow
-2026-11-04,26690,Confluencia,main,,24246.0,m3/s,95.2,bad_snap flow
+2026-11-04,26690,Confluencia,main,,24828.0,m3/s,95.7,bad_snap flow
 2026-05-09,26261,Corrientes,main,659.8,2.9,m,29.7,
 2026-05-10,26261,Corrientes,main,659.8,2.92,m,31.3,
 2026-05-11,26261,Corrientes,main,659.8,2.88,m,31.0,

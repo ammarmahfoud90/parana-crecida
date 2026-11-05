@@ -1,28 +1,32 @@
-export - 2026-11-04T23:26:54-03:00
+export - 2026-11-05T17:16:44-03:00
 
-  [ok  ] rows_present: 17445 observation rows
+  [ok  ] rows_present: 17491 observation rows
   [ok  ] no_null_fields: 0 rows with a null field
   [ok  ] values_are_finite: 0 rows that are NaN or infinite
   [ok  ] no_duplicate_days: no gauge has two rows for one day
-  [ok  ] no_future_days: newest reading is not after 2026-11-04
+  [ok  ] no_future_days: newest reading is not after 2026-11-05
   [ok  ] values_in_sane_range: no series is systematically outside its unit's range
   [warn] no_isolated_outliers: 1 series carry isolated out-of-range readings
   [ok  ] threshold_units_match: every threshold is in the same unit as its gauge
   [ok  ] required_gauges_present: all 13 tier-1 gauges have data
-  [ok  ] data_is_fresh: newest reading is 2026-11-03 (1 days old)
+  [ok  ] data_is_fresh: newest reading is 2026-11-04 (1 days old)
   [ok  ] latest_within_record: every latest reading sits within its gauge's own record
-  [ok  ] thresholds_loaded: 16 gauges have official alert or evacuation levels
+  [ok  ] thresholds_loaded: 15 gauges have official alert or evacuation levels
+  [ok  ] water_record_present: 9 stretches measured
+  [ok  ] water_series_aligned: every stretch's days, water and flood series are the same length
+  [ok  ] flood_within_water: flood water never exceeds all water
+  [ok  ] water_within_corridor: no stretch reports more water than its corridor holds
+  [ok  ] river_measured_over_the_union: the whole river is measured over the dissolved corridor union
 
 8 stretches of water surface -> site/data/floodwater.json
-8452 rows -> site/data/csv/river_daily.csv
+8450 rows -> site/data/csv/river_daily.csv
 248 rows -> site/data/csv/flooded_area.csv
 12 rows -> site/data/csv/travel_times.csv
-11 arrival projections -> site/data/track.json
+10 arrival projections -> site/data/track.json
 22 anchors on the river line -> site/data/river_stage.json
-9 river stretches -> site/data/flooded.json
 7 driver gauges -> site/data/drivers.json
 24 chain gauges -> site/data/wave.json
 37 gauges -> site/data/river_today.json
-16 carry official alert/evacuation lines
-newest reading: 2026-11-03
+15 carry official alert/evacuation lines
+newest reading: 2026-11-04
 warnings: no_isolated_outliers
