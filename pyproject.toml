@@ -42,3 +42,10 @@ ina-a5 = { path = "packages/ina-a5", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "packages/ina-a5/tests"]
+# The automated suite is offline and deterministic. Anything that needs a
+# credential, quota or a live service carries one of these markers and is
+# skipped unless --run-external is given; see tests/conftest.py.
+markers = [
+    "needs_ee: needs an Earth Engine credential and quota",
+    "needs_network: needs to reach a live service",
+]
