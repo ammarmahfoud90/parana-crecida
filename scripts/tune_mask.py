@@ -29,6 +29,38 @@ LOG = logging.getLogger("tune")
 
 PAIR_DAYS = 4
 
+#: The 2021 bajante, the lowest Parana in 77 years: water present then is
+#: channel. The same window the per-stretch VV thresholds were calibrated
+#: against, so the two methods are compared on one baseline.
+DRY = (date(2021, 8, 1), date(2021, 9, 15))
+
+
+def dry_reference(corridor):
+    """Median VH over the bajante, per pixel.
+
+    This lived in ``parana_crecida.floodwater`` and was removed in 73a539c
+    when the change-detection trial was rejected. The call site here
+    survived, so this script has raised AttributeError ever since and the
+    IoU range that rejected change detection - 0.38 to 0.45 - has not been
+    reproducible from the repository. It is restored here rather than in
+    the production module, because it is exploratory and nothing that
+    publishes uses it.
+
+    A median is taken rather than a mean: in dB the two are not the same
+    operation, and only the median survives the log transform unchanged.
+    """
+    import ee
+
+    from parana_crecida import flooded as fl
+    from parana_crecida import floodwater as fw
+
+    return (
+        fw._vh(corridor, *DRY)
+        .median()
+        .focal_median(fl.SPECKLE_RADIUS_M, "circle", "meters")
+        .clip(corridor)
+    )
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -94,19 +126,45 @@ def main() -> None:
               f"{result['precision']:6.2f} {result['iou']:6.2f}")
 
     # A plain VH threshold, no change detection: how much is the band alone?
-    for cut in (-20, -22, -24):
+    #
+    # The range now contains the value in production. It did not: this swept
+    # -20, -22 and -24 while floodwater.VH_THRESHOLD_DB was set to -25 in
+    # the same commit, so the chosen value was outside the swept set and
+    # has never been reproducible from committed code. -22.9 is in here too,
+    # because that is the published optimum for VH water.
+    for cut in (-20, -22, -22.9, -24, -25, -26):
         def build(s, c, cut=cut):
             vh = (fw._vh(c, start, end).mosaic()
                   .focal_median(fl.SPECKLE_RADIUS_M, "circle", "meters").clip(c))
             hand = ee.Image(fw.HAND).select("hnd")
-            return vh.lt(cut).And(hand.lte(fw.HAND_LIMIT_M))
+            return (vh.lt(cut).And(vh.gt(fw.VH_FLOOR_DB))
+                    .And(hand.lte(fw.HAND_LIMIT_M)))
         result = score(f"vh{cut}", build)
         if result:
             print(f"{f'VH < {cut} dB + HAND':34s} {result['recall']:7.2f} "
                   f"{result['precision']:6.2f} {result['iou']:6.2f}")
 
+    # And HAND, which no committed script has ever swept, though the module
+    # asserts that 10 m "was the best of 10, 15 and 25". None includes the
+    # case for the constraint doing nothing at all, which is the question
+    # worth asking on a floodplain this flat.
+    for limit in (5, 10, 15, 25, None):
+        def build(s, c, limit=limit):
+            vh = (fw._vh(c, start, end).mosaic()
+                  .focal_median(fl.SPECKLE_RADIUS_M, "circle", "meters").clip(c))
+            mask = vh.lt(fw.VH_THRESHOLD_DB).And(vh.gt(fw.VH_FLOOR_DB))
+            if limit is None:
+                return mask
+            return mask.And(ee.Image(fw.HAND).select("hnd").lte(limit))
+        result = score(f"hand{limit}", build)
+        if result:
+            label = "no HAND limit" if limit is None else f"HAND <= {limit} m"
+            print(f"{f'VH at {fw.VH_THRESHOLD_DB} dB, {label}':34s} "
+                  f"{result['recall']:7.2f} {result['precision']:6.2f} "
+                  f"{result['iou']:6.2f}")
+
     # Change detection, swept on how big a drop counts.
-    references = {s.key: fw.dry_reference(c) for s, c, _, _ in prepared}
+    references = {s.key: dry_reference(c) for s, c, _, _ in prepared}
     for drop in (3, 5, 7, 9):
         for ceiling in (-18, -20):
             def build(s, c, drop=drop, ceiling=ceiling):

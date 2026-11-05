@@ -164,10 +164,16 @@ def test_only_implemented_commands_are_registered():
     """No stubs: every registered command must actually do something.
 
     The analysis commands (events, lags, track) arrive with their modules.
+
+    `animation` is gone. It rendered the old per-stretch VV mask at the
+    module default of -16 dB - not even the calibrated per-stretch values -
+    with JRC occurrence alone as the permanent channel, so it would have
+    drawn the Yacyreta reservoir as flood. Its output path did not exist,
+    no page referenced it, and it was in no workflow. `film` does the job
+    on the live mask.
     """
     assert set(main.commands) == {
         "gauges",
-        "animation",
         "film",
         "floodwater",
         "backtest",
