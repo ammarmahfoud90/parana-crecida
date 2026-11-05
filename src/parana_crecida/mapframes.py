@@ -111,10 +111,17 @@ def stretch_areas(
     for stretch in stretches:
         corridor = fl.corridor_geometry(stretch)
         try:
-            out[stretch.key] = round(
-                fw.area_km2(corridor, fw.water_mask(corridor, start, end)), 1)
+            km2 = fw.area_km2(corridor, fw.water_mask(corridor, start, end))
         except Exception as error:  # pragma: no cover - Earth Engine
             log.warning("  area %s %s: %s", stretch.key, end, error)
+            continue
+        # Nothing observed is not zero water: the stretch is left out of
+        # this frame's numbers rather than labelled with a figure it does
+        # not have.
+        if km2 is None:
+            log.warning("  area %s %s: nothing observed", stretch.key, end)
+            continue
+        out[stretch.key] = round(km2, 1)
     return out
 
 

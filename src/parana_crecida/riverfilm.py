@@ -317,11 +317,18 @@ def render(
         for stretch in stretches:
             corridor = fl.corridor_geometry(stretch)
             try:
-                total += fw.area_km2(corridor, fw.water_mask(corridor, start, end))
+                km2 = fw.area_km2(corridor, fw.water_mask(corridor, start, end))
             except Exception as error:  # pragma: no cover - Earth Engine
                 log.warning("  area %s %s: %s", stretch.key, end, error)
                 total = None
                 break
+            # A frame whose total is missing one stretch is not a smaller
+            # river, so the label goes blank rather than low.
+            if km2 is None:
+                log.warning("  area %s %s: nothing observed", stretch.key, end)
+                total = None
+                break
+            total += km2
 
         _label(frame, end, total, locale_month=MONTHS_ES)
         if keep_frames:

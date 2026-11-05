@@ -181,11 +181,25 @@ def flood_only(corridor, start: date, end: date):
     return water_mask(corridor, start, end).And(permanent_water().Not())
 
 
-def area_km2(corridor, mask) -> float:
+def area_km2(corridor, mask) -> float | None:
+    """Water area over the corridor, or ``None`` where nothing was observed.
+
+    ``None`` and ``0.0`` are different answers and the difference matters
+    more here than anywhere else in the pipeline. ``reduceRegion`` returns
+    null when no unmasked pixel falls inside the region, and the previous
+    version of this coerced that to zero - so a window in which the
+    satellite saw nothing reported no water, which reads as a river that
+    had dried up. Radar that did not look is not radar that found nothing.
+
+    The band is renamed rather than read by position: the reduction returns
+    a dictionary keyed on band name, and taking whichever key came first
+    would quietly follow the wrong one if this image ever gained a band.
+    """
     import ee
 
     stats = (
         mask.selfMask()
+        .rename("water")
         .multiply(ee.Image.pixelArea())
         .reduceRegion(
             reducer=ee.Reducer.sum(), geometry=corridor,
@@ -193,7 +207,8 @@ def area_km2(corridor, mask) -> float:
         )
         .getInfo()
     )
-    return float(next(iter(stats.values()), 0) or 0) / 1e6
+    value = (stats or {}).get("water")
+    return None if value is None else float(value) / 1e6
 
 
 def series(
@@ -214,6 +229,9 @@ def series(
         except Exception as error:  # pragma: no cover - Earth Engine
             log.warning("%s: %s", end, error)
             continue
+        if total is None or flood is None:
+            log.warning("%s: nothing observed; no figure for this cycle", end)
+            continue
         out.append((end, round(total, 1), round(flood, 1)))
     return out
 
@@ -231,12 +249,22 @@ def _grid(known: list[str], last: date, window_days: int) -> list[date]:
     every morning and never add to the series it already had. The map
     frames did exactly that and left a full set of orphaned images behind.
 
-    So the grid is anchored to the last cycle already measured, and a new
+    So the grid is anchored to the last cycle already attempted, and a new
     one is added only once a full window has passed since it.
+
+    ``known`` is every window end already accounted for - measured or
+    recorded as a gap. Anchoring on measurements alone would stall the
+    series on the first unobservable window and re-measure it every day
+    for ever.
+
+    The dates this returns are window **ends**, not acquisition dates.
+    The grid is a sequence of bins whose phase comes from whenever the
+    series was first built; the acquisitions that fall inside each bin are
+    recorded separately, per cycle.
     """
     if not known:
         return [last - timedelta(days=window_days * i) for i in range(KEEP_CYCLES - 1, -1, -1)]
-    anchor = date.fromisoformat(known[-1])
+    anchor = date.fromisoformat(max(known))
     fresh = []
     while anchor + timedelta(days=window_days) <= last:
         anchor = anchor + timedelta(days=window_days)
@@ -275,7 +303,7 @@ def rebuild(
                 "key": stretch.key, "from": stretch.from_id, "to": stretch.to_id,
                 "from_name": stretch.from_name, "to_name": stretch.to_name,
                 "river_km": stretch.river_km, "corridor_km2": None,
-                "days": [], "water_km2": [], "flood_km2": [],
+                "days": [], "water_km2": [], "flood_km2": [], "gaps": [],
             }
             rows.append(row)
             by_key[stretch.key] = row
@@ -285,13 +313,23 @@ def rebuild(
             row["corridor_km2"] = round(
                 float(corridor.area(1000).divide(1e6).getInfo()))
 
-        for end in _grid(row["days"], last, window_days):
+        attempted = list(row["days"]) + list(row.get("gaps") or [])
+        for end in _grid(attempted, last, window_days):
             start = end - timedelta(days=window_days - 1)
             try:
                 water = area_km2(corridor, water_mask(corridor, start, end))
                 flood = area_km2(corridor, flood_only(corridor, start, end))
             except Exception as error:  # pragma: no cover - Earth Engine
                 log.warning("%s %s: %s", stretch.key, end, error)
+                continue
+            if water is None or flood is None:
+                # Nothing observed over this corridor in this window. It is
+                # recorded as a gap rather than as zero water, and the gap
+                # counts toward the grid anchor so the series can move past
+                # an unobservable window instead of stalling on it forever.
+                log.warning("%s %s: nothing observed; recorded as a gap",
+                            stretch.key, end)
+                row.setdefault("gaps", []).append(end.isoformat())
                 continue
             row["days"].append(end.isoformat())
             row["water_km2"].append(round(water, 1))
@@ -302,6 +340,11 @@ def rebuild(
         # Trim from the front, keeping every series the same length.
         for field in ("days", "water_km2", "flood_km2"):
             row[field] = row[field][-keep:]
+        # Gaps are trimmed to the span the series still covers, so a gap
+        # older than the published window stops being reported while a gap
+        # inside it stays visible.
+        if row["days"]:
+            row["gaps"] = [g for g in (row.get("gaps") or []) if g >= row["days"][0]]
 
     payload.update({
         "schema": 2,

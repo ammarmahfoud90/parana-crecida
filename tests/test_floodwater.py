@@ -303,3 +303,95 @@ def test_an_empty_table_asks_for_a_whole_year():
     assert len(grid) == KEEP_CYCLES
     assert grid == sorted(grid), "the grid must run oldest first"
     assert grid[-1] == _date(2026, 10, 28)
+
+
+def test_a_gap_moves_the_grid_on_rather_than_stalling_it():
+    """A window nobody could measure must not be retried for ever.
+
+    The anchor is the last window *attempted*, not the last one measured.
+    Anchoring on measurements alone would park the series in front of the
+    first unobservable window and re-measure it every morning, never
+    reaching the cycles behind it.
+    """
+    from datetime import date as _date
+
+    from parana_crecida.floodwater import _grid
+
+    measured = ["2026-10-04", "2026-10-16"]
+    gap = "2026-10-28"
+
+    # On measurements alone the grid offers the gap again, for ever.
+    assert _grid(measured, _date(2026, 11, 9), 12) == [
+        _date(2026, 10, 28), _date(2026, 11, 9),
+    ]
+
+    # Counting the gap as attempted moves past it to the cycle behind.
+    assert _grid(measured + [gap], _date(2026, 11, 9), 12) == [_date(2026, 11, 9)]
+
+
+def test_the_grid_anchors_on_the_newest_attempt_whatever_the_order():
+    """``gaps`` and ``days`` are separate lists and concatenate unsorted."""
+    from datetime import date as _date
+
+    from parana_crecida.floodwater import _grid
+
+    assert _grid(
+        ["2026-10-16", "2026-11-09", "2026-10-28"], _date(2026, 11, 21), 12
+    ) == [_date(2026, 11, 21)]
+
+
+def test_nothing_observed_is_not_zero_water():
+    """``area_km2`` separates "no water" from "no observation".
+
+    A null reduction means no unmasked pixel fell inside the corridor -
+    the satellite did not look, or the mosaic does not cover this ground.
+    Coercing that to 0.0 published a dry river for a window with no data,
+    and it is the shape of the one failure in the published series.
+    """
+    from parana_crecida import floodwater as fw
+
+    class FakeMask:
+        """Just enough of an ee.Image to reach the reduction."""
+
+        def __init__(self, result):
+            self._result = result
+
+        def selfMask(self):
+            return self
+
+        def rename(self, _name):
+            return self
+
+        def multiply(self, _other):
+            return self
+
+        def reduceRegion(self, **_kwargs):
+            return self
+
+        def getInfo(self):
+            return self._result
+
+    class FakeEE:
+        class Image:
+            @staticmethod
+            def pixelArea():
+                return None
+
+        class Reducer:
+            @staticmethod
+            def sum():
+                return None
+
+    import sys
+
+    sys.modules.setdefault("ee", FakeEE)
+    try:
+        assert fw.area_km2(None, FakeMask({"water": None})) is None
+        assert fw.area_km2(None, FakeMask({})) is None
+        assert fw.area_km2(None, FakeMask(None)) is None
+        # A real zero still reads as a real zero.
+        assert fw.area_km2(None, FakeMask({"water": 0.0})) == 0.0
+        assert fw.area_km2(None, FakeMask({"water": 2.5e6})) == pytest.approx(2.5)
+    finally:
+        if sys.modules.get("ee") is FakeEE:
+            del sys.modules["ee"]
