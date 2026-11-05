@@ -202,6 +202,27 @@ def parse_report(pdf_path: Path | str) -> list[ReportRow]:
     return rows
 
 
+#: Report river names that mean the same river as a roster entry's. INA
+#: writes the Delta reaches as "Parana/Delta", which is the Parana.
+_RIVER_ALIASES = {
+    normalise_name(roster.PARANA): {"parana", "parana/delta", "parana delta"},
+}
+
+
+def rivers_agree(gauge: roster.Gauge, river: str | None) -> bool:
+    """Does the report row's river match the one the roster claims?
+
+    An absent or unparsed river is not a disagreement - the report's
+    layout varies and a blank cell is not evidence of a different river -
+    so only a river that is named and different holds a row back.
+    """
+    if not river:
+        return True
+    theirs = normalise_name(river)
+    ours = normalise_name(gauge.river)
+    return theirs == ours or theirs in _RIVER_ALIASES.get(ours, set())
+
+
 def match_to_roster(
     rows: list[ReportRow],
 ) -> tuple[dict[str, ReportRow], list[ReportRow]]:
@@ -222,12 +243,32 @@ def match_to_roster(
         # for Puerto Pilcomayo, but the series we hold under that name is
         # discharge; attaching a 5.35 m alert to a 1,800 m3/s reading would
         # mislabel every day as catastrophic. Refuse on unit, do not guess.
-        gauge_is_flow = "flow" in gauge.flags
+        gauge_is_flow = gauge.unit == UNIT_FLOW
         if gauge_is_flow != (row.unit == UNIT_FLOW):
             log.warning(
                 "%s (%s) is %s but the report row is in %s; not attaching",
                 gauge.name, gauge.series_id,
                 "discharge" if gauge_is_flow else "stage", row.unit,
+            )
+            unmatched.append(row)
+            continue
+        # And a name can match on the wrong river. This matcher has only
+        # ever looked at the station name, though the report names the
+        # river in the same table and the CSV has always carried it: INA's
+        # San Fernando is on the Lujan, and its 3.0 m alert was attached to
+        # the Parana estuary gauge of the same name purely because the
+        # names coincide. The module's own docstring warns about this -
+        # "Parana" is a city, a river and a province in these tables - and
+        # then the code did not check.
+        #
+        # They may well be the same installation. The point is that a name
+        # match is not evidence of it, so the row is held back and named
+        # rather than attached on the strength of a coincidence.
+        if not rivers_agree(gauge, row.river):
+            log.warning(
+                "%s (%s) matched a report row on the %s; the rivers do not "
+                "agree, so it is not attached",
+                gauge.name, gauge.series_id, row.river or "unnamed river",
             )
             unmatched.append(row)
             continue

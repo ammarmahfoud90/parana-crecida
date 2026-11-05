@@ -210,3 +210,63 @@ def test_parses_a_real_ina_daily_report():
     assert corrientes.alert == pytest.approx(6.5)
     assert corrientes.evacuation == pytest.approx(7.0)
     assert any(r.unit == th.UNIT_FLOW for r in rows)
+
+
+# -- matching on more than a station name ----------------------------------
+
+
+def _row(station, river, unit="m", alert=5.0, evac=6.0):
+    from parana_crecida.thresholds import ReportRow
+
+    return ReportRow(station=station, river=river, unit=unit, alert=alert,
+                     evacuation=evac, value=None, trend=None, outlook=None)
+
+
+def test_a_threshold_from_another_river_is_not_attached():
+    """INA's San Fernando is on the Lujan.
+
+    Its 3.0 m alert was attached to the Parana estuary gauge of the same
+    name purely because the station names coincide. They may well be the
+    same installation; the point is that a name match is not evidence of
+    it. The module's own docstring warns that "Parana" is a city, a river
+    and a province in these tables, and then the code did not check.
+    """
+    from parana_crecida.thresholds import match_to_roster
+
+    matched, unmatched = match_to_roster([_row("San Fernando", "Lujan", alert=3.0)])
+    assert matched == {}
+    assert [r.station for r in unmatched] == ["San Fernando"]
+
+
+def test_the_same_river_still_attaches():
+    from parana_crecida.thresholds import match_to_roster
+
+    matched, unmatched = match_to_roster([_row("Corrientes", "Parana", alert=6.5)])
+    assert list(matched) == ["26261"]
+    assert unmatched == []
+
+
+def test_the_delta_alias_counts_as_the_parana():
+    """INA writes the Delta reaches as "Parana/Delta"."""
+    from parana_crecida.thresholds import match_to_roster
+
+    matched, _ = match_to_roster([_row("Victoria", "Parana/Delta", alert=4.6)])
+    assert list(matched) == ["26274"]
+
+
+def test_an_unnamed_river_is_not_a_disagreement():
+    """The report's layout varies; a blank cell is not another river."""
+    from parana_crecida.thresholds import match_to_roster
+
+    matched, _ = match_to_roster([_row("Goya", "")])
+    assert list(matched) == ["26265"]
+
+
+def test_a_tributary_matches_its_own_river():
+    from parana_crecida.thresholds import match_to_roster
+
+    matched, _ = match_to_roster([_row("Puerto Formosa", "Paraguay", alert=7.8)])
+    assert list(matched) == ["26442"]
+    # And not when the report puts that station on the Parana.
+    matched, unmatched = match_to_roster([_row("Puerto Formosa", "Parana")])
+    assert matched == {} and len(unmatched) == 1
