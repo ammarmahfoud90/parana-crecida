@@ -133,3 +133,53 @@ def test_branches_are_from_the_documented_set():
         roster.TRIBUTARY,
     }
     assert all(g.branch in known for g in roster.GAUGES)
+
+
+def test_every_gauge_states_its_unit_in_one_place():
+    """Stage or discharge, derived from one flag, read from one property.
+
+    The unit used to be re-derived in two places with two different
+    mechanisms - a SQL `flags LIKE '%flow%'` in the validation and a
+    `"flow" in gauge.flags` in the climatology builder. A wrong unit
+    mislabels every day of a series, and a substring match would also have
+    caught any future flag containing those letters.
+    """
+    from parana_crecida import gauges as roster
+
+    flow = {g.series_id for g in roster.GAUGES if g.unit == roster.UNIT_FLOW}
+    assert flow == {"26684", "26685", "26690", "26652", "26605"}
+    for gauge in roster.GAUGES:
+        assert gauge.unit in (roster.UNIT_LEVEL, roster.UNIT_FLOW)
+        assert (gauge.unit == roster.UNIT_FLOW) == ("flow" in gauge.flags)
+
+
+def test_the_store_carries_the_unit_rather_than_deriving_it():
+    from parana_crecida import gauges as roster
+    from parana_crecida.store import Store
+
+    with Store(":memory:") as store:
+        store.load_gauges()
+        rows = store.con.execute("SELECT series_id, unit FROM gauge").fetchall()
+    held = dict(rows)
+    assert len(held) == len(roster.GAUGES)
+    for gauge in roster.GAUGES:
+        assert held[gauge.series_id] == gauge.unit
+
+
+def test_every_gauge_states_its_river():
+    """A station name is not unique across rivers.
+
+    INA's San Fernando is on the Lujan, and its alert level was attached to
+    the Parana estuary gauge of the same name purely because the names
+    coincide.
+    """
+    from parana_crecida import gauges as roster
+
+    off_parana = {g.series_id: g.river for g in roster.GAUGES
+                  if g.river != roster.PARANA}
+    assert off_parana == {
+        "26652": roster.PARAGUAY,   # Puerto Pilcomayo
+        "26442": roster.PARAGUAY,   # Puerto Formosa
+        "26300": roster.BERMEJO,    # Bermejo
+        "26605": roster.IGUAZU,     # Andresito
+    }

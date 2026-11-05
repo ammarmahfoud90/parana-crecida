@@ -202,8 +202,14 @@ def water_checks(path: Path | str | None = None) -> list[Check]:
 
 
 def _unit_expr() -> str:
-    """SQL for a gauge's unit, since the observation table does not store it."""
-    return "CASE WHEN g.flags LIKE '%flow%' THEN 'm3/s' ELSE 'm' END"
+    """SQL for a gauge's unit.
+
+    Reads the column the roster fills, rather than pattern-matching
+    ``flags LIKE '%flow%'`` - which worked, but would have silently
+    reclassified any future flag containing those letters, and put a
+    second definition of the unit in a place nobody would think to look.
+    """
+    return "g.unit"
 
 
 def validate(

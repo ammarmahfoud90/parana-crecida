@@ -40,6 +40,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+#: The two quantities INA publishes for the gauges in scope.
+UNIT_LEVEL = "m"
+UNIT_FLOW = "m3/s"
+
+#: Rivers, as INA's daily report names them. Needed because the report is
+#: matched to this roster, and a station name is not unique across rivers:
+#: INA's San Fernando is on the Lujan, and its alert level was attached to
+#: the Parana estuary gauge of the same name purely because the names
+#: coincide. "Parana/Delta", which the report uses for Victoria, is the
+#: Parana.
+PARANA = "Parana"
+PARAGUAY = "Paraguay"
+IGUAZU = "Iguazu"
+BERMEJO = "Bermejo"
+
 MAIN = "main"
 PALMAS = "palmas"
 GUAZU = "guazu"
@@ -66,6 +81,8 @@ class Gauge:
     flags: frozenset[str] = field(default_factory=frozenset)
     note: str = ""
     display: str = ""
+    #: The river this gauge sits on, as INA's daily report names it.
+    river: str = PARANA
 
     @property
     def label(self) -> str:
@@ -73,13 +90,34 @@ class Gauge:
         return self.display or self.name
 
     @property
+    def unit(self) -> str:
+        """``m`` for a stage series, ``m3/s`` for a discharge one.
+
+        One place, derived from one flag, instead of a SQL
+        ``flags LIKE '%flow%'`` in the validation and a separate
+        ``"flow" if "flow" in gauge.flags`` in the climatology builder.
+        A substring match would also have reclassified any future flag
+        that happened to contain the letters "flow".
+
+        This is the project's own assertion about the series, not INA's.
+        INA states it too, in the a5 catalogue's ``family`` field, and the
+        two have disagreed: the daily report lists a *stage* for Puerto
+        Pilcomayo while the series held under that name is discharge.
+        ``crecida catalogue`` now compares them and names any gauge where
+        they differ, because a wrong unit here mislabels every day.
+        """
+        return UNIT_FLOW if "flow" in self.flags else UNIT_LEVEL
+
+    @property
     def is_routing_node(self) -> bool:
         """True when this gauge may be used as a travel-time node."""
         return self.tier == 1 and not (self.flags & {"bad_snap", "unrouted", "flow"})
 
 
-def _g(series_id, name, branch=MAIN, tier=3, flags=(), note="", display="") -> Gauge:
-    return Gauge(str(series_id), name, branch, tier, frozenset(flags), note, display)
+def _g(series_id, name, branch=MAIN, tier=3, flags=(), note="", display="",
+       river=PARANA) -> Gauge:
+    return Gauge(str(series_id), name, branch, tier, frozenset(flags), note,
+                 display, river)
 
 
 #: Tier 1: the main-stem routing chain, in downstream order.
@@ -161,14 +199,16 @@ TRIBUTARIES = [
     # Paraguay's flow in m3/s and not metres on any datum. INA's daily
     # report lists a *level* for Puerto Pilcomayo, so its official
     # thresholds belong to a stage series whose id we do not have yet.
-    _g(26652, "Puerto Pilcomayo", TRIBUTARY, 3, ("flow",), "Paraguay, discharge"),
-    _g(26442, "Puerto Formosa", TRIBUTARY, 3, ("bad_snap",), "Paraguay"),
-    _g(26300, "Bermejo", TRIBUTARY, 3),
+    _g(26652, "Puerto Pilcomayo", TRIBUTARY, 3, ("flow",), "Paraguay, discharge",
+       river=PARAGUAY),
+    _g(26442, "Puerto Formosa", TRIBUTARY, 3, ("bad_snap",), "Paraguay",
+       river=PARAGUAY),
+    _g(26300, "Bermejo", TRIBUTARY, 3, river=BERMEJO),
     # The Iguazu's discharge into the Parana just above Puerto Iguazu. INA
     # publishes alert and evacuation levels for it in m3/s.
     _g(
         26605, "Andresito", TRIBUTARY, 3, ("flow",),
-        note="Iguazu inflow, discharge", display="Andresito",
+        note="Iguazu inflow, discharge", display="Andresito", river=IGUAZU,
     ),
 ]
 

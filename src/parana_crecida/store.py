@@ -45,7 +45,13 @@ CREATE TABLE IF NOT EXISTS gauge (
     tier        INTEGER NOT NULL,
     flags       VARCHAR NOT NULL,
     note        VARCHAR NOT NULL,
-    river_order INTEGER
+    river_order INTEGER,
+    -- The quantity the series holds: "m" for stage, "m3/s" for discharge.
+    -- Stored rather than pattern-matched out of `flags` at query time: a
+    -- wrong unit mislabels every day, and the validation used to derive it
+    -- with `flags LIKE '%flow%'`, which would also have matched any future
+    -- flag containing those letters.
+    unit        VARCHAR NOT NULL DEFAULT 'm'
 );
 
 CREATE TABLE IF NOT EXISTS observation (
@@ -155,7 +161,7 @@ class Store(AbstractContextManager["Store"]):
         self.con.execute("DELETE FROM gauge")
         self.con.executemany(
             "INSERT INTO gauge (series_id, name, display, branch, tier, flags, note,"
-            " river_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            " river_order, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
                     g.series_id,
@@ -166,6 +172,7 @@ class Store(AbstractContextManager["Store"]):
                     ",".join(sorted(g.flags)),
                     g.note,
                     order.get(g.series_id),
+                    g.unit,
                 )
                 for g in gauges
             ],

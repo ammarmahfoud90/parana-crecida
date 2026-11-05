@@ -241,6 +241,36 @@ def catalogue(out: Path, keep_all: bool, report: Path | None) -> None:
     if missing:
         rep.say(f"not in the catalogue: {', '.join(missing)}")
 
+    # Does INA agree with us about what each series holds?
+    #
+    # The roster's `flow` flag is this project's assertion that a series is
+    # discharge and not stage, and it is what the validation ranges and the
+    # threshold matching are built on. INA states the same thing in the
+    # catalogue's `family` field. Nothing had ever compared them, and they
+    # have disagreed before: the daily report lists a *stage* for Puerto
+    # Pilcomayo while the series held under that name is discharge.
+    #
+    # A wrong unit here mislabels every day of a series, so the
+    # disagreement is named rather than resolved automatically - whichever
+    # side is wrong, a human has to decide which.
+    disagreed = []
+    for s in in_scope:
+        if not s.family:
+            continue
+        gauge = roster.BY_ID[s.series_id]
+        theirs = {"flow": roster.UNIT_FLOW, "level": roster.UNIT_LEVEL}.get(s.family)
+        if theirs is not None and theirs != gauge.unit:
+            disagreed.append(
+                f"{s.series_id} {gauge.name}: INA says {s.family} "
+                f"({theirs}), the roster says {gauge.unit}"
+            )
+    if disagreed:
+        rep.say(f"UNIT DISAGREEMENT on {len(disagreed)} series:")
+        for line in disagreed:
+            rep.say(f"  {line}")
+    else:
+        rep.say(f"unit agrees with INA on all {len(in_scope)} series in scope")
+
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(
         json.dumps(
@@ -805,7 +835,7 @@ def climatology(
             series_id,
             values,
             station=gauge.name,
-            family="flow" if "flow" in gauge.flags else "level",
+            family="flow" if gauge.unit == roster.UNIT_FLOW else "level",
         )
         if entry is None:
             thin.append(gauge.name)
