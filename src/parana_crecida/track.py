@@ -341,19 +341,45 @@ def build(
 
 
 def payload(track: Track, *, today: date | None = None) -> dict[str, object]:
-    """The track as the page wants it."""
+    """The track as the page wants it: where the front is, and no dates.
+
+    The arrival dates were built, scored over the record since 1998 and
+    withdrawn: 23% of crests landed inside the published window, with a
+    median error of 9 days on journeys of a few days to a fortnight. An
+    error the size of the thing being predicted is not a forecast.
+
+    The page stopped rendering them and this file did not. It went on
+    publishing ``expected``, ``earliest`` and ``latest`` for eleven gauges,
+    under a note that read as a live product, at a public URL - and a JSON
+    served from a public URL is the copy that gets scraped, cited and
+    kept. That is the project's own argument about the flooded-area CSV:
+    "a CSV is the copy that gets downloaded, cited and kept, so it is the
+    last place an old measurement should survive."
+
+    So the dates are gone from the payload too. What stays is the
+    observation underneath them - which gauge has passed its peak, how far
+    down the river it is, and what each gauge below it is doing now - plus
+    the skill record that withdrew the dates, because the reason is worth
+    more than the dates were.
+    """
     today = today or date.today()
     anchor = track.anchor
     # Timing is judged against the newest reading, not today: see
     # Projection.timing.
     as_of = max((s.last_day for s in track.states), default=today)
     return {
-        "schema": 1,
+        "schema": 2,
         "note": (
-            "When the crest now in the river is due at the gauges below it, "
-            "from travel times measured over the whole record. It says when, "
-            "not how high. The range is every leg at its fast end against "
-            "every leg at its slow end, not a confidence interval."
+            "Where the crest is, and which gauges below it are still "
+            "rising. No arrival dates: they were measured at a 23% hit "
+            "rate with a 9-day median error and withdrawn. See `skill`."
+        ),
+        "withdrawn": (
+            "Arrival-date projections (expected, earliest, latest) were "
+            "removed from this file in schema 2. They were published here "
+            "for some months after the page stopped showing them. Anything "
+            "relying on those fields was relying on a projection this "
+            "project does not stand behind."
         ),
         "generated_for": today.isoformat(),
         "as_of": as_of.isoformat(),
@@ -377,16 +403,11 @@ def payload(track: Track, *, today: date | None = None) -> dict[str, object]:
                 "name": p.name,
                 "river_km": p.river_km,
                 "km_from_anchor": p.km_from_anchor,
-                "expected": p.expected.isoformat(),
-                "earliest": p.earliest.isoformat(),
-                "latest": p.latest.isoformat(),
-                "days_ahead": p.days_ahead(today),
                 "legs": p.legs,
                 "percentile_now": (
                     None if p.percentile_now is None else round(p.percentile_now, 1)
                 ),
                 "state": p.state,
-                "timing": p.timing(as_of),
             }
             for p in track.projections
         ],

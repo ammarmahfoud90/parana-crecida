@@ -245,27 +245,44 @@ def test_the_record_is_truncated_at_the_day_asked_about():
 # -- timing ----------------------------------------------------------------
 
 
-def test_timing_is_judged_against_the_data_not_the_calendar():
-    """INA's feed runs a day or two behind.
-
-    Judged against today, every gauge is overdue by exactly that lag.
-    """
+def test_as_of_is_the_data_not_the_calendar():
+    """INA's feed runs a day or two behind, and the payload says so."""
     track = track_from({A: "crested", B: "rising", C: "rising", D: "rising"})
     as_of = max(s.last_day for s in track.states)
-    projection = track.projections[0]
-    assert projection.timing(as_of) in {"ahead", "due", "overdue"}
-    # Four days further on, nothing has been measured, so nothing changes.
+    # Four days further on, nothing has been measured, so as_of does not move.
     payload = tk.payload(track, today=as_of + timedelta(days=4))
     assert payload["as_of"] == as_of.isoformat()
-    assert payload["projections"][0]["timing"] == projection.timing(as_of)
+    assert payload["generated_for"] == (as_of + timedelta(days=4)).isoformat()
 
 
-def test_days_ahead_counts_from_today():
+def test_the_payload_publishes_no_arrival_dates():
+    """They were measured at a 23% hit rate and withdrawn.
+
+    The page stopped rendering them and this file did not: it went on
+    publishing expected, earliest and latest for eleven gauges at a public
+    URL, under a note that read as a live product. A JSON served from a
+    public URL is the copy that gets scraped and cited, which is the
+    project's own argument about the flooded-area CSV.
+
+    The projection machinery stays - it is what places the front and what
+    the skill record scored - but no date reaches the payload.
+    """
     track = track_from({A: "crested", B: "rising", C: "rising", D: "rising"})
-    today = date(2026, 9, 30)
-    payload = tk.payload(track, today=today)
-    for row, projection in zip(payload["projections"], track.projections):
-        assert row["days_ahead"] == (projection.expected - today).days
+    payload = tk.payload(track)
+
+    assert payload["projections"], "the front still has to be published"
+    for row in payload["projections"]:
+        for field in ("expected", "earliest", "latest", "days_ahead", "timing"):
+            assert field not in row, field
+
+    # And the file says what left it, so a consumer of the old fields can
+    # find out why they are gone rather than reading a silent absence.
+    assert "withdrawn" in payload
+    assert "23%" in payload["note"]
+
+    # The projections themselves are still computed; they are the thing the
+    # skill record scored, and they place the front on the river.
+    assert track.projections[0].expected is not None
 
 
 # -- the payload -----------------------------------------------------------
@@ -276,7 +293,7 @@ def test_the_payload_says_whether_the_crest_is_confirmed():
     payload = tk.payload(track)
     assert payload["anchor"]["confirmed"] is True
     assert payload["anchor"]["series_id"] == A
-    assert "how high" in payload["note"]
+    assert "crest" in payload["note"]
 
 
 def test_the_payload_of_an_empty_track_carries_the_reason():
