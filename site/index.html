@@ -167,9 +167,11 @@ const T = {
 
     riverUnavailable: "La cifra del río entero no se está publicando: se mide una sola vez sobre la unión de los corredores, que se superponen, y esa medición todavía no está hecha. Los tramos de abajo sí: cada uno se mide sobre su propio corredor.",
     areaCap: "km² de agua abierta detectada por radar",
-    areaNote: (from_, to, extra, low, lowDays) =>
+    areaNote: (from_, to, extra, low, lowDays, many) =>
       `Compuesto de doce días del ${from_} al ${to}. Son ${extra} km² más que en ` +
-      `las pasadas más bajas del registro de un año (mediana ${low} km², sobre ${lowDays}).`,
+      (many
+        ? `las pasadas más bajas del registro de un año (mediana ${low} km², sobre ${lowDays}).`
+        : `la pasada más baja del registro de un año (${low} km², ${lowDays}).`),
     floodNote: (now, low, times) =>
       `Fuera del cauce permanente, que es el agua que normalmente no está ahí: ` +
       `${now} km² en esta pasada contra ${low} km² en las más bajas, ${times} veces más. ` +
@@ -182,7 +184,7 @@ const T = {
       `cada doce días como máximo, no a diario.`,
     passLabel: "Ventana medida",
     reachLabel: "Tramo medido",
-    riseLabel: "Contra las pasadas más bajas",
+    riseLabel: "Contra el mínimo del registro",
     windowValue: (from_, to) => `${from_} – ${to}`,
     reachValue: (km, n) => `${km} km de río, ${n} tramos validados`,
     sumWarning: "Esta cifra suma tramos cuyos corredores se superponen, así que cuenta dos veces el agua cercana a cada estación: alrededor de un 7% de más. La medición sobre la unión de los corredores la reemplaza en cuanto esté hecha.",
@@ -192,9 +194,11 @@ const T = {
     chartGap: "ciclo sin medición",
     chartNone: "No hay serie del río entero para graficar mientras la cifra del río entero no se publique. Cada tramo sigue teniendo la suya, en «Superficie, tramo por tramo».",
     chartTitle: "Superficie de agua del río Paraná por pasada del satélite",
-    chartDesc: (first, last, lo, hi) =>
-      `Serie de superficie de agua entre ${first} y ${last}. El mínimo es ${lo} km² ` +
-      `y el máximo ${hi} km².`,
+    chartDesc: (first, last, lo, hi, gaps) =>
+      `Serie de superficie de agua entre ${first} y ${last}, un punto por ventana ` +
+      `de doce días. El valor más bajo es ${lo} km² y el más alto ${hi} km².` +
+      (gaps ? ` ${gaps} ciclo(s) no se pudieron medir y faltan en la serie; ` +
+              `la línea se corta ahí.` : ""),
     keyWater: "Toda el agua", keyFlood: "Sin el cauce permanente",
     axisKm2: "km²",
 
@@ -263,9 +267,11 @@ const T = {
 
     riverUnavailable: "The whole-river figure is not being published: it is measured once over the union of the corridors, which overlap, and that measurement has not been made yet. The stretches below are unaffected — each is measured over its own corridor.",
     areaCap: "km² of open water detected by radar",
-    areaNote: (from_, to, extra, low, lowDays) =>
+    areaNote: (from_, to, extra, low, lowDays, many) =>
       `A twelve-day composite, ${from_} to ${to}. That is ${extra} km² more than the ` +
-      `lowest passes in the one-year record (median ${low} km², over ${lowDays}).`,
+      (many
+        ? `lowest passes in the one-year record (median ${low} km², over ${lowDays}).`
+        : `lowest pass in the one-year record (${low} km², ${lowDays}).`),
     floodNote: (now, low, times) =>
       `Outside the permanent channel, which is the water that is not normally ` +
       `there: ${now} km² in this pass against ${low} km² in the lowest, ` +
@@ -279,7 +285,7 @@ const T = {
       `available, at most every twelve days, not daily.`,
     passLabel: "Window measured",
     reachLabel: "Reach measured",
-    riseLabel: "Against the lowest passes",
+    riseLabel: "Against the record low",
     windowValue: (from_, to) => `${from_} – ${to}`,
     reachValue: (km, n) => `${km} km of river, ${n} validated stretches`,
     sumWarning: "This figure adds up stretches whose corridors overlap, so it counts the water near each gauge twice — about 7% too much. The measurement over the dissolved corridor union replaces it as soon as it has been made.",
@@ -289,9 +295,11 @@ const T = {
     chartGap: "cycle not measured",
     chartNone: "There is no whole-river series to chart while the whole-river figure is withheld. Each stretch still has its own, under “Surface, stretch by stretch”.",
     chartTitle: "Water surface of the Paraná by satellite pass",
-    chartDesc: (first, last, lo, hi) =>
-      `Water surface from ${first} to ${last}. The lowest pass is ${lo} km² and ` +
-      `the highest ${hi} km².`,
+    chartDesc: (first, last, lo, hi, gaps) =>
+      `Water surface from ${first} to ${last}, one point per twelve-day window. ` +
+      `The lowest value is ${lo} km² and the highest ${hi} km².` +
+      (gaps ? ` ${gaps} cycle(s) could not be measured and are absent from the ` +
+              `series; the line breaks there.` : ""),
     keyWater: "All water", keyFlood: "Without the permanent channel",
     axisKm2: "km²",
 
@@ -555,8 +563,12 @@ function drawChart(rows, data) {
   }
 
   const lo = Math.min(...water), hi = Math.max(...water);
+  let gaps = 0;
+  for (let i = 0; i < rows.length - 1; i += 1) if (gapAfter(i)) gaps += 1;
   document.getElementById("chartDesc").textContent = t.chartDesc(
-    longDay(rows[0].day), longDay(rows[rows.length - 1].day), num(lo), num(hi));
+    longDay(rows[0].day), longDay(rows[rows.length - 1].day),
+    num(Math.round(data.lowest ? data.lowest.water_km2 : lo)),
+    num(Math.round(data.highest ? data.highest.water_km2 : hi)), gaps);
   document.getElementById("keys").hidden = false;
 }
 
@@ -621,7 +633,8 @@ function render(data) {
     document.getElementById("areaNote").textContent = low && low.day !== latest.day
       ? t.areaNote(longDay(from_), longDay(to),
                    num(Math.round(latest.water_km2 - low.water_km2)),
-                   num(Math.round(low.water_km2)), anchorDays(low))
+                   num(Math.round(low.water_km2)), anchorDays(low),
+                   (low.over_cycles || []).length > 1)
       : t.areaNoteFlat(longDay(from_), longDay(to));
 
     // How old the measurement is, said plainly. The gauge pages carry an

@@ -237,7 +237,7 @@ const T = {
 
     lagHeading: "Crestas y tiempos de viaje",
     lagBody: "Una crecida tarda días en bajar de una estación a la siguiente, y ese retraso se mide, no se supone. Se suaviza la serie con una ventana centrada. Centrada a propósito: una media que mira sólo hacia atrás corre los picos hacia adelante e inventaría demoras. Después se detectan las crestas, y se emparejan entre estaciones vecinas. En paralelo se calcula la correlación cruzada entre las dos series. Cuando los dos métodos coinciden, la demora es creíble; cuando no, la tabla lo marca.",
-    colLeg: "Tramo", colKm: "km", colDays: "demora", colSpread: "rango", colN: "casos", colNote: "",
+    colLeg: "Tramo", colKm: "km", colDays: "demora", colSpread: "rango", colN: "casos", colNote: "qué tan firme",
     lagLimits: "Dos límites importantes. El dato es diario, así que en los tramos cortos la demora medida dice más sobre cada cuánto se mide que sobre el río: San Lorenzo a Rosario son 21 km, que la cresta cubre en unas horas, pero una lectura por día sólo puede registrar 0, 1 o 2 días. En esos tramos la demora sigue sirviendo para saber cuándo llega; la velocidad en km por día no, y por eso no se publica por tramo sino sobre el recorrido entero. Y la velocidad tampoco está separada por tamaño de onda, cuando se sabe que una crecida grande viaja más rápido que una chica; una mediana única esconde eso.",
     noteResolution: "la demora sirve, la velocidad no",
     noteDisagree: "los dos métodos no coinciden",
@@ -348,7 +348,7 @@ const T = {
 
     lagHeading: "Crests and travel times",
     lagBody: "A flood takes days to move from one gauge to the next, and that delay is measured rather than assumed. The series is smoothed with a centred window. Centred deliberately: an average that looks only backwards shifts peaks forward and would invent delays. Then crests are detected and matched between neighbouring gauges. Separately, the two series are cross-correlated. Where the two methods agree the delay is credible; where they don't, the table says so.",
-    colLeg: "Leg", colKm: "km", colDays: "delay", colSpread: "range", colN: "cases", colNote: "",
+    colLeg: "Leg", colKm: "km", colDays: "delay", colSpread: "range", colN: "cases", colNote: "how firm",
     lagLimits: "Two limits matter. The data is daily, so on short legs the measured delay says more about how often it is measured than about the river: San Lorenzo to Rosario is 21 km, which a crest covers in a few hours, but one reading a day can only record 0, 1 or 2 days. On those legs the delay is still useful for knowing when the water arrives; the speed in km per day is not, which is why speed is quoted over the whole run rather than per leg. And speed is not separated by wave size either, although a large flood is known to travel faster than a small one; a single median hides that.",
     noteResolution: "delay usable, speed not",
     noteDisagree: "the two methods disagree",
