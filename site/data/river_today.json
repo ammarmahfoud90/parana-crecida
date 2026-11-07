@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-07T14:48:39-03:00",
+ "generated_at": "2026-11-07T19:01:07-03:00",
  "last_data_day": "2026-11-06",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -754,10 +754,10 @@
    "to": "Santa Elena"
   },
   "front": {
-   "gauge": "Bella Vista",
-   "day": "2026-11-01",
+   "gauge": "Goya",
+   "day": "2026-11-03",
    "confirmed": false,
-   "river_km": 786.0
+   "river_km": 869.5
   },
   "water": {
    "km2": 3764.4,

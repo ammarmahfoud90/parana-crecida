@@ -1977,7 +1977,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-03,26684,Yacyreta afluente,main,,28600.0,m3/s,100.0,flow regulated
 2026-11-04,26684,Yacyreta afluente,main,,31500.0,m3/s,100.0,flow regulated
 2026-11-05,26684,Yacyreta afluente,main,,29600.0,m3/s,100.0,flow regulated
-2026-11-06,26684,Yacyreta afluente,main,,29200.0,m3/s,100.0,flow regulated
+2026-11-06,26684,Yacyreta afluente,main,,28700.0,m3/s,100.0,flow regulated
 2026-05-11,26685,Yacyreta efluente,main,,9600.0,m3/s,18.9,flow regulated
 2026-05-12,26685,Yacyreta efluente,main,,8700.0,m3/s,12.7,flow regulated
 2026-05-13,26685,Yacyreta efluente,main,,9400.0,m3/s,17.3,flow regulated
@@ -2157,7 +2157,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-03,26685,Yacyreta efluente,main,,29500.0,m3/s,100.0,flow regulated
 2026-11-04,26685,Yacyreta efluente,main,,29300.0,m3/s,100.0,flow regulated
 2026-11-05,26685,Yacyreta efluente,main,,29200.0,m3/s,100.0,flow regulated
-2026-11-06,26685,Yacyreta efluente,main,,29000.0,m3/s,100.0,flow regulated
+2026-11-06,26685,Yacyreta efluente,main,,28700.0,m3/s,100.0,flow regulated
 2026-05-11,26690,Confluencia,main,,8355.98,m3/s,19.7,bad_snap flow
 2026-05-12,26690,Confluencia,main,,9166.22,m3/s,28.0,bad_snap flow
 2026-05-13,26690,Confluencia,main,,9724.02,m3/s,36.7,bad_snap flow
@@ -2337,7 +2337,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-03,26690,Confluencia,main,,25789.9,m3/s,96.1,bad_snap flow
 2026-11-04,26690,Confluencia,main,,24828.0,m3/s,95.7,bad_snap flow
 2026-11-05,26690,Confluencia,main,,24963.6,m3/s,97.1,bad_snap flow
-2026-11-06,26690,Confluencia,main,,27265.3,m3/s,100.0,bad_snap flow
+2026-11-06,26690,Confluencia,main,,25525.3,m3/s,100.0,bad_snap flow
 2026-05-11,26261,Corrientes,main,659.8,2.88,m,31.0,
 2026-05-12,26261,Corrientes,main,659.8,2.65,m,24.2,
 2026-05-13,26261,Corrientes,main,659.8,2.51,m,20.9,
