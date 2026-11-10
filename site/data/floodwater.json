@@ -172,7 +172,7 @@
   }
  },
  "skill_floor": 0.45,
- "fetched_on": "2026-11-09",
+ "fetched_on": "2026-11-10",
  "corridor_km2": 55836,
  "corridor_note": "river[] is measured once over the dissolved union of the publishing corridors, not summed from the stretches. The corridors are 20 km buffers that meet at a gauge, so neighbours overlap by 1,328-1,651 km2 each - 9,889 km2 in all, 17.7% of their summed area, every km2 of it channel. union_corridor_km2 is the area of that union; the stretches' own corridor_km2 must not be added together.",
  "river_km": 1477.3,
