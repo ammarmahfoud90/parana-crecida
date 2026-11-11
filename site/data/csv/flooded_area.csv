@@ -1,5 +1,4 @@
 day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precision
-2025-11-02,puerto_iguazu_libertador,Puerto Iguazú,Libertador,226.7,21.5,0.83,0.84,0.98
 2025-11-14,puerto_iguazu_libertador,Puerto Iguazú,Libertador,231.8,25.2,0.83,0.84,0.98
 2025-11-26,puerto_iguazu_libertador,Puerto Iguazú,Libertador,230.1,23.7,0.83,0.84,0.98
 2025-12-08,puerto_iguazu_libertador,Puerto Iguazú,Libertador,226.4,21.1,0.83,0.84,0.98
@@ -30,7 +29,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,puerto_iguazu_libertador,Puerto Iguazú,Libertador,221.3,17.3,0.83,0.84,0.98
 2026-10-16,puerto_iguazu_libertador,Puerto Iguazú,Libertador,222.3,23.8,0.83,0.84,0.98
 2026-10-28,puerto_iguazu_libertador,Puerto Iguazú,Libertador,232.1,26.8,0.83,0.84,0.98
-2025-11-02,libertador_posadas,Libertador,Posadas,343.8,9.7,0.9,0.9,0.99
+2026-11-09,puerto_iguazu_libertador,Puerto Iguazú,Libertador,146.9,18.3,0.83,0.84,0.98
 2025-11-14,libertador_posadas,Libertador,Posadas,344.6,10.0,0.9,0.9,0.99
 2025-11-26,libertador_posadas,Libertador,Posadas,343.6,9.3,0.9,0.9,0.99
 2025-12-08,libertador_posadas,Libertador,Posadas,343.5,9.3,0.9,0.9,0.99
@@ -61,7 +60,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,libertador_posadas,Libertador,Posadas,349.4,11.5,0.9,0.9,0.99
 2026-10-16,libertador_posadas,Libertador,Posadas,373.7,35.3,0.9,0.9,0.99
 2026-10-28,libertador_posadas,Libertador,Posadas,364.9,26.1,0.9,0.9,0.99
-2025-11-02,posadas_ita_ibate,Posadas,Itá Ibaté,1895.2,176.2,0.87,0.92,0.94
+2026-11-09,libertador_posadas,Libertador,Posadas,159.5,17.0,0.9,0.9,0.99
 2025-11-14,posadas_ita_ibate,Posadas,Itá Ibaté,1857.7,136.8,0.87,0.92,0.94
 2025-11-26,posadas_ita_ibate,Posadas,Itá Ibaté,1818.9,101.7,0.87,0.92,0.94
 2025-12-08,posadas_ita_ibate,Posadas,Itá Ibaté,1802.4,82.0,0.87,0.92,0.94
@@ -92,7 +91,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,posadas_ita_ibate,Posadas,Itá Ibaté,1890.2,166.3,0.87,0.92,0.94
 2026-10-16,posadas_ita_ibate,Posadas,Itá Ibaté,1851.5,155.7,0.87,0.92,0.94
 2026-10-28,posadas_ita_ibate,Posadas,Itá Ibaté,2360.0,630.3,0.87,0.92,0.94
-2025-11-02,ita_ibate_corrientes,Itá Ibaté,Corrientes,902.5,284.0,0.64,0.76,0.8
+2026-11-09,posadas_ita_ibate,Posadas,Itá Ibaté,587.4,225.0,0.87,0.92,0.94
 2025-11-14,ita_ibate_corrientes,Itá Ibaté,Corrientes,830.4,214.2,0.64,0.76,0.8
 2025-11-26,ita_ibate_corrientes,Itá Ibaté,Corrientes,758.5,142.3,0.64,0.76,0.8
 2025-12-08,ita_ibate_corrientes,Itá Ibaté,Corrientes,734.7,118.1,0.64,0.76,0.8
@@ -123,7 +122,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,ita_ibate_corrientes,Itá Ibaté,Corrientes,811.2,193.3,0.64,0.76,0.8
 2026-10-16,ita_ibate_corrientes,Itá Ibaté,Corrientes,761.9,187.3,0.64,0.76,0.8
 2026-10-28,ita_ibate_corrientes,Itá Ibaté,Corrientes,1430.7,796.3,0.64,0.76,0.8
-2025-11-02,corrientes_goya,Corrientes,Goya,803.3,170.1,0.48,0.69,0.61
+2026-11-09,ita_ibate_corrientes,Itá Ibaté,Corrientes,521.1,340.6,0.64,0.76,0.8
 2025-11-14,corrientes_goya,Corrientes,Goya,770.4,143.2,0.48,0.69,0.61
 2025-11-26,corrientes_goya,Corrientes,Goya,739.1,127.5,0.48,0.69,0.61
 2025-12-08,corrientes_goya,Corrientes,Goya,743.3,112.5,0.48,0.69,0.61
@@ -154,7 +153,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,corrientes_goya,Corrientes,Goya,741.5,115.0,0.48,0.69,0.61
 2026-10-16,corrientes_goya,Corrientes,Goya,836.9,214.4,0.48,0.69,0.61
 2026-10-28,corrientes_goya,Corrientes,Goya,1691.9,1043.4,0.48,0.69,0.61
-2025-11-02,goya_la_paz,Goya,La Paz,890.8,256.8,0.53,0.7,0.69
+2026-11-09,corrientes_goya,Corrientes,Goya,1150.8,855.3,0.48,0.69,0.61
 2025-11-14,goya_la_paz,Goya,La Paz,831.4,199.1,0.53,0.7,0.69
 2025-11-26,goya_la_paz,Goya,La Paz,764.3,186.1,0.53,0.7,0.69
 2025-12-08,goya_la_paz,Goya,La Paz,770.9,146.1,0.53,0.7,0.69
@@ -185,7 +184,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,goya_la_paz,Goya,La Paz,941.7,313.2,0.53,0.7,0.69
 2026-10-16,goya_la_paz,Goya,La Paz,931.4,301.2,0.53,0.7,0.69
 2026-10-28,goya_la_paz,Goya,La Paz,1448.0,801.0,0.53,0.7,0.69
-2025-11-02,la_paz_parana,La Paz,Paraná,670.0,150.9,0.67,0.8,0.8
+2026-11-09,goya_la_paz,Goya,La Paz,1460.6,1138.0,0.53,0.7,0.69
 2025-11-14,la_paz_parana,La Paz,Paraná,728.2,209.5,0.67,0.8,0.8
 2025-11-26,la_paz_parana,La Paz,Paraná,677.6,168.9,0.67,0.8,0.8
 2025-12-08,la_paz_parana,La Paz,Paraná,682.6,173.4,0.67,0.8,0.8
@@ -216,7 +215,7 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,la_paz_parana,La Paz,Paraná,841.8,303.7,0.67,0.8,0.8
 2026-10-16,la_paz_parana,La Paz,Paraná,725.0,185.8,0.67,0.8,0.8
 2026-10-28,la_paz_parana,La Paz,Paraná,838.9,286.9,0.67,0.8,0.8
-2025-11-02,parana_villa_constitucion,Paraná,Villa Constitución,1173.3,548.3,0.61,0.79,0.72
+2026-11-09,la_paz_parana,La Paz,Paraná,669.2,385.2,0.67,0.8,0.8
 2025-11-14,parana_villa_constitucion,Paraná,Villa Constitución,1108.1,481.8,0.61,0.79,0.72
 2025-11-26,parana_villa_constitucion,Paraná,Villa Constitución,835.0,221.9,0.61,0.79,0.72
 2025-12-08,parana_villa_constitucion,Paraná,Villa Constitución,1015.8,400.5,0.61,0.79,0.72
@@ -247,3 +246,4 @@ day,stretch,from_gauge,to_gauge,water_km2,beyond_permanent_km2,iou,recall,precis
 2026-10-04,parana_villa_constitucion,Paraná,Villa Constitución,1404.5,751.4,0.61,0.79,0.72
 2026-10-16,parana_villa_constitucion,Paraná,Villa Constitución,1279.4,621.7,0.61,0.79,0.72
 2026-10-28,parana_villa_constitucion,Paraná,Villa Constitución,1361.0,691.1,0.61,0.79,0.72
+2026-11-09,parana_villa_constitucion,Paraná,Villa Constitución,807.5,531.9,0.61,0.79,0.72
