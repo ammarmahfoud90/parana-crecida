@@ -1,5 +1,4 @@
 day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
-2026-05-15,26251,Puerto Iguazu,main,0.0,9.7,m,22.6,regulated
 2026-05-16,26251,Puerto Iguazu,main,0.0,9.6,m,22.0,regulated
 2026-05-17,26251,Puerto Iguazu,main,0.0,8.4,m,14.8,regulated
 2026-05-18,26251,Puerto Iguazu,main,0.0,6.2,m,3.4,regulated
@@ -179,7 +178,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26251,Puerto Iguazu,main,0.0,25.8,m,100.0,regulated
 2026-11-09,26251,Puerto Iguazu,main,0.0,25.8,m,100.0,regulated
 2026-11-10,26251,Puerto Iguazu,main,0.0,25.6,m,100.0,regulated
-2026-05-15,26252,Libertad,main,48.4,9.8,m,30.6,regulated
+2026-11-11,26251,Puerto Iguazu,main,0.0,25.2,m,100.0,regulated
 2026-05-16,26252,Libertad,main,48.4,9.9,m,31.7,regulated
 2026-05-17,26252,Libertad,main,48.4,9.5,m,29.0,regulated
 2026-05-18,26252,Libertad,main,48.4,8.6,m,21.0,regulated
@@ -359,7 +358,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26252,Libertad,main,48.4,25.0,m,100.0,regulated
 2026-11-09,26252,Libertad,main,48.4,25.2,m,100.0,regulated
 2026-11-10,26252,Libertad,main,48.4,25.3,m,100.0,regulated
-2026-05-15,26253,El Dorado,main,117.7,7.3,m,32.1,regulated
+2026-11-11,26252,Libertad,main,48.4,24.6,m,100.0,regulated
 2026-05-16,26253,El Dorado,main,117.7,7.5,m,35.9,regulated
 2026-05-17,26253,El Dorado,main,117.7,7.25,m,32.2,regulated
 2026-05-18,26253,El Dorado,main,117.7,6.7,m,24.2,regulated
@@ -539,7 +538,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26253,El Dorado,main,117.7,19.4,m,100.0,regulated
 2026-11-09,26253,El Dorado,main,117.7,19.4,m,100.0,regulated
 2026-11-10,26253,El Dorado,main,117.7,19.3,m,100.0,regulated
-2026-05-15,26254,Libertador,main,187.7,6.9,m,58.3,regulated
+2026-11-11,26253,El Dorado,main,117.7,19.2,m,100.0,regulated
 2026-05-16,26254,Libertador,main,187.7,6.82,m,57.0,regulated
 2026-05-17,26254,Libertador,main,187.7,6.73,m,55.2,regulated
 2026-05-18,26254,Libertador,main,187.7,6.5,m,51.6,regulated
@@ -718,7 +717,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26254,Libertador,main,187.7,14.48,m,100.0,regulated
 2026-11-09,26254,Libertador,main,187.7,14.48,m,100.0,regulated
 2026-11-10,26254,Libertador,main,187.7,14.48,m,100.0,regulated
-2026-05-15,26255,Santa Ana,main,296.3,7.17,m,25.0,regulated
+2026-11-11,26254,Libertador,main,187.7,14.28,m,100.0,regulated
 2026-05-16,26255,Santa Ana,main,296.3,7.17,m,25.0,regulated
 2026-05-17,26255,Santa Ana,main,296.3,7.25,m,36.4,regulated
 2026-05-18,26255,Santa Ana,main,296.3,7.32,m,45.8,regulated
@@ -898,7 +897,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26255,Santa Ana,main,296.3,8.98,m,95.9,regulated
 2026-11-09,26255,Santa Ana,main,296.3,8.98,m,96.9,regulated
 2026-11-10,26255,Santa Ana,main,296.3,8.98,m,96.9,regulated
-2026-05-15,26256,Posadas,main,334.2,9.87,m,81.8,regulated
+2026-11-11,26255,Santa Ana,main,296.3,8.98,m,96.9,regulated
 2026-05-16,26256,Posadas,main,334.2,9.88,m,82.2,regulated
 2026-05-17,26256,Posadas,main,334.2,10.0,m,86.5,regulated
 2026-05-18,26256,Posadas,main,334.2,10.1,m,90.0,regulated
@@ -1078,7 +1077,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26256,Posadas,main,334.2,10.09,m,85.4,regulated
 2026-11-09,26256,Posadas,main,334.2,10.1,m,85.7,regulated
 2026-11-10,26256,Posadas,main,334.2,10.13,m,86.8,regulated
-2026-05-15,26257,Ituzaingo,main,,0.9,m,13.8,regulated unrouted
+2026-11-11,26256,Posadas,main,334.2,10.14,m,87.5,regulated
 2026-05-16,26257,Ituzaingo,main,,1.0,m,17.9,regulated unrouted
 2026-05-17,26257,Ituzaingo,main,,0.4,m,4.0,regulated unrouted
 2026-05-18,26257,Ituzaingo,main,,0.24,m,0.8,regulated unrouted
@@ -1258,7 +1257,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26257,Ituzaingo,main,,3.55,m,100.0,regulated unrouted
 2026-11-09,26257,Ituzaingo,main,,3.54,m,100.0,regulated unrouted
 2026-11-10,26257,Ituzaingo,main,,3.5,m,100.0,regulated unrouted
-2026-05-15,26258,Ita Ibate,main,493.3,1.35,m,29.9,regulated
+2026-11-11,26257,Ituzaingo,main,,3.46,m,100.0,regulated unrouted
 2026-05-16,26258,Ita Ibate,main,493.3,1.3,m,27.7,regulated
 2026-05-17,26258,Ita Ibate,main,493.3,0.94,m,13.5,regulated
 2026-05-18,26258,Ita Ibate,main,493.3,0.6,m,4.0,regulated
@@ -1438,7 +1437,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26258,Ita Ibate,main,493.3,5.97,m,100.0,regulated
 2026-11-09,26258,Ita Ibate,main,493.3,5.88,m,100.0,regulated
 2026-11-10,26258,Ita Ibate,main,493.3,5.78,m,100.0,regulated
-2026-05-15,26259,Itati,main,585.0,2.23,m,19.9,regulated
+2026-11-11,26258,Ita Ibate,main,493.3,5.68,m,100.0,regulated
 2026-05-16,26259,Itati,main,585.0,2.4,m,25.0,regulated
 2026-05-17,26259,Itati,main,585.0,2.5,m,28.6,regulated
 2026-05-18,26259,Itati,main,585.0,2.1,m,17.3,regulated
@@ -1618,7 +1617,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26259,Itati,main,585.0,7.4,m,100.0,regulated
 2026-11-09,26259,Itati,main,585.0,7.42,m,100.0,regulated
 2026-11-10,26259,Itati,main,585.0,7.36,m,100.0,regulated
-2026-05-15,26260,Paso de la Patria,main,629.8,2.47,m,17.6,regulated
+2026-11-11,26259,Itati,main,585.0,7.32,m,100.0,regulated
 2026-05-16,26260,Paso de la Patria,main,629.8,2.58,m,19.5,regulated
 2026-05-17,26260,Paso de la Patria,main,629.8,2.7,m,21.7,regulated
 2026-05-18,26260,Paso de la Patria,main,629.8,2.64,m,20.7,regulated
@@ -1798,7 +1797,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26260,Paso de la Patria,main,629.8,7.1,m,100.0,regulated
 2026-11-09,26260,Paso de la Patria,main,629.8,7.09,m,100.0,regulated
 2026-11-10,26260,Paso de la Patria,main,629.8,7.05,m,100.0,regulated
-2026-05-15,26684,Yacyreta afluente,main,,10000.0,m3/s,27.6,flow regulated
+2026-11-11,26260,Paso de la Patria,main,629.8,7.0,m,100.0,regulated
 2026-05-16,26684,Yacyreta afluente,main,,9700.0,m3/s,24.3,flow regulated
 2026-05-17,26684,Yacyreta afluente,main,,8800.0,m3/s,17.1,flow regulated
 2026-05-18,26684,Yacyreta afluente,main,,8700.0,m3/s,14.5,flow regulated
@@ -1978,7 +1977,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26684,Yacyreta afluente,main,,28700.0,m3/s,100.0,flow regulated
 2026-11-09,26684,Yacyreta afluente,main,,28400.0,m3/s,100.0,flow regulated
 2026-11-10,26684,Yacyreta afluente,main,,28100.0,m3/s,100.0,flow regulated
-2026-05-15,26685,Yacyreta efluente,main,,9900.0,m3/s,20.7,flow regulated
+2026-11-11,26684,Yacyreta afluente,main,,27800.0,m3/s,100.0,flow regulated
 2026-05-16,26685,Yacyreta efluente,main,,7500.0,m3/s,6.5,flow regulated
 2026-05-17,26685,Yacyreta efluente,main,,7200.0,m3/s,5.4,flow regulated
 2026-05-18,26685,Yacyreta efluente,main,,8900.0,m3/s,13.4,flow regulated
@@ -2158,7 +2157,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26685,Yacyreta efluente,main,,28700.0,m3/s,100.0,flow regulated
 2026-11-09,26685,Yacyreta efluente,main,,27800.0,m3/s,100.0,flow regulated
 2026-11-10,26685,Yacyreta efluente,main,,27600.0,m3/s,100.0,flow regulated
-2026-05-15,26690,Confluencia,main,,9399.2,m3/s,32.5,bad_snap flow
+2026-11-11,26685,Yacyreta efluente,main,,27500.0,m3/s,100.0,flow regulated
 2026-05-16,26690,Confluencia,main,,8694.75,m3/s,23.3,bad_snap flow
 2026-05-17,26690,Confluencia,main,,7937.29,m3/s,15.1,bad_snap flow
 2026-05-18,26690,Confluencia,main,,8779.97,m3/s,23.6,bad_snap flow
@@ -2338,7 +2337,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26690,Confluencia,main,,26966.0,m3/s,100.0,bad_snap flow
 2026-11-09,26690,Confluencia,main,,25804.1,m3/s,100.0,bad_snap flow
 2026-11-10,26690,Confluencia,main,,24058.2,m3/s,100.0,bad_snap flow
-2026-05-15,26261,Corrientes,main,659.8,2.58,m,23.8,
+2026-11-11,26690,Confluencia,main,,22808.5,m3/s,100.0,bad_snap flow
 2026-05-16,26261,Corrientes,main,659.8,2.68,m,27.5,
 2026-05-17,26261,Corrientes,main,659.8,2.77,m,30.8,
 2026-05-18,26261,Corrientes,main,659.8,2.68,m,28.6,
@@ -2518,7 +2517,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26261,Corrientes,main,659.8,6.95,m,100.0,
 2026-11-09,26261,Corrientes,main,659.8,6.91,m,100.0,
 2026-11-10,26261,Corrientes,main,659.8,6.87,m,100.0,
-2026-05-15,26263,Empedrado,main,717.2,2.38,m,28.8,
+2026-11-11,26261,Corrientes,main,659.8,6.84,m,100.0,
 2026-05-16,26263,Empedrado,main,717.2,2.4,m,30.2,
 2026-05-17,26263,Empedrado,main,717.2,2.6,m,38.6,
 2026-05-18,26263,Empedrado,main,717.2,2.55,m,36.7,
@@ -2698,7 +2697,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26263,Empedrado,main,717.2,6.0,m,100.0,
 2026-11-09,26263,Empedrado,main,717.2,6.0,m,100.0,
 2026-11-10,26263,Empedrado,main,717.2,5.94,m,100.0,
-2026-05-15,26264,Bella Vista,main,786.0,2.72,m,20.5,
+2026-11-11,26263,Empedrado,main,717.2,5.92,m,100.0,
 2026-05-16,26264,Bella Vista,main,786.0,2.72,m,20.6,
 2026-05-17,26264,Bella Vista,main,786.0,2.81,m,22.0,
 2026-05-18,26264,Bella Vista,main,786.0,2.87,m,23.3,
@@ -2878,7 +2877,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26264,Bella Vista,main,786.0,6.36,m,100.0,
 2026-11-09,26264,Bella Vista,main,786.0,6.34,m,100.0,
 2026-11-10,26264,Bella Vista,main,786.0,6.34,m,100.0,
-2026-05-15,26265,Goya,main,869.5,2.81,m,26.8,
+2026-11-11,26264,Bella Vista,main,786.0,6.3,m,100.0,
 2026-05-16,26265,Goya,main,869.5,2.8,m,27.4,
 2026-05-17,26265,Goya,main,869.5,2.77,m,27.1,
 2026-05-18,26265,Goya,main,869.5,2.85,m,30.1,
@@ -3058,7 +3057,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26265,Goya,main,869.5,6.01,m,100.0,
 2026-11-09,26265,Goya,main,869.5,5.98,m,100.0,
 2026-11-10,26265,Goya,main,869.5,5.96,m,100.0,
-2026-05-15,26267,Esquina,main,1000.8,2.62,m,17.8,
+2026-11-11,26265,Goya,main,869.5,5.93,m,100.0,
 2026-05-16,26267,Esquina,main,1000.8,2.54,m,16.6,
 2026-05-17,26267,Esquina,main,1000.8,2.51,m,16.2,
 2026-05-18,26267,Esquina,main,1000.8,2.5,m,16.0,
@@ -3238,7 +3237,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26267,Esquina,main,1000.8,5.59,m,100.0,
 2026-11-09,26267,Esquina,main,1000.8,5.58,m,100.0,
 2026-11-10,26267,Esquina,main,1000.8,5.56,m,100.0,
-2026-05-15,26268,La Paz,main,1085.9,3.28,m,32.2,
+2026-11-11,26267,Esquina,main,1000.8,5.55,m,100.0,
 2026-05-16,26268,La Paz,main,1085.9,3.18,m,30.8,
 2026-05-17,26268,La Paz,main,1085.9,3.07,m,29.1,
 2026-05-18,26268,La Paz,main,1085.9,3.03,m,28.8,
@@ -3418,7 +3417,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26268,La Paz,main,1085.9,6.05,m,100.0,
 2026-11-09,26268,La Paz,main,1085.9,6.13,m,100.0,
 2026-11-10,26268,La Paz,main,1085.9,6.2,m,100.0,
-2026-05-15,26269,Santa Elena,main,1112.5,3.21,m,20.5,
+2026-11-11,26268,La Paz,main,1085.9,6.25,m,100.0,
 2026-05-16,26269,Santa Elena,main,1112.5,3.14,m,19.4,
 2026-05-17,26269,Santa Elena,main,1112.5,3.08,m,18.7,
 2026-05-18,26269,Santa Elena,main,1112.5,3.02,m,18.0,
@@ -3598,7 +3597,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26269,Santa Elena,main,1112.5,5.9,m,100.0,
 2026-11-09,26269,Santa Elena,main,1112.5,6.05,m,100.0,
 2026-11-10,26269,Santa Elena,main,1112.5,6.24,m,100.0,
-2026-05-15,26270,Hernandarias,main,1149.9,2.8,m,20.7,
+2026-11-11,26269,Santa Elena,main,1112.5,6.34,m,100.0,
 2026-05-16,26270,Hernandarias,main,1149.9,2.77,m,20.5,
 2026-05-17,26270,Hernandarias,main,1149.9,2.7,m,19.1,
 2026-05-18,26270,Hernandarias,main,1149.9,2.65,m,18.2,
@@ -3773,7 +3772,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26270,Hernandarias,main,1149.9,5.75,m,100.0,
 2026-11-09,26270,Hernandarias,main,1149.9,5.94,m,100.0,
 2026-11-10,26270,Hernandarias,main,1149.9,6.1,m,100.0,
-2026-05-15,26271,Parana,main,1229.3,2.4,m,25.0,
+2026-11-11,26270,Hernandarias,main,1149.9,6.26,m,100.0,
 2026-05-16,26271,Parana,main,1229.3,2.38,m,25.0,
 2026-05-17,26271,Parana,main,1229.3,2.34,m,24.3,
 2026-05-18,26271,Parana,main,1229.3,2.3,m,23.8,
@@ -3953,7 +3952,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26271,Parana,main,1229.3,4.85,m,98.3,
 2026-11-09,26271,Parana,main,1229.3,5.05,m,100.0,
 2026-11-10,26271,Parana,main,1229.3,5.23,m,100.0,
-2026-05-15,26273,Diamante,main,1287.9,2.8,m,24.1,
+2026-11-11,26271,Parana,main,1229.3,5.38,m,100.0,
 2026-05-16,26273,Diamante,main,1287.9,2.79,m,24.4,
 2026-05-17,26273,Diamante,main,1287.9,2.75,m,24.0,
 2026-05-18,26273,Diamante,main,1287.9,2.7,m,23.4,
@@ -4133,7 +4132,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26273,Diamante,main,1287.9,5.1,m,97.4,
 2026-11-09,26273,Diamante,main,1287.9,5.2,m,98.8,
 2026-11-10,26273,Diamante,main,1287.9,5.37,m,100.0,
-2026-05-15,26275,San Lorenzo,main,1369.1,2.48,m,17.5,
+2026-11-11,26273,Diamante,main,1287.9,5.52,m,100.0,
 2026-05-16,26275,San Lorenzo,main,1369.1,2.48,m,17.6,
 2026-05-17,26275,San Lorenzo,main,1369.1,2.44,m,17.2,
 2026-05-18,26275,San Lorenzo,main,1369.1,2.42,m,17.3,
@@ -4313,7 +4312,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26275,San Lorenzo,main,1369.1,4.59,m,84.9,
 2026-11-09,26275,San Lorenzo,main,1369.1,4.64,m,85.6,
 2026-11-10,26275,San Lorenzo,main,1369.1,4.64,m,85.4,
-2026-05-15,26276,Rosario,main,1390.5,2.32,m,19.4,
+2026-11-11,26275,San Lorenzo,main,1369.1,4.84,m,88.8,
 2026-05-16,26276,Rosario,main,1390.5,2.35,m,20.3,
 2026-05-17,26276,Rosario,main,1390.5,2.32,m,20.6,
 2026-05-18,26276,Rosario,main,1390.5,2.26,m,20.0,
@@ -4493,7 +4492,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26276,Rosario,main,1390.5,4.18,m,90.6,
 2026-11-09,26276,Rosario,main,1390.5,4.22,m,90.9,
 2026-11-10,26276,Rosario,main,1390.5,4.3,m,91.9,
-2026-05-15,26277,Villa Constitucion,main,1440.5,1.85,m,14.8,
+2026-11-11,26276,Rosario,main,1390.5,4.4,m,93.0,
 2026-05-16,26277,Villa Constitucion,main,1440.5,1.79,m,14.5,
 2026-05-17,26277,Villa Constitucion,main,1440.5,1.71,m,13.4,
 2026-05-18,26277,Villa Constitucion,main,1440.5,1.85,m,15.9,
@@ -4673,7 +4672,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26277,Villa Constitucion,main,1440.5,3.3,m,77.4,
 2026-11-09,26277,Villa Constitucion,main,1440.5,3.38,m,79.1,
 2026-11-10,26277,Villa Constitucion,main,1440.5,3.42,m,79.8,
-2026-05-15,26274,Victoria,victoria,,3.17,m,17.6,
+2026-11-11,26277,Villa Constitucion,main,1440.5,3.46,m,80.8,
 2026-05-16,26274,Victoria,victoria,,3.18,m,18.1,
 2026-05-17,26274,Victoria,victoria,,3.18,m,18.3,
 2026-05-18,26274,Victoria,victoria,,3.18,m,18.5,
@@ -4853,7 +4852,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26274,Victoria,victoria,,4.2,m,77.9,
 2026-11-09,26274,Victoria,victoria,,4.21,m,78.0,
 2026-11-10,26274,Victoria,victoria,,4.21,m,77.7,
-2026-05-15,26278,San Nicolas,main,,1.69,m,17.0,bad_snap
+2026-11-11,26274,Victoria,victoria,,4.24,m,78.0,
 2026-05-16,26278,San Nicolas,main,,1.58,m,15.4,bad_snap
 2026-05-17,26278,San Nicolas,main,,1.49,m,14.1,bad_snap
 2026-05-18,26278,San Nicolas,main,,1.68,m,17.6,bad_snap
@@ -5033,7 +5032,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26278,San Nicolas,main,,3.0,m,78.8,bad_snap
 2026-11-09,26278,San Nicolas,main,,3.08,m,80.9,bad_snap
 2026-11-10,26278,San Nicolas,main,,2.1,m,33.9,bad_snap
-2026-05-15,26279,Ramallo,main,,1.58,m,19.5,bad_snap
+2026-11-11,26278,San Nicolas,main,,3.12,m,81.3,bad_snap
 2026-05-16,26279,Ramallo,main,,1.39,m,16.2,bad_snap
 2026-05-17,26279,Ramallo,main,,1.31,m,15.4,bad_snap
 2026-05-18,26279,Ramallo,main,,1.6,m,20.8,bad_snap
@@ -5213,7 +5212,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26279,Ramallo,main,,2.62,m,77.3,bad_snap
 2026-11-09,26279,Ramallo,main,,2.68,m,79.3,bad_snap
 2026-11-10,26279,Ramallo,main,,2.66,m,78.3,bad_snap
-2026-05-15,26280,San Pedro,main,,1.49,m,26.2,bad_snap
+2026-11-11,26279,Ramallo,main,,2.66,m,78.3,bad_snap
 2026-05-16,26280,San Pedro,main,,1.23,m,17.7,bad_snap
 2026-05-17,26280,San Pedro,main,,1.06,m,13.4,bad_snap
 2026-05-18,26280,San Pedro,main,,1.35,m,21.6,bad_snap
@@ -5393,7 +5392,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26280,San Pedro,main,,2.12,m,75.9,bad_snap
 2026-11-09,26280,San Pedro,main,,2.17,m,78.2,bad_snap
 2026-11-10,26280,San Pedro,main,,2.07,m,72.8,bad_snap
-2026-05-15,26281,Baradero,tributary,,1.3,m,28.4,unrouted
+2026-11-11,26280,San Pedro,main,,2.0,m,67.6,bad_snap
 2026-05-16,26281,Baradero,tributary,,1.1,m,20.2,unrouted
 2026-05-17,26281,Baradero,tributary,,0.98,m,16.0,unrouted
 2026-05-18,26281,Baradero,tributary,,1.35,m,29.7,unrouted
@@ -5573,7 +5572,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26281,Baradero,tributary,,1.98,m,78.2,unrouted
 2026-11-09,26281,Baradero,tributary,,2.0,m,78.6,unrouted
 2026-11-10,26281,Baradero,tributary,,1.85,m,71.4,unrouted
-2026-05-15,26282,Zarate,palmas,,0.97,m,62.0,bad_snap tide_affected
+2026-11-11,26281,Baradero,tributary,,1.77,m,65.6,unrouted
 2026-05-16,26282,Zarate,palmas,,0.81,m,46.6,bad_snap tide_affected
 2026-05-17,26282,Zarate,palmas,,1.15,m,77.9,bad_snap tide_affected
 2026-05-18,26282,Zarate,palmas,,1.08,m,73.7,bad_snap tide_affected
@@ -5750,7 +5749,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-06,26282,Zarate,palmas,,0.83,m,48.3,bad_snap tide_affected
 2026-11-07,26282,Zarate,palmas,,1.64,m,93.5,bad_snap tide_affected
 2026-11-10,26282,Zarate,palmas,,0.93,m,55.7,bad_snap tide_affected
-2026-05-15,26283,Campana,palmas,,0.6,m,37.5,tide_affected unrouted
+2026-11-11,26282,Zarate,palmas,,1.0,m,60.7,bad_snap tide_affected
 2026-05-16,26283,Campana,palmas,,0.4,m,20.0,tide_affected unrouted
 2026-05-17,26283,Campana,palmas,,0.8,m,57.9,tide_affected unrouted
 2026-05-18,26283,Campana,palmas,,0.7,m,50.0,tide_affected unrouted
@@ -5930,7 +5929,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26283,Campana,palmas,,1.1,m,75.0,tide_affected unrouted
 2026-11-09,26283,Campana,palmas,,0.8,m,50.0,tide_affected unrouted
 2026-11-10,26283,Campana,palmas,,0.55,m,29.2,tide_affected unrouted
-2026-05-15,26284,Escobar,palmas,,0.9,m,67.5,tide_affected unrouted
+2026-11-11,26283,Campana,palmas,,0.4,m,19.3,tide_affected unrouted
 2026-05-16,26284,Escobar,palmas,,0.8,m,58.3,tide_affected unrouted
 2026-05-17,26284,Escobar,palmas,,1.3,m,90.0,tide_affected unrouted
 2026-05-18,26284,Escobar,palmas,,0.98,m,74.6,tide_affected unrouted
@@ -6109,7 +6108,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26284,Escobar,palmas,,1.1,m,76.7,tide_affected unrouted
 2026-11-09,26284,Escobar,palmas,,0.7,m,50.0,tide_affected unrouted
 2026-11-10,26284,Escobar,palmas,,0.8,m,50.0,tide_affected unrouted
-2026-05-15,26286,Canal Nuevo,ibicuy,1696.6,1.88,m,63.9,tide_affected
+2026-11-11,26284,Escobar,palmas,,0.8,m,50.0,tide_affected unrouted
 2026-05-16,26286,Canal Nuevo,ibicuy,1696.6,1.8,m,56.5,tide_affected
 2026-05-17,26286,Canal Nuevo,ibicuy,1696.6,1.73,m,48.6,tide_affected
 2026-05-18,26286,Canal Nuevo,ibicuy,1696.6,1.9,m,64.9,tide_affected
@@ -6289,7 +6288,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26286,Canal Nuevo,ibicuy,1696.6,2.02,m,76.5,tide_affected
 2026-11-09,26286,Canal Nuevo,ibicuy,1696.6,2.1,m,84.1,tide_affected
 2026-11-10,26286,Canal Nuevo,ibicuy,1696.6,2.06,m,80.4,tide_affected
-2026-05-15,26287,Ibicuy,ibicuy,1628.4,0.7,m,32.5,tide_affected
+2026-11-11,26286,Canal Nuevo,ibicuy,1696.6,1.9,m,67.9,tide_affected
 2026-05-16,26287,Ibicuy,ibicuy,1628.4,0.45,m,20.1,tide_affected
 2026-05-17,26287,Ibicuy,ibicuy,1628.4,0.5,m,22.9,tide_affected
 2026-05-18,26287,Ibicuy,ibicuy,1628.4,0.7,m,32.5,tide_affected
@@ -6469,7 +6468,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26287,Ibicuy,ibicuy,1628.4,1.08,m,70.0,tide_affected
 2026-11-09,26287,Ibicuy,ibicuy,1628.4,1.1,m,71.4,tide_affected
 2026-11-10,26287,Ibicuy,ibicuy,1628.4,1.0,m,64.3,tide_affected
-2026-05-15,26290,Guazucito,guazu,,1.2,m,65.6,tide_affected
+2026-11-11,26287,Ibicuy,ibicuy,1628.4,1.0,m,64.3,tide_affected
 2026-05-16,26290,Guazucito,guazu,,1.0,m,50.0,tide_affected
 2026-05-17,26290,Guazucito,guazu,,1.4,m,77.5,tide_affected
 2026-05-18,26290,Guazucito,guazu,,1.6,m,87.8,tide_affected
@@ -6648,7 +6647,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26290,Guazucito,guazu,,1.55,m,84.4,tide_affected
 2026-11-09,26290,Guazucito,guazu,,1.5,m,82.5,tide_affected
 2026-11-10,26290,Guazucito,guazu,,0.3,m,0.0,tide_affected
-2026-05-15,26291,Tigre,estuary,,1.0,m,50.0,tide_affected unrouted
+2026-11-11,26290,Guazucito,guazu,,1.2,m,65.9,tide_affected
 2026-05-16,26291,Tigre,estuary,,1.5,m,85.0,tide_affected unrouted
 2026-05-17,26291,Tigre,estuary,,1.6,m,90.0,tide_affected unrouted
 2026-05-18,26291,Tigre,estuary,,1.1,m,58.3,tide_affected unrouted
@@ -6828,7 +6827,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26291,Tigre,estuary,,1.53,m,76.9,tide_affected unrouted
 2026-11-09,26291,Tigre,estuary,,1.0,m,42.3,tide_affected unrouted
 2026-11-10,26291,Tigre,estuary,,0.9,m,33.3,tide_affected unrouted
-2026-05-15,26294,San Fernando,estuary,,0.91,m,38.6,tide_affected unrouted
+2026-11-11,26291,Tigre,estuary,,1.2,m,58.3,tide_affected unrouted
 2026-05-16,26294,San Fernando,estuary,,0.95,m,41.3,tide_affected unrouted
 2026-05-17,26294,San Fernando,estuary,,1.61,m,89.1,tide_affected unrouted
 2026-05-18,26294,San Fernando,estuary,,1.18,m,66.1,tide_affected unrouted
@@ -7008,7 +7007,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26294,San Fernando,estuary,,1.17,m,60.2,tide_affected unrouted
 2026-11-09,26294,San Fernando,estuary,,0.94,m,38.2,tide_affected unrouted
 2026-11-10,26294,San Fernando,estuary,,0.81,m,25.0,tide_affected unrouted
-2026-05-15,26296,Olivos,estuary,,0.8,m,41.7,tide_affected unrouted
+2026-11-11,26294,San Fernando,estuary,,1.0,m,44.6,tide_affected unrouted
 2026-05-16,26296,Olivos,estuary,,0.9,m,50.0,tide_affected unrouted
 2026-05-17,26296,Olivos,estuary,,1.5,m,86.2,tide_affected unrouted
 2026-05-18,26296,Olivos,estuary,,1.0,m,58.3,tide_affected unrouted
@@ -7185,7 +7184,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26296,Olivos,estuary,,1.5,m,81.4,tide_affected unrouted
 2026-11-09,26296,Olivos,estuary,,0.8,m,33.3,tide_affected unrouted
 2026-11-10,26296,Olivos,estuary,,0.8,m,33.3,tide_affected unrouted
-2026-05-15,26262,Barranqueras,tributary,,2.51,m,17.7,bad_snap
+2026-11-11,26296,Olivos,estuary,,1.0,m,50.0,tide_affected unrouted
 2026-05-16,26262,Barranqueras,tributary,,2.61,m,19.4,bad_snap
 2026-05-17,26262,Barranqueras,tributary,,2.71,m,21.2,bad_snap
 2026-05-18,26262,Barranqueras,tributary,,2.62,m,20.1,bad_snap
@@ -7365,7 +7364,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26262,Barranqueras,tributary,,6.8,m,100.0,bad_snap
 2026-11-09,26262,Barranqueras,tributary,,6.78,m,100.0,bad_snap
 2026-11-10,26262,Barranqueras,tributary,,6.75,m,100.0,bad_snap
-2026-05-15,26266,Reconquista,tributary,,2.98,m,23.4,
+2026-11-11,26262,Barranqueras,tributary,,6.7,m,100.0,bad_snap
 2026-05-16,26266,Reconquista,tributary,,2.94,m,23.0,
 2026-05-17,26266,Reconquista,tributary,,2.94,m,23.2,
 2026-05-18,26266,Reconquista,tributary,,3.0,m,24.6,
@@ -7545,7 +7544,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26266,Reconquista,tributary,,5.85,m,100.0,
 2026-11-09,26266,Reconquista,tributary,,5.81,m,100.0,
 2026-11-10,26266,Reconquista,tributary,,5.8,m,100.0,
-2026-05-15,26272,Santa Fe,tributary,,2.68,m,19.5,bad_snap
+2026-11-11,26266,Reconquista,tributary,,5.76,m,100.0,
 2026-05-16,26272,Santa Fe,tributary,,2.68,m,19.6,bad_snap
 2026-05-17,26272,Santa Fe,tributary,,2.65,m,19.3,bad_snap
 2026-05-18,26272,Santa Fe,tributary,,2.62,m,18.9,bad_snap
@@ -7725,7 +7724,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26272,Santa Fe,tributary,,4.76,m,86.8,bad_snap
 2026-11-09,26272,Santa Fe,tributary,,4.87,m,88.2,bad_snap
 2026-11-10,26272,Santa Fe,tributary,,5.02,m,90.3,bad_snap
-2026-05-15,26652,Puerto Pilcomayo,tributary,,3585.59,m3/s,42.1,flow
+2026-11-11,26272,Santa Fe,tributary,,5.18,m,93.9,bad_snap
 2026-05-16,26652,Puerto Pilcomayo,tributary,,3585.59,m3/s,41.6,flow
 2026-05-17,26652,Puerto Pilcomayo,tributary,,3585.59,m3/s,40.9,flow
 2026-05-18,26652,Puerto Pilcomayo,tributary,,3577.1,m3/s,40.5,flow
@@ -7905,7 +7904,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26652,Puerto Pilcomayo,tributary,,2729.22,m3/s,44.8,flow
 2026-11-09,26652,Puerto Pilcomayo,tributary,,2715.37,m3/s,44.5,flow
 2026-11-10,26652,Puerto Pilcomayo,tributary,,2660.37,m3/s,43.0,flow
-2026-05-15,26442,Puerto Formosa,tributary,,5.2,m,49.7,bad_snap
+2026-11-11,26652,Puerto Pilcomayo,tributary,,2605.98,m3/s,41.7,flow
 2026-05-16,26442,Puerto Formosa,tributary,,5.21,m,50.0,bad_snap
 2026-05-17,26442,Puerto Formosa,tributary,,5.21,m,50.0,bad_snap
 2026-05-18,26442,Puerto Formosa,tributary,,5.21,m,50.0,bad_snap
@@ -8085,7 +8084,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26442,Puerto Formosa,tributary,,5.49,m,84.2,bad_snap
 2026-11-09,26442,Puerto Formosa,tributary,,5.44,m,83.7,bad_snap
 2026-11-10,26442,Puerto Formosa,tributary,,5.39,m,83.3,bad_snap
-2026-05-15,26300,Bermejo,tributary,,3.68,m,27.8,
+2026-11-11,26442,Puerto Formosa,tributary,,5.33,m,82.7,bad_snap
 2026-05-16,26300,Bermejo,tributary,,3.72,m,29.2,
 2026-05-17,26300,Bermejo,tributary,,3.78,m,31.3,
 2026-05-18,26300,Bermejo,tributary,,3.75,m,31.2,
@@ -8265,7 +8264,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26300,Bermejo,tributary,,5.81,m,86.0,
 2026-11-09,26300,Bermejo,tributary,,5.8,m,85.8,
 2026-11-10,26300,Bermejo,tributary,,5.74,m,84.7,
-2026-05-15,26605,Andresito,tributary,,550.2,m3/s,19.8,flow
+2026-11-11,26300,Bermejo,tributary,,5.72,m,84.4,
 2026-05-16,26605,Andresito,tributary,,627.75,m3/s,24.7,flow
 2026-05-17,26605,Andresito,tributary,,584.29,m3/s,21.6,flow
 2026-05-18,26605,Andresito,tributary,,419.97,m3/s,10.0,flow
@@ -8445,3 +8444,4 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-08,26605,Andresito,tributary,,7756.0,m3/s,98.0,flow
 2026-11-09,26605,Andresito,tributary,,8007.07,m3/s,98.7,flow
 2026-11-10,26605,Andresito,tributary,,4839.16,m3/s,92.4,flow
+2026-11-11,26605,Andresito,tributary,,4641.47,m3/s,92.2,flow
