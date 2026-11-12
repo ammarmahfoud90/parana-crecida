@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-12T17:10:50-03:00",
+ "generated_at": "2026-11-12T20:43:56-03:00",
  "last_data_day": "2026-11-11",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -480,7 +480,7 @@
    "unit": "m",
    "day": "2026-11-11",
    "value": 3.12,
-   "change": 1.02,
+   "change": 0.02,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
