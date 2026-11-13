@@ -146,8 +146,13 @@ def test_the_exported_parameters_are_the_ones_in_the_code():
     assert payload["vh_threshold_db"] == fw.VH_THRESHOLD_DB
     assert payload["hand_limit_m"] == fw.HAND_LIMIT_M
     assert payload["window_days"] == fw.WINDOW_DAYS
-    if payload.get("vh_floor_db") is not None:
-        assert payload["vh_floor_db"] == fw.VH_FLOOR_DB
+    # A lower bound on the water class shipped for a week, unmeasured, and
+    # removed the darkest water on the river. A payload still carrying one
+    # was measured with it.
+    assert payload.get("vh_floor_db") is None, (
+        "the published record was measured with the -30 dB floor, which "
+        "removes calm open water; it has to be rebuilt"
+    )
 
 
 def test_the_publication_floor_in_the_data_is_the_one_in_the_code():
@@ -180,7 +185,6 @@ def test_the_method_document_states_the_parameters_in_use():
     text = DOCS.read_text(encoding="utf-8")
     for label, value in (
         ("VH threshold", f"{abs(fw.VH_THRESHOLD_DB):g}"),
-        ("VH floor", f"{abs(fw.VH_FLOOR_DB):g}"),
         ("HAND limit", f"{fw.HAND_LIMIT_M:g}"),
         ("window", f"{fw.WINDOW_DAYS:g}"),
         ("coverage floor", f"{fw.MIN_COVERAGE * 100:g}"),

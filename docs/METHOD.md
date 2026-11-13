@@ -26,7 +26,7 @@ daily job's Earth Engine step, which is skipped when no credential is set.
 | 3 | Which 12-day windows are missing, anchored to the last one attempted | `floodwater._grid()`, `floodwater.WINDOW_DAYS = 12` |
 | 4 | `COPERNICUS/S1_GRD`, IW mode, dual-pol scenes carrying VH, `[start, end]` **inclusive** | `floodwater._vh()` |
 | 5 | `.mosaic()` over the window, `focal_median` at **50 m**, clipped to the corridor | `flooded.SPECKLE_RADIUS_M` |
-| 6 | Water where VH < **−25 dB** *and* VH > **−30 dB** *and* MERIT HAND ≤ **10 m** | `floodwater.VH_THRESHOLD_DB`, `VH_FLOOR_DB`, `HAND_LIMIT_M`, band `hnd` of `MERIT/Hydro/v1_0_1` |
+| 6 | Water where VH < **−25 dB** *and* MERIT HAND ≤ **10 m**. No lower bound: calm water here sits below −30 dB | `floodwater.VH_THRESHOLD_DB`, `HAND_LIMIT_M`, band `hnd` of `MERIT/Hydro/v1_0_1` |
 | 7 | Permanent channel: `JRC/GSW1_4/GlobalSurfaceWater` `occurrence > 90` **or** `JRC/GSW1_4/YearlyHistory` `waterClass == 3` in **2021** | `floodwater.permanent_water()` |
 | 8 | Observed area, from the mosaic's own mask, at 200 m | `floodwater.observed_km2()` |
 | 9 | Acquisition dates, scene count, relative orbits, pass directions, platforms | `floodwater.acquisitions()` |
@@ -93,11 +93,12 @@ something that may or may not have been adopted.
 
 | artefact | role | fitted or scored against | status |
 |---|---|---|---|
-| `floodwater.water_mask`, VH < −25 dB ∧ > −30 dB ∧ HAND ≤ 10 m | **production mask** | tuned against Sentinel-2 MNDWI water, 2026-10-22 | **live**, and the tuning is in-sample — see below |
+| `floodwater.water_mask`, VH < −25 dB ∧ HAND ≤ 10 m | **production mask** | tuned against Sentinel-2 MNDWI water, 2026-10-22 | **live**, and the tuning is in-sample — see below |
 | `scripts/validate_mask.py` → `data/mask_skill.json` | **validation**, and the publishing gate | Sentinel-2 MNDWI water, 2026-10-22, one date | live; hand-run, not in CI |
 | `floodwater.permanent_water()` | **reference layer** | JRC GSW occurrence ∪ 2021 water class | live |
 | `floodwater.MIN_COVERAGE` | **quality filter** | observed share of the corridor | live |
 | `export.MIN_CHANNEL_FRACTION` | **quality filter** | the series' own median channel detection | live |
+| A −30 dB lower bound on the water class | "noise rejection" | nothing — it was not measured | **withdrawn** 2026-11-12 after a week in production. Median VH over the permanent channel is −31.8 dB between Posadas and Itá Ibaté, so it removed 73% of that reach's water |
 | `flooded.water_mask`, per-stretch VV thresholds | calibration | JRC permanent water over the 2021 bajante | **superseded.** IoU 0.59 against 0.69. Not run, not published; kept because `validate_mask.py` scores the live mask against it |
 | `flooded.SLOPE_LIMIT_DEG` slope mask | calibration aid, gorge only | terrain shadow | **superseded** by HAND |
 | `flooded.MIN_COVERAGE`, `MIN_PLAUSIBLE_FRACTION` | quality filters | corridor coverage; JRC permanent water | **superseded.** The second never ran: it was only consumed by `area_series(floor_km2=)` while `build()` used `composite_series`. The reasoning survives in `export.MIN_CHANNEL_FRACTION` |

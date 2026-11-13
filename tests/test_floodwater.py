@@ -658,3 +658,67 @@ def test_the_published_record_explains_what_the_correlation_is_for():
         pytest.skip("no stage correlations in the export")
     note = (payload.get("stage_correlation_note") or "").lower()
     assert "context, not validation" in note
+
+
+def test_a_half_built_record_publishes_no_whole_river_figure(tmp_path):
+    """A rebuild is an hour of Earth Engine calls and saves as it goes.
+
+    What it saves part-way is marked partial, and a partial record must not
+    produce a river-wide number: its union series stops wherever the run
+    was interrupted.
+    """
+    source = write_source(
+        tmp_path,
+        [row("upper", [100.0, 110.0, 120.0])],
+        river=union([95.0, 105.0, 115.0], ["upper"]),
+    )
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload["partial"] = True
+    source.write_text(json.dumps(payload), encoding="utf-8")
+
+    export_floodwater(Passing(), source_path=source,
+                      skill_path=write_skill(tmp_path, {"upper": GOOD}),
+                      out_dir=tmp_path)
+    out = json.loads((tmp_path / "floodwater.json").read_text(encoding="utf-8"))
+    assert out["river"] == []
+    assert "re-measured" in out["river_unavailable"]
+
+
+def test_the_water_test_has_no_lower_bound():
+    """A floor at -30 dB shipped for a week and removed the river.
+
+    Calm open water is the darkest target in a VH scene. Over the permanent
+    channel between Posadas and Ita Ibate the median is -31.8 dB and 81% of
+    it lies below -30, so a lower bound "to reject noise" cut that reach
+    from 2,167 km2 to 587 and the whole-river figure to 3,764. It was added
+    without a measurement, and this is here so the next one is not.
+    """
+    import inspect
+
+    from parana_crecida import floodwater as fw
+
+    assert not hasattr(fw, "VH_FLOOR_DB")
+    source = inspect.getsource(fw.water_mask)
+    assert ".gt(" not in source and ".gte(" not in source, (
+        "water_mask has a lower bound on backscatter again; measure what it "
+        "does to the permanent channel before it ships"
+    )
+
+
+def test_a_series_is_never_extended_with_a_different_method():
+    """Thirty cycles one way and one cycle another is not a series.
+
+    The daily job appended a cycle measured with a twelve-day window and a
+    floor to thirty measured with eleven days and none, and published the
+    result as one line with a 40% cliff at the end.
+    """
+    import inspect
+
+    from parana_crecida import floodwater as fw
+
+    assert fw.MASK_VERSION
+    source = inspect.getsource(fw.rebuild)
+    assert 'payload.get("mask_version") != MASK_VERSION' in source
+    assert source.index("mask_version") < source.index("_grid("), (
+        "the method check has to come before any cycle is measured"
+    )

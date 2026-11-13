@@ -50,7 +50,6 @@ def test_the_manifest_describes_the_parameters_in_production(manifest):
     assert manifest["parameters"] == {
         "vh_threshold_db": fw.VH_THRESHOLD_DB,
         "hand_limit_m": fw.HAND_LIMIT_M,
-        "vh_floor_db": fw.VH_FLOOR_DB,
     }
 
 

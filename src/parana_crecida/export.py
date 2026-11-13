@@ -851,6 +851,11 @@ def _river_series(
     leave a whole-river total standing for a reach that no longer belongs
     in it.
     """
+    if payload.get("partial"):
+        return [], [], (
+            "the water record is part-way through being re-measured, so there "
+            "is no whole-river figure to publish yet."
+        )
     rows = payload.get("river")
     if not rows:
         return [], [], (
@@ -1004,9 +1009,9 @@ def export_floodwater(
         "note": payload.get("note"),
         "method": payload.get("method"),
         "vh_threshold_db": payload.get("vh_threshold_db"),
-        "vh_floor_db": payload.get("vh_floor_db"),
         "hand_limit_m": payload.get("hand_limit_m"),
         "window_days": payload.get("window_days"),
+        "mask_version": payload.get("mask_version"),
         "window": payload.get("window"),
         "min_coverage": payload.get("min_coverage"),
         "skill": skill or payload.get("skill") or fw.SKILL,

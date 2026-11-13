@@ -108,15 +108,31 @@ BAJANTE_YEAR = 2021
 #: change here.
 VH_THRESHOLD_DB = -25.0
 
-#: And a floor, which is a different thing from the threshold.
+#: There is no lower bound, and there was one for a week.
 #:
-#: ``vh.lt(-25)`` admitted everything down to the band's bottom, so
-#: residual GRD border noise and thermal-denoising artefacts - which land
-#: in exactly that range - counted as water. Earth Engine's own worked
-#: example for this collection masks pixels below -30 dB as edge noise
-#: before using the image. This is that, not a retuning: no pixel between
-#: -30 and -25 dB changes class.
-VH_FLOOR_DB = -30.0
+#: A floor at -30 dB was added on the reasoning that anything darker is
+#: border noise or a denoising artefact, with the claim that it "rejects
+#: noise rather than retuning anything". It was not measured before it
+#: shipped, and it was wrong. Calm open water is the darkest target in a
+#: VH scene and on this river it sits *below* -30 dB: over the permanent
+#: channel between Posadas and Ita Ibate the median is -31.8 dB and 81% of
+#: the channel is under -30. The floor removed the most certain water on
+#: the river - 587 km2 detected in that reach where 2,167 km2 is found
+#: without it - and the published whole-river figure fell from about
+#: 9,000 km2 to 3,764.
+#:
+#: Measured 2026-11-12 over the window 2026-10-29 to 2026-11-09:
+#:
+#:     reach                   with floor   without   median VH on channel
+#:     posadas_ita_ibate            587.4    2167.1   -31.8 dB (81% < -30)
+#:     ita_ibate_corrientes         521.1    1295.9   -31.4 dB (66% < -30)
+#:     goya_la_paz                 1460.6    2340.5   -29.7 dB (40% < -30)
+#:
+#: Border noise is a real concern and the right instrument for it is a
+#: mask on scene edges, not a threshold that cannot tell an edge artefact
+#: from a reservoir. Nothing about the water test changes again without a
+#: measurement of what it does to the permanent channel first;
+#: tests/test_floodwater.py holds the mask to that.
 
 #: Metres above the nearest drainage beyond which standing water is not
 #: credible. Ten was the best of 10, 15 and 25 and the difference between
@@ -126,6 +142,18 @@ HAND_LIMIT_M = 10.0
 
 #: One Sentinel-1 repeat cycle.
 WINDOW_DAYS = 12
+
+#: What a number in the series means. Change it whenever the water test,
+#: the window or the compositing changes, and ``rebuild`` will measure the
+#: whole series again instead of appending to it.
+#:
+#: Without this the daily job appended cycles measured by new code to a
+#: series measured by old code: thirty cycles on an eleven-day window with
+#: no lower bound, then one on a twelve-day window with a -30 dB floor,
+#: published as one line with a 40% cliff at the end that the river never
+#: made. A series is only a series if every point was measured the same
+#: way.
+MASK_VERSION = "vh<-25dB+hand<=10m/mosaic/12d-inclusive/v3"
 
 #: Share of the corridor that has to be observed before a cycle publishes a
 #: figure. A pass that crosses only part of the corridor leaves the rest
@@ -193,7 +221,6 @@ def water_mask(corridor, start: date, end: date):
     hand = ee.Image(HAND).select("hnd")
     return (
         vh.lt(VH_THRESHOLD_DB)
-        .And(vh.gt(VH_FLOOR_DB))
         .And(hand.lte(HAND_LIMIT_M))
     )
 
@@ -434,6 +461,14 @@ def rebuild(
     """
     path = Path(path)
     payload = load(path) or {}
+    if payload and payload.get("mask_version") != MASK_VERSION:
+        log.warning(
+            "%s was measured as %r and the mask is now %r; measuring the "
+            "whole series again rather than appending to it",
+            path, payload.get("mask_version"), MASK_VERSION,
+        )
+        payload = {}
+    payload["mask_version"] = MASK_VERSION
     rows = payload.get("stretches") or []
     by_key = {row["key"]: row for row in rows}
 
@@ -523,6 +558,8 @@ def rebuild(
             row["gaps"] = [
                 g for g in (row.get("gaps") or []) if g.get("day", "") >= row["days"][0]
             ]
+        payload["stretches"] = rows
+        _checkpoint(path, payload)
 
     # -- the river, measured once over the dissolved union ----------------
     #
@@ -580,6 +617,8 @@ def rebuild(
         log.info("river %s: %.0f km2 water, %.0f beyond the channel, "
                  "%.0f%% of %d km2 observed",
                  end, water, flood, 100 * (coverage or 0), union_km2)
+        payload["river"] = river
+        _checkpoint(path, payload)
 
     river = river[-keep:]
     if river:
@@ -601,15 +640,13 @@ def rebuild(
                        "every km2 of it channel. union_corridor_km2 is the "
                        "area of that union; the stretches' own corridor_km2 "
                        "must not be added together."),
-        "note": ("Open water from Sentinel-1 VH below -25 dB and above the "
-                 "-30 dB noise floor, bounded by height "
+        "note": ("Open water from Sentinel-1 VH below -25 dB, bounded by height "
                  "above nearest drainage. One threshold for the whole river, "
                  "tuned against Sentinel-2 optical water during a flood rather "
                  "than against the channel at low flow. water_km2 is all water; "
                  "flood_km2 excludes the permanent channel."),
         "method": "vh-threshold/hand",
         "vh_threshold_db": VH_THRESHOLD_DB,
-        "vh_floor_db": VH_FLOOR_DB,
         "hand_limit_m": HAND_LIMIT_M,
         "window_days": window_days,
         "window": ("Window ends are grid dates, not acquisition dates: the "
@@ -631,10 +668,30 @@ def rebuild(
         "fetched_on": date.today().isoformat(),
         "stretches": rows,
     })
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
-                    encoding="utf-8")
+    payload.pop("partial", None)
+    _write(path, payload)
     return payload
+
+
+def _write(path: Path, payload: dict) -> None:
+    """Write through a temporary file, so a kill leaves the last good one."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+                   encoding="utf-8")
+    tmp.replace(path)
+
+
+def _checkpoint(path: Path, payload: dict) -> None:
+    """Save what has been measured so far, marked as unfinished.
+
+    A first run is about an hour of Earth Engine calls and used to write
+    once, at the very end, so a timeout forty minutes in lost all of it.
+    The grid resumes from whatever is on disk, so an interrupted run now
+    costs only the stretch it was in the middle of. ``partial`` keeps the
+    export from publishing a river-wide figure from a half-built record.
+    """
+    _write(path, payload | {"partial": True})
 
 
 def load(path: Path | str = Path("data/floodwater.json")) -> dict:

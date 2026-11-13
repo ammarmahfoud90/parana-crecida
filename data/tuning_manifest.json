@@ -4,13 +4,14 @@
  "why": "The project had no record of this, and the absence was itself the defect. tune_mask.py and validate_mask.py both default to --day 2026-10-22, the tuning swept three of the nine reaches, and the per-reach IoU from that same fit is what decides which reaches publish an area at all. So the published 0.69 is a goodness-of-fit, the 0.45 publication floor inherits the leakage, and neither was stated anywhere.",
  "parameters": {
   "vh_threshold_db": -25.0,
-  "hand_limit_m": 10.0,
-  "vh_floor_db": -30.0
+  "hand_limit_m": 10.0
  },
  "reproducible": false,
- "reproducible_note": "The chosen values cannot be reproduced from committed code as it stood when they were set. scripts/tune_mask.py swept VH at -20, -22 and -24 while -25 was written into floodwater.py in the same commit, so the chosen value was outside the swept range; HAND was never swept at all, though floodwater.py asserts that 10 m 'was the best of 10, 15 and 25'; and the script raised AttributeError from 73a539c until 2026-11-05 because it called floodwater.dry_reference, which that commit removed. The sweep has since been repaired and extended to cover both parameters and the production value, but that does not retrospectively justify the numbers in use. VH_FLOOR_DB was not tuned: it rejects the instrument noise floor and changes no pixel between -30 and -25 dB.",
+ "reproducible_note": "The chosen values cannot be reproduced from committed code as it stood when they were set. scripts/tune_mask.py swept VH at -20, -22 and -24 while -25 was written into floodwater.py in the same commit, so the chosen value was outside the swept range; HAND was never swept at all, though floodwater.py asserts that 10 m 'was the best of 10, 15 and 25'; and the script raised AttributeError from 73a539c until 2026-11-05 because it called floodwater.dry_reference, which that commit removed. The sweep has since been repaired and extended to cover both parameters and the production value, but that does not retrospectively justify the numbers in use.",
  "tuning": {
-  "dates": ["2026-10-22"],
+  "dates": [
+   "2026-10-22"
+  ],
   "date_window_days": 6,
   "reaches": [
    "corrientes_goya",
@@ -22,7 +23,9 @@
   "script": "scripts/tune_mask.py"
  },
  "scoring": {
-  "dates": ["2026-10-22"],
+  "dates": [
+   "2026-10-22"
+  ],
   "reaches": "all nine; eight had a clear optical scene",
   "script": "scripts/validate_mask.py",
   "output": "data/mask_skill.json",
@@ -39,5 +42,13 @@
   "dates": [],
   "reaches": [],
   "note": "Empty. No out-of-sample evaluation has been run. AUDIT/03_validation_and_area.md section A2 specifies the design: a JRC monthly-history set over 1984-2021 for zero temporal leakage, held-out single-date Sentinel-2 and Landsat for currency, and leave-one-out folds for the parameters. Adding a date or reach here asserts that it played no part in choosing the parameters above."
- }
+ },
+ "withdrawn": [
+  {
+   "parameter": "vh_floor_db = -30.0",
+   "in_production": "2026-11-05 to 2026-11-12",
+   "why": "Added without a measurement, on the reasoning that anything darker than -30 dB is noise. Calm open water on this river is darker than that: median VH over the permanent channel between Posadas and Ita Ibate is -31.8 dB, and 81% of it is below -30. The floor cut detected water in that reach from 2,167 to 587 km2 and the whole-river figure to 3,764 km2.",
+   "lesson": "No change to the water test ships without measuring its effect on the permanent channel first."
+  }
+ ]
 }

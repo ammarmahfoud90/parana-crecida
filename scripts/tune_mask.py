@@ -137,8 +137,7 @@ def main() -> None:
             vh = (fw._vh(c, start, end).mosaic()
                   .focal_median(fl.SPECKLE_RADIUS_M, "circle", "meters").clip(c))
             hand = ee.Image(fw.HAND).select("hnd")
-            return (vh.lt(cut).And(vh.gt(fw.VH_FLOOR_DB))
-                    .And(hand.lte(fw.HAND_LIMIT_M)))
+            return vh.lt(cut).And(hand.lte(fw.HAND_LIMIT_M))
         result = score(f"vh{cut}", build)
         if result:
             print(f"{f'VH < {cut} dB + HAND':34s} {result['recall']:7.2f} "
@@ -152,7 +151,7 @@ def main() -> None:
         def build(s, c, limit=limit):
             vh = (fw._vh(c, start, end).mosaic()
                   .focal_median(fl.SPECKLE_RADIUS_M, "circle", "meters").clip(c))
-            mask = vh.lt(fw.VH_THRESHOLD_DB).And(vh.gt(fw.VH_FLOOR_DB))
+            mask = vh.lt(fw.VH_THRESHOLD_DB)
             if limit is None:
                 return mask
             return mask.And(ee.Image(fw.HAND).select("hnd").lte(limit))
