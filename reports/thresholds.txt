@@ -1,5 +1,6 @@
-ina thresholds - 2026-11-12T20:43:03-03:00
+ina thresholds - 2026-11-12T23:37:42-03:00
 
+  2026-11-13: HTTP 404, 195 bytes
   2026-11-12: 2727 KB -> reporte_diario_2026-11-12.pdf
 parsed 25 rows from the report's threshold tables
 
