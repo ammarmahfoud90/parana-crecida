@@ -1,4 +1,4 @@
-rainfall - 2026-11-15T23:02:52-03:00
+rainfall - 2026-11-16T19:22:38-03:00
 
 source NASA/GPM_L3/IMERG_V07
 window 2026-05-18 to 2026-11-14
