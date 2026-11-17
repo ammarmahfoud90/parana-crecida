@@ -18,7 +18,7 @@
    "iou": 0.59
   }
  },
- "fetched_on": "2026-11-16",
+ "fetched_on": "2026-11-17",
  "stretches": [
   {
    "key": "puerto_iguazu_libertador",
@@ -1231,24 +1231,6 @@
  "river_gaps": [],
  "river": [
   {
-   "day": "2025-11-08",
-   "window_start": "2025-10-28",
-   "water_km2": 2826.1,
-   "flood_km2": 1087.2,
-   "seen_km2": 55672.3,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
    "day": "2025-11-20",
    "window_start": "2025-11-09",
    "water_km2": 2497.5,
@@ -1776,6 +1758,24 @@
    "water_km2": 4538.6,
    "flood_km2": 2775.9,
    "seen_km2": 55673.4,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-11-15",
+   "window_start": "2026-11-04",
+   "water_km2": 5363.9,
+   "flood_km2": 3702.7,
+   "seen_km2": 55673.7,
    "coverage": 0.997,
    "stretches": [
     "corrientes_goya",
