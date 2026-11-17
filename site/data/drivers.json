@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-17T01:30:28-03:00",
+ "generated_at": "2026-11-17T18:07:56-03:00",
  "window": {
   "start": "2025-11-17",
   "end": "2026-11-17"
@@ -1489,14 +1489,14 @@
     25100.0,
     24400.0,
     22800.0,
-    21900.0
+    22000.0
    ],
    "latest": {
     "day": "2026-11-16",
-    "value": 21900.0,
+    "value": 22000.0,
     "percentile": 100.0
    },
-   "change_7d": -6500.0,
+   "change_7d": -6400.0,
    "alert": 25000.0,
    "evacuation": 30000.0
   },
@@ -2236,14 +2236,14 @@
     24700.0,
     23100.0,
     21900.0,
-    21700.0
+    21600.0
    ],
    "latest": {
     "day": "2026-11-16",
-    "value": 21700.0,
-    "percentile": 92.9
+    "value": 21600.0,
+    "percentile": 92.7
    },
-   "change_7d": -6100.0,
+   "change_7d": -6200.0,
    "alert": 25000.0,
    "evacuation": 30000.0
   },
@@ -5224,14 +5224,14 @@
     21650.5,
     19828.6,
     19766.9,
-    17533.7
+    17840.7
    ],
    "latest": {
     "day": "2026-11-16",
-    "value": 17533.7,
-    "percentile": 91.6
+    "value": 17840.7,
+    "percentile": 92.3
    },
-   "change_7d": -8270.4,
+   "change_7d": -7963.4,
    "alert": 25000.0,
    "evacuation": 30000.0
   }
@@ -5241,7 +5241,7 @@
    "station": "Guaíra Porto",
    "river": "Paraná",
    "unit": "m3/s",
-   "value": 15100.0,
+   "value": 14700.0,
    "trend": "falling",
    "alert": 20000.0,
    "evacuation": 25000.0
@@ -5250,13 +5250,13 @@
    "station": "Represa Itaipú",
    "river": "Paraná",
    "unit": "m3/s",
-   "value": 15400.0,
+   "value": 14000.0,
    "trend": "falling",
    "alert": 20000.0,
    "evacuation": 25000.0
   }
  ],
- "report_date": "2026-11-16",
+ "report_date": "2026-11-17",
  "rainfall": {
   "source": "NASA/GPM_L3/IMERG_V07",
   "fetched_on": "2026-11-17",

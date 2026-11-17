@@ -1977,7 +1977,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-13,26684,Yacyreta afluente,main,,25100.0,m3/s,100.0,flow regulated
 2026-11-14,26684,Yacyreta afluente,main,,24400.0,m3/s,100.0,flow regulated
 2026-11-15,26684,Yacyreta afluente,main,,22800.0,m3/s,100.0,flow regulated
-2026-11-16,26684,Yacyreta afluente,main,,21900.0,m3/s,100.0,flow regulated
+2026-11-16,26684,Yacyreta afluente,main,,22000.0,m3/s,100.0,flow regulated
 2026-05-21,26685,Yacyreta efluente,main,,10800.0,m3/s,32.7,flow regulated
 2026-05-22,26685,Yacyreta efluente,main,,10700.0,m3/s,30.8,flow regulated
 2026-05-23,26685,Yacyreta efluente,main,,8900.0,m3/s,13.0,flow regulated
@@ -2157,7 +2157,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-13,26685,Yacyreta efluente,main,,24700.0,m3/s,96.8,flow regulated
 2026-11-14,26685,Yacyreta efluente,main,,23100.0,m3/s,94.2,flow regulated
 2026-11-15,26685,Yacyreta efluente,main,,21900.0,m3/s,92.6,flow regulated
-2026-11-16,26685,Yacyreta efluente,main,,21700.0,m3/s,92.9,flow regulated
+2026-11-16,26685,Yacyreta efluente,main,,21600.0,m3/s,92.7,flow regulated
 2026-05-21,26690,Confluencia,main,,10302.6,m3/s,47.3,bad_snap flow
 2026-05-22,26690,Confluencia,main,,9448.73,m3/s,34.2,bad_snap flow
 2026-05-23,26690,Confluencia,main,,8733.28,m3/s,23.7,bad_snap flow
@@ -2337,7 +2337,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-13,26690,Confluencia,main,,21650.5,m3/s,99.7,bad_snap flow
 2026-11-14,26690,Confluencia,main,,19828.6,m3/s,96.1,bad_snap flow
 2026-11-15,26690,Confluencia,main,,19766.9,m3/s,96.0,bad_snap flow
-2026-11-16,26690,Confluencia,main,,17533.7,m3/s,91.6,bad_snap flow
+2026-11-16,26690,Confluencia,main,,17840.7,m3/s,92.3,bad_snap flow
 2026-05-21,26261,Corrientes,main,659.8,2.37,m,20.1,
 2026-05-22,26261,Corrientes,main,659.8,2.59,m,26.7,
 2026-05-23,26261,Corrientes,main,659.8,2.76,m,31.9,
@@ -7007,7 +7007,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-13,26294,San Fernando,estuary,,1.31,m,71.0,tide_affected unrouted
 2026-11-14,26294,San Fernando,estuary,,0.76,m,17.9,tide_affected unrouted
 2026-11-15,26294,San Fernando,estuary,,1.27,m,65.4,tide_affected unrouted
-2026-11-16,26294,San Fernando,estuary,,0.91,m,33.7,tide_affected unrouted
+2026-11-16,26294,San Fernando,estuary,,0.95,m,38.0,tide_affected unrouted
 2026-05-21,26296,Olivos,estuary,,1.7,m,93.3,tide_affected unrouted
 2026-05-22,26296,Olivos,estuary,,1.1,m,66.7,tide_affected unrouted
 2026-05-23,26296,Olivos,estuary,,1.0,m,58.3,tide_affected unrouted
