@@ -1,12 +1,12 @@
 {
  "schema": 1,
- "generated_at": "2026-11-18T00:43:23-03:00",
+ "generated_at": "2026-11-18T17:45:40-03:00",
  "last_data_day": "2026-11-17",
  "data_age_days": 1,
  "freshness": "1 day behind",
  "official_source_url": "https://alerta.ina.gob.ar/",
  "thresholds": {
-  "source_date": "2026-11-17",
+  "source_date": "2026-11-18",
   "gauges_with_values": 15
  },
  "validation": {
@@ -704,8 +704,8 @@
    ],
    "unit": "m",
    "day": "2026-11-17",
-   "value": 0.79,
-   "change": -0.16,
+   "value": 0.84,
+   "change": -0.11,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
@@ -754,10 +754,10 @@
    "to": "Diamante"
   },
   "front": {
-   "gauge": "Esquina",
-   "day": "2026-11-06",
+   "gauge": "Hernandarias",
+   "day": "2026-11-14",
    "confirmed": false,
-   "river_km": 1000.8
+   "river_km": 1149.9
   },
   "water": {
    "km2": 3764.4,

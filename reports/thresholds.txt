@@ -1,7 +1,6 @@
-ina thresholds - 2026-11-18T00:42:39-03:00
+ina thresholds - 2026-11-18T17:44:46-03:00
 
-  2026-11-18: HTTP 404, 195 bytes
-  2026-11-17: 2705 KB -> reporte_diario_2026-11-17.pdf
+  2026-11-18: 2707 KB -> reporte_diario_2026-11-18.pdf
 parsed 25 rows from the report's threshold tables
 
 15 gauges in scope have official levels:
@@ -37,4 +36,4 @@ parsed 25 rows from the report's threshold tables
   Concepción del Uruguay, Boca Gualeguaychú, Guaíra Porto
   Represa Itaipú
 
-thresholds -> data/ina_thresholds.csv  (check it against reporte_diario_2026-11-17.pdf)
+thresholds -> data/ina_thresholds.csv  (check it against reporte_diario_2026-11-18.pdf)
