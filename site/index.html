@@ -1,149 +1,302 @@
 <!doctype html>
-<html lang="es" data-theme="auto">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>El Paraná desde el espacio · Crecida del Paraná</title>
-<meta name="description" content="Cuánta superficie cubre el río Paraná, medida por radar Sentinel-1 pasada por pasada.">
-<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
-<link rel="stylesheet" href="style.css">
+<meta name="description" content="Cuánta superficie cubre el río Paraná, medida por radar Sentinel-1 cada doce días a lo largo de 1.477 km y puntuada contra agua óptica.">
+<meta name="theme-color" content="#0c1214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,400&family=Albert+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="report.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#content" data-t="skipLink"></a>
-<div class="wrap">
 
-  <header>
-    <div>
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="subtitle"></p>
-    </div>
-    <div class="langs" role="group" data-t-aria="langGroup">
-      <button type="button" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
-
+<header class="bar">
+  <a class="mark" href="index.html" data-t-aria="homeLink">Paraná</a>
   <nav class="views" data-t-aria="viewsNav">
     <a href="index.html" aria-current="page" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
     <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
-
-  <main id="content" tabindex="-1">
-
-  <p class="notice">
-    <strong data-t="noticeStrong"></strong>
-    <span data-t="noticeBody"></span>
-    <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
-  </p>
-
-  <div id="error" class="err" role="alert" hidden></div>
-
-  <!-- Withheld, not broken: its own box, its own wording, no alert role. -->
-  <p class="warn measure" id="riverUnavailable" hidden></p>
-
-  <!-- The finding, before any measurement: how much of the valley is wet,
-       and how much wetter than the driest pass on the record. -->
-  <div class="headline lede" id="headline" hidden>
-    <span class="big" id="area">–</span>
-    <span class="unit" id="areaCap"></span>
-    <p class="say" id="areaNote"></p>
-    <p class="say" id="ageNote"></p>
-    <p class="say" id="floodNote" hidden></p>
-    <p class="warn" id="sumWarning" hidden></p>
-    <dl class="facts" id="meta" hidden>
-      <div><dt data-t="passLabel"></dt><dd id="passWindow"></dd></div>
-      <div><dt data-t="reachLabel"></dt><dd id="reach"></dd></div>
-      <div><dt data-t="riseLabel"></dt><dd id="rise"></dd></div>
-    </dl>
+  <div class="langs" role="group" data-t-aria="langGroup">
+    <button type="button" data-lang="es" aria-pressed="true">ES</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
   </div>
+  <a class="btn" href="#film" data-t="ctaFilm"></a>
+</header>
 
-  <h2 class="section major" style="margin-top:34px" data-t="chartHeading"></h2>
-  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="chartLead"></p>
-  <p class="cap measure" id="chartEmpty" data-t="chartNone"
-     style="color:var(--ink-faint);font-size:.9rem" hidden></p>
-  <div class="chartbox">
-    <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
-      <title id="chartTitle"></title>
-      <desc id="chartDesc"></desc>
-    </svg>
-  </div>
-  <div class="floodkeys" id="keys" hidden>
-    <span><i class="water"></i><span data-t="keyWater"></span></span>
-    <span><i class="flood"></i><span data-t="keyFlood"></span></span>
-  </div>
+<main id="content" tabindex="-1">
 
-  <h2 class="section major" style="margin-top:34px" data-t="loopHeading"></h2>
-  <figure class="loop">
-    <div class="loopwrap">
-      <img src="media/river.gif" alt="" id="loop" data-t-alt="loopAlt"
-           width="999" height="1400" loading="lazy" decoding="async">
-      <canvas id="loopFrame" hidden aria-hidden="true"></canvas>
-      <button type="button" id="loopToggle" class="playbtn loopbtn playing"></button>
+  <!-- The masthead: the river's own corridors, as the satellite sees them in
+       false colour, butted against flat fields in the river's colours. -->
+  <div class="mosaic">
+    <div class="cell-img cell-a">
+      <img src="media/basemap/ita_ibate_corrientes.webp" width="2048" height="682"
+           data-t-alt="altItaCorrientes" alt="" fetchpriority="high">
     </div>
-    <figcaption id="loopCaption"></figcaption>
-  </figure>
+    <div class="cell-img cell-b">
+      <img src="media/basemap/libertador_posadas.webp" width="2048" height="1848"
+           data-t-alt="altLibertadorPosadas" alt="">
+    </div>
+    <div class="cell-water" aria-hidden="true"></div>
+    <div class="cell-tall">
+      <div class="tile-text">
+        <span><span class="tile-big fig" id="area">–</span>
+              <span class="tile-unit" id="areaCap"></span>
+              <span class="tile-when" id="tileWindow"></span></span>
+      </div>
+    </div>
+    <div class="cell-silt" aria-hidden="true"></div>
+    <div class="cell-green">
+      <div class="tile-text"><span class="tile-note" data-t="mastNote"></span></div>
+    </div>
+    <div class="cell-img cell-d">
+      <img src="media/basemap/goya_la_paz.webp" width="734" height="2048"
+           data-t-alt="altGoyaLaPaz" alt="">
+    </div>
+    <div class="cell-img cell-c">
+      <img src="media/basemap/la_paz_parana.webp" width="1745" height="2048"
+           data-t-alt="altLaPazParana" alt="">
+    </div>
+  </div>
+
+  <div class="page">
+    <section class="opening" aria-labelledby="title">
+      <div class="side">
+        <p class="standfirst rise" data-t="subtitle"></p>
+        <p class="notice rise" style="--i:1">
+          <strong data-t="noticeStrong"></strong>
+          <span data-t="noticeBody"></span>
+          <a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a>
+        </p>
+      </div>
+      <div>
+        <h1 class="display" id="title">
+          <span class="line reveal-line"><span data-t="titleA"></span></span>
+          <span class="line reveal-line"><span data-t="titleB"></span></span>
+        </h1>
+        <div class="readout" id="headline">
+          <div id="error" class="err" role="alert" hidden></div>
+          <!-- Withheld, not broken: its own box, its own wording, no alert role. -->
+          <p class="warn" id="riverUnavailable" hidden></p>
+          <p class="say rise" id="areaNote"></p>
+          <p class="say rise" id="ageNote" style="--i:1"></p>
+          <p class="say rise" id="floodNote" style="--i:2" hidden></p>
+          <p class="warn" id="sumWarning" hidden></p>
+        </div>
+        <dl class="facts rise" id="meta" style="--i:3" hidden>
+          <div><dt data-t="passLabel"></dt><dd id="passWindow"></dd></div>
+          <div><dt data-t="reachLabel"></dt><dd id="reach"></dd></div>
+          <div><dt data-t="riseLabel"></dt><dd id="rise"></dd></div>
+        </dl>
+      </div>
+    </section>
+  </div>
+
+  <!-- A year of river: the series, with the two figures it is read by. -->
+  <section class="chapter year page" aria-labelledby="chartHeading">
+    <h2 class="h2 on-axis rise" id="chartHeading" data-t="chartHeading"></h2>
+    <div class="ymosaic">
+      <div class="plate">
+        <p class="lead rise" data-t="chartLead"></p>
+        <p class="lead" id="chartEmpty" data-t="chartNone" hidden></p>
+        <div class="floodkeys" id="keys" hidden>
+          <span><svg width="28" height="6" aria-hidden="true"><rect y="1" width="28" height="4" fill="var(--channel)"/></svg><span data-t="keyWater"></span></span>
+          <span><svg width="28" height="6" aria-hidden="true"><rect y="1" width="8" height="4" fill="var(--flood)"/><rect x="11" y="1" width="8" height="4" fill="var(--flood)"/><rect x="22" y="1" width="6" height="4" fill="var(--flood)"/></svg><span data-t="keyFlood"></span></span>
+        </div>
+        <div class="chartbox rise" style="--i:1">
+          <svg id="chart" class="floodchart" role="img" aria-labelledby="chartTitle chartDesc">
+            <title id="chartTitle"></title>
+            <desc id="chartDesc"></desc>
+          </svg>
+        </div>
+      </div>
+      <div class="ftile silt rise" style="--i:2">
+        <span class="fig" id="riseTile">–</span>
+        <p data-t="riseCap"></p>
+      </div>
+      <div class="ftile green rise" style="--i:3">
+        <span class="fig" id="lowTile">–</span>
+        <p id="lowCap"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The reaches, each in its own corridor. -->
+  <section class="chapter reaches" aria-labelledby="reachesHeading">
+    <h2 class="h2 rise" id="reachesHeading" data-t="reachesHeading"></h2>
+    <div class="band">
+      <figure class="panel">
+        <img src="media/basemap/puerto_iguazu_libertador.webp" width="996" height="2048"
+             loading="lazy" decoding="async" data-t-alt="altIguazuLibertador" alt="">
+        <p class="panel-title" data-t="reachesTitle"></p>
+        <figcaption data-t="capIguazu"></figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="media/basemap/posadas_ita_ibate.webp" width="2048" height="664"
+             loading="lazy" decoding="async" data-t-alt="altPosadasIta" alt="">
+        <figcaption data-t="capPosadas"></figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="media/basemap/corrientes_goya.webp" width="806" height="2048"
+             loading="lazy" decoding="async" data-t-alt="altCorrientesGoya" alt="">
+        <figcaption data-t="capCorrientes"></figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="media/basemap/parana_villa_constitucion.webp" width="864" height="2048"
+             loading="lazy" decoding="async" data-t-alt="altParanaVilla" alt="">
+        <figcaption data-t="capParana"></figcaption>
+      </figure>
+    </div>
+    <p class="band-cap">
+      <span data-t="reachesCap"></span>
+      <a href="flood.html" data-t="alsoFlood"></a>
+    </p>
+  </section>
+
+  <!-- The film, and the one thing a reader can do: hold any window still
+       and read the figure measured for it. -->
+  <section class="chapter film field field-water" id="film" aria-labelledby="loopHeading">
+    <div class="head">
+      <h2 class="h2 rise" id="loopHeading" data-t="loopHeading"></h2>
+      <p class="lead rise" style="--i:1" data-t="filmLead"></p>
+    </div>
+    <div class="filmgrid">
+      <figure class="screen rise">
+        <img src="media/river.gif" alt="" id="loop" data-t-alt="loopAlt"
+             width="999" height="1400" loading="lazy" decoding="async">
+        <canvas id="loopFrame" hidden aria-hidden="true"></canvas>
+        <img id="still" alt="" hidden width="999" height="1400">
+      </figure>
+      <div class="console">
+        <div class="ctrl rise" style="--i:1">
+          <span class="when" id="scrubWhen" aria-live="polite">–</span>
+          <span><span class="fig" id="scrubKm">–</span>
+                <span class="unit" data-t="scrubUnit"></span></span>
+          <label for="scrub" data-t="scrubLabel"></label>
+          <input type="range" id="scrub" min="0" max="0" value="0" step="1" disabled>
+          <div class="row">
+            <button type="button" id="loopToggle" class="btn ink playing"></button>
+          </div>
+        </div>
+        <dl class="facts2 rise" style="--i:2">
+          <div><dt data-t="filmFramesLabel"></dt><dd id="filmFrames">–</dd></div>
+          <div><dt data-t="filmWindowLabel"></dt><dd id="filmWindow">–</dd></div>
+          <div><dt data-t="filmRiverLabel"></dt><dd id="filmRiver">–</dd></div>
+          <div><dt data-t="filmStretchesLabel"></dt><dd id="filmStretches">–</dd></div>
+        </dl>
+      </div>
+    </div>
+    <p class="cap" id="loopCaption"></p>
+  </section>
 
   <!-- How good the instrument is. Published because a reader has no way
        to weigh an area figure without knowing how often the mask is right. -->
-  <h2 class="section major" style="margin-top:34px" data-t="skillHeading"></h2>
-  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" id="skillLead"></p>
-  <div class="skillwrap">
-    <table class="skill">
-      <caption class="vh" data-t="skillCaption"></caption>
-      <thead>
-        <tr>
-          <th scope="col" data-t="skillMethod"></th>
-          <th scope="col" data-t="skillRecall"></th>
-          <th scope="col" data-t="skillPrecision"></th>
-          <th scope="col" data-t="skillIou"></th>
-          <th scope="col" data-t="skillWas"></th>
-        </tr>
-      </thead>
-      <tbody id="skillRows"></tbody>
-    </table>
-  </div>
-  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="skillWhat"></p>
-  <p class="warn measure" data-t="skillCaveat"></p>
+  <section class="chapter skill-sec page" aria-labelledby="skillHeading">
+    <h2 class="h2 display rise" id="skillHeading">
+      <span data-t="skillHeadA"></span>
+      <span class="indent" data-t="skillHeadB"></span>
+    </h2>
+    <div class="tablewrap rise" style="--i:1">
+      <table class="skill">
+        <caption class="vh" data-t="skillCaption"></caption>
+        <thead>
+          <tr>
+            <th scope="col" data-t="skillMethod"></th>
+            <th scope="col" data-t="skillRecall"></th>
+            <th scope="col" data-t="skillPrecision"></th>
+            <th scope="col" data-t="skillIou"></th>
+            <th scope="col" data-t="skillWas"></th>
+          </tr>
+        </thead>
+        <tbody id="skillRows"></tbody>
+      </table>
+    </div>
+    <div class="cols on-axis">
+      <p class="rise" id="skillLead"></p>
+      <p class="rise" style="--i:1" data-t="skillWhat"></p>
+      <p class="rise" style="--i:2" data-t="skillCaveat"></p>
+    </div>
+  </section>
 
-  <h2 class="section major" style="margin-top:34px" data-t="limitsHeading"></h2>
-  <ul class="limits measure">
-    <li data-t="limitTrees"></li>
-    <li data-t="limitUrban"></li>
-    <li data-t="limitWindow"></li>
-    <li data-t="limitDelta"></li>
-    <li data-t="limitFloor"></li>
-  </ul>
-
-  <section class="seealso" aria-labelledby="alsoHeading">
-    <h2 class="section" id="alsoHeading" data-t="alsoHeading"></h2>
-    <ul class="alsolist">
-      <li><a href="flood.html" data-t="alsoFlood"></a>
-          <span data-t="alsoFloodWhy"></span></li>
-      <li><a href="map.html" data-t="alsoMap"></a>
-          <span data-t="alsoMapWhy"></span></li>
-      <li><a href="gauges.html" data-t="alsoGauges"></a>
-          <span data-t="alsoGaugesWhy"></span></li>
+  <section class="chapter limits-sec field field-silt" aria-labelledby="limitsHeading">
+    <h2 class="h2 rise" id="limitsHeading">
+      <span class="soft" data-t="limitsHeadA"></span>
+      <span data-t="limitsHeadB"></span>
+    </h2>
+    <ul class="limits">
+      <li class="rise"><span class="name" data-t="limitTreesName"></span>
+          <div class="text"><p data-t="limitTrees"></p></div></li>
+      <li class="rise" style="--i:1"><span class="name" data-t="limitUrbanName"></span>
+          <div class="text"><p data-t="limitUrban"></p></div></li>
+      <li class="rise" style="--i:2"><span class="name" data-t="limitWindowName"></span>
+          <div class="text"><p data-t="limitWindow"></p></div></li>
+      <li class="rise" style="--i:3"><span class="name" data-t="limitDeltaName"></span>
+          <div class="text"><p data-t="limitDelta"></p></div></li>
+      <li class="rise" style="--i:4"><span class="name" data-t="limitFloorName"></span>
+          <div class="text"><p data-t="limitFloor"></p></div></li>
     </ul>
   </section>
 
-  <section class="provenance" aria-labelledby="provHeading">
-    <h2 class="section" id="provHeading" data-t="provHeading"></h2>
-    <dl>
-      <div><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
-      <div><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
-      <div><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
+  <section class="prov field field-green" aria-labelledby="provHeading">
+    <h2 class="h2 rise" id="provHeading" data-t="provHeading"></h2>
+    <p class="lead rise" style="--i:1" data-t="provLead"></p>
+    <dl class="provgrid">
+      <div class="rise"><dt data-t="provMeasuredLabel"></dt><dd data-t="provMeasured"></dd></div>
+      <div class="rise" style="--i:1"><dt data-t="provCalculatedLabel"></dt><dd data-t="provCalculated"></dd></div>
+      <div class="rise" style="--i:2"><dt data-t="provMissingLabel"></dt><dd data-t="provMissing"></dd></div>
     </dl>
+    <h3 class="vh" data-t="alsoHeading"></h3>
+    <ul class="also">
+      <li class="rise"><a href="flood.html" data-t="alsoFlood"></a>
+          <span data-t="alsoFloodWhy"></span></li>
+      <li class="rise" style="--i:1"><a href="map.html" data-t="alsoMap"></a>
+          <span data-t="alsoMapWhy"></span></li>
+      <li class="rise" style="--i:2"><a href="gauges.html" data-t="alsoGauges"></a>
+          <span data-t="alsoGaugesWhy"></span></li>
+    </ul>
   </section>
-  </main>
+</main>
 
-  <footer>
-    <p data-t="method"></p>
-    <p data-t="credits"></p>
-  </footer>
-</div>
+<footer class="close">
+  <p class="wordmark" aria-hidden="true">Paraná</p>
+  <div class="row1">
+    <ul class="places">
+      <li><a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="placeAlert"></a></li>
+      <li><a href="https://github.com/ammarmahfoud90/parana-crecida" target="_blank" rel="noopener" data-t="placeCode"></a></li>
+      <li><a href="method.html" data-t="placeData"></a></li>
+    </ul>
+    <div class="linkcols">
+      <ul>
+        <li class="lh" data-t="colViews"></li>
+        <li><a href="index.html" data-t="viewSpace"></a></li>
+        <li><a href="map.html" data-t="viewMap"></a></li>
+        <li><a href="gauges.html" data-t="viewToday"></a></li>
+        <li><a href="method.html" data-t="viewMethod"></a></li>
+      </ul>
+      <ul>
+        <li class="lh" data-t="colSurface"></li>
+        <li><a href="flood.html" data-t="alsoFlood"></a></li>
+        <li><a href="#film" data-t="loopHeading"></a></li>
+        <li><a href="#skillHeading" data-t="colSkill"></a></li>
+      </ul>
+      <ul>
+        <li class="lh" data-t="colRiver"></li>
+        <li><a href="wave.html" data-t="colWave"></a></li>
+        <li><a href="drivers.html" data-t="colDrivers"></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <p><span data-t="method"></span> <span data-t="credits"></span></p>
+    <a href="#content" data-t="backTop"></a>
+  </div>
+</footer>
 
 <script>
 "use strict";
@@ -151,22 +304,27 @@
 const T = {
   es: {
     chartLow: "mínimo",
-    chartNow: "hoy",
+    chartNow: "último",
     htmlLang: "es", locale: "es-AR",
     title: "El Paraná desde el espacio",
-    subtitle: "Cuánta superficie cubre el río, medida por radar pasada por pasada",
-    langGroup: "Idioma", viewsNav: "Vistas",
+    titleA: "El Paraná",
+    titleB: "desde el espacio",
+    subtitle: "Cuánta superficie cubre el río, medida por radar cada doce días a lo largo de 1.477 km.",
+    langGroup: "Idioma", viewsNav: "Vistas", homeLink: "Inicio",
     skipLink: "Saltar al contenido",
+    ctaFilm: "Recorrer el año",
     viewSpace: "Desde el espacio",
     viewMap: "Mapa",
     viewToday: "El río hoy",
     viewMethod: "Método",
     noticeStrong: "Esto no es un sistema de alerta.",
-    noticeBody: "Este sitio mide; no avisa, no pronostica y no es un mapa oficial de riesgo. Las alertas, las evacuaciones y los pronósticos oficiales los publica el Instituto Nacional del Agua:",
+    noticeBody: "Este sitio mide; no avisa, no pronostica y no es un mapa oficial de riesgo. Las alertas y los pronósticos oficiales los publica el Instituto Nacional del Agua:",
     officialLink: "Sistema de Alerta Hidrológico del INA",
+    mastNote: "Corredores del río en falso color Sentinel-2: vegetación en verde, agua en azul oscuro, suelo desnudo en rosa.",
 
-    riverUnavailable: "La cifra del río entero no se está publicando: se mide una sola vez sobre la unión de los corredores, que se superponen, y esa medición todavía no está hecha. Los tramos de abajo sí: cada uno se mide sobre su propio corredor.",
-    areaCap: "km² de agua abierta detectada por radar",
+    riverUnavailable: "La cifra del río entero no se está publicando: se mide una sola vez sobre la unión de los corredores, que se superponen, y esa medición todavía no está hecha. Los tramos sí: cada uno se mide sobre su propio corredor.",
+    areaCap: "km² de agua abierta",
+    tileWindow: (from_, to) => `Compuesto de radar, ${from_} – ${to}`,
     areaNote: (from_, to, extra, low, lowDays, many) =>
       `Compuesto de doce días del ${from_} al ${to}. Son ${extra} km² más que en ` +
       (many
@@ -174,26 +332,26 @@ const T = {
         : `la pasada más baja del registro de un año (${low} km², ${lowDays}).`),
     floodNote: (now, low, times) =>
       `Fuera del cauce permanente, que es el agua que normalmente no está ahí: ` +
-      `${now} km² en esta pasada contra ${low} km² en las más bajas, ${times} veces más. ` +
+      `${now} km² en esta ventana contra ${low} km² en las más bajas, ${times} veces más. ` +
       `Esta cifra no fue validada contra agua óptica; sí lo fue el agua total.`,
     areaNoteFlat: (from_, to) =>
       `Compuesto de doce días del ${from_} al ${to}.`,
     ageNote: (n) =>
       n <= 1 ? "Medición de ayer." :
-      `Medido hace ${n} días. Se actualiza cuando hay una pasada válida, ` +
-      `cada doce días como máximo, no a diario.`,
+      `Medido hace ${n} días. Se actualiza cuando cierra una ventana de doce días ` +
+      `con el río observado completo, no a diario.`,
     passLabel: "Ventana medida",
     reachLabel: "Tramo medido",
     riseLabel: "Contra el mínimo del registro",
     windowValue: (from_, to) => `${from_} – ${to}`,
-    reachValue: (km, n) => `${km} km de río, ${n} tramos validados`,
-    sumWarning: "Esta cifra suma tramos cuyos corredores se superponen, así que cuenta dos veces el agua cercana a cada estación: alrededor de un 7% de más. La medición sobre la unión de los corredores la reemplaza en cuanto esté hecha.",
+    reachValue: (km, n) => `${km} km, ${n} tramos`,
+    sumWarning: "Esta cifra suma tramos cuyos corredores se superponen, así que cuenta dos veces el agua cercana a cada estación. La medición sobre la unión de los corredores la reemplaza en cuanto esté hecha.",
 
-    chartHeading: "Un año de río, pasada por pasada",
-    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1, y la fecha es el cierre de esa ventana, no el día de una pasada. La línea llena es toda el agua abierta. La punteada deja afuera el cauce permanente. Un corte en la línea es un ciclo que no se pudo medir: no es agua cero.",
+    chartHeading: "Un año de río, ventana por ventana",
+    chartLead: "Cada punto es un compuesto de doce días del radar Sentinel-1, fechado al cierre de la ventana, no el día de una pasada. La línea llena es toda el agua abierta; la punteada deja afuera el cauce permanente. Un corte en la línea es un ciclo que no se pudo medir: no es agua cero.",
     chartGap: "ciclo sin medición",
     chartNone: "No hay serie del río entero para graficar mientras la cifra del río entero no se publique. Cada tramo sigue teniendo la suya, en «Superficie, tramo por tramo».",
-    chartTitle: "Superficie de agua del río Paraná por pasada del satélite",
+    chartTitle: "Superficie de agua del río Paraná por ventana de doce días",
     chartDesc: (first, last, lo, hi, gaps) =>
       `Serie de superficie de agua entre ${first} y ${last}, un punto por ventana ` +
       `de doce días. El valor más bajo es ${lo} km² y el más alto ${hi} km².` +
@@ -201,72 +359,119 @@ const T = {
               `la línea se corta ahí.` : ""),
     keyWater: "Toda el agua", keyFlood: "Sin el cauce permanente",
     axisKm2: "km²",
+    riseCap: "más agua abierta que en las ventanas más bajas del año.",
+    lowCap: (days) => `km² en las ventanas más bajas: la mediana de ${days}.`,
+
+    reachesHeading: "Ocho tramos, un río",
+    reachesTitle: "De Puerto Iguazú a Villa Constitución",
+    reachesCap: "Cada tramo va de una estación del INA a la siguiente y se mide sobre su propio corredor de 20 km.",
+    capIguazu: "Puerto Iguazú – Libertador",
+    capPosadas: "Posadas – Itá Ibaté",
+    capCorrientes: "Corrientes – Goya",
+    capParana: "Paraná – Villa Constitución",
+    altItaCorrientes: "Imagen satelital en falso color del Paraná entre Itá Ibaté y Corrientes: el cauce azul oscuro entre islas y campos verdes.",
+    altLibertadorPosadas: "Imagen satelital en falso color del Paraná entre Libertador y Posadas.",
+    altGoyaLaPaz: "Imagen satelital en falso color del Paraná entre Goya y La Paz.",
+    altLaPazParana: "Imagen satelital en falso color del Paraná entre La Paz y Paraná.",
+    altIguazuLibertador: "Imagen satelital en falso color del Alto Paraná entre Puerto Iguazú y Libertador, encajonado entre selva.",
+    altPosadasIta: "Imagen satelital en falso color del Paraná entre Posadas e Itá Ibaté, con el embalse de Yacyretá.",
+    altCorrientesGoya: "Imagen satelital en falso color del Paraná entre Corrientes y Goya, trenzado en muchos brazos.",
+    altParanaVilla: "Imagen satelital en falso color del Paraná entre la ciudad de Paraná y Villa Constitución.",
 
     loopHeading: "El río entero, un año",
+    filmLead: "Cada cuadro es una ventana de doce días. El azul es el cauce permanente; el naranja, el agua que el radar encontró más allá de él. Detené la animación y recorré las ventanas una por una, cada una con la cifra medida para ella.",
     loopCaption: (km, n, first, last) =>
-      `${km} km de Paraná, de Puerto Iguazú a Villa Constitución, en ${n} compuestos ` +
-      `de doce días entre ${first} y ${last}. Cada cuadro es una ventana, no un instante. El azul es el cauce permanente: agua ` +
-      `que el JRC mapea como siempre presente, o que seguía ahí en la bajante de ` +
-      `2021. Es una constante, no una medición. El naranja es el agua que el radar ` +
-      `encontró más allá de ese cauce.`,
-    loopCaptionFlat: "El río entero, una pasada del satélite cada doce días. El azul es el cauce permanente; el naranja es el agua medida más allá de él.",
-    loopAlt: "Animación del río Paraná desde Puerto Iguazú hasta Villa Constitución, un cuadro cada doce días a lo largo de un año. El cauce permanente en azul y el agua detectada por radar en naranja. El naranja crece a lo largo del río a medida que avanza la crecida.",
+      `${km} km de Paraná en ${n} compuestos de doce días entre ${first} y ${last}. ` +
+      `El cauce permanente es agua que el JRC mapea como siempre presente, o que ` +
+      `seguía ahí en la bajante de 2021: es una constante, no una medición.`,
+    loopCaptionFlat: "El río entero, una ventana de doce días por cuadro. El azul es el cauce permanente; el naranja es el agua medida más allá de él.",
+    loopAlt: "Animación del río Paraná desde Puerto Iguazú hasta Villa Constitución, un cuadro cada doce días a lo largo de un año. El cauce permanente en azul y el agua detectada por radar en naranja.",
+    stillAlt: (when) => `El río Paraná en la ventana ${when}: cauce permanente en azul, agua detectada más allá de él en naranja.`,
     playLoop: "Reproducir la animación", pauseLoop: "Pausar la animación",
+    scrubLabel: "Ventana de doce días",
+    scrubUnit: "km² medidos",
+    scrubNone: "sin cifra",
+    scrubValue: (when, km) => km ? `${when}, ${km} km²` : when,
+    filmFramesLabel: "Ventanas", filmWindowLabel: "Cada una",
+    filmRiverLabel: "Río dibujado", filmStretchesLabel: "Tramos",
+    filmWindowValue: (n) => `${n} días`,
+    filmRiverValue: (km) => `${km} km`,
 
     skillHeading: "Qué tan bien funciona la medición",
+    skillHeadA: "Qué tan bien",
+    skillHeadB: "funciona",
     skillLead: (against, n) =>
       `Cada tramo medido contra agua óptica de Sentinel-2 alrededor del ${against}: ${n} ` +
       `tramos con escena limpia. La referencia es una mediana de las escenas limpias ` +
-      `dentro de seis días a cada lado de esa fecha, no una foto de ese día. La última ` +
-      `columna es lo que daba el método anterior en el mismo tramo.`,
-    skillCaveat: "Tres límites van con estos números. El umbral se ajustó contra la misma fecha contra la que se lo puntúa, así que esto es qué tan bien ajusta y no una prueba independiente. Se puntúa el agua total, de la cual el cauce permanente es entre el 56% y el 93%, así que la mayor parte de la cifra mide si la máscara encuentra el río. Y el óptico tampoco ve bajo la vegetación, que es el error principal del radar: ninguno de estos números lo acota.",
-    skillCaption: "Comparación de dos métodos de detección de agua por radar",
+      `dentro de seis días a cada lado de esa fecha. La última columna es lo que daba ` +
+      `el método anterior en el mismo tramo.`,
+    skillCaveat: "Tres límites van con estos números. El umbral se ajustó contra la misma fecha contra la que se lo puntúa, así que esto es qué tan bien ajusta y no una prueba independiente. Se puntúa el agua total, de la cual el cauce permanente es la mayor parte, así que buena parte de la cifra mide si la máscara encuentra el río. Y el óptico tampoco ve bajo la vegetación, que es el error principal del radar: ninguno de estos números lo acota.",
+    skillCaption: "Puntaje de la máscara de agua por radar contra agua óptica, por tramo",
     skillMethod: "Tramo", skillRecall: "Hallada", skillPrecision: "Acertada", skillIou: "IoU",
     skillWas: "IoU antes", skillWhole: "Todo el río medido",
-    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos. Para comparar: en el banco de pruebas Sen1Floods11 los métodos de umbral como este llegan a un IoU de alrededor de 0,55 y las redes entrenadas a cerca de 0,73, así que 0,69 con un solo umbral global es un resultado razonable. Un tramo que no llega a 0,45 no publica cifra. Tampoco uno que nunca se pudo medir contra el óptico.",
+    skillWhat: "«Hallada» es cuánta del agua que el óptico ve encuentra el radar. «Acertada» es cuánto de lo que el radar llama agua realmente lo es. El IoU junta las dos. En el banco de pruebas Sen1Floods11 los métodos de umbral como este rondan un IoU de 0,55 y las redes entrenadas 0,73. Un tramo que no llega al piso de puntaje no publica cifra, y tampoco uno que nunca se pudo medir contra el óptico.",
 
     limitsHeading: "Lo que esta medición no puede hacer",
-    limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Del agua que el óptico ve, el radar encuentra el 80%; cuánta hay bajo la vegetación no está medido, porque el óptico tampoco la ve. Ningún umbral lo recupera.",
-    limitWindow: "Cada punto son doce días, no un instante. La franja que ve el satélite es más angosta que este tramo de río, así que una foto del río entero necesita una vuelta completa.",
-    limitDelta: "El Delta no publica número. En la fecha de validación no hubo escena óptica limpia sobre el tramo, así que la máscara nunca se pudo medir ahí: no se sabe que esté mal, pero tampoco que esté bien.",
+    limitsHeadA: "Lo que esta medición",
+    limitsHeadB: "no puede hacer",
+    limitTreesName: "Agua bajo los árboles",
+    limitUrbanName: "Superficies lisas",
+    limitWindowName: "Doce días, no un instante",
+    limitDeltaName: "El Delta",
+    limitFloorName: "Un piso",
+    limitTrees: "El radar no ve el agua bajo los árboles. En banda C la señal rebota en la copa, así que el monte y el humedal inundados se leen como tierra. Cuánta agua hay bajo la vegetación no está medido, porque el óptico tampoco la ve. Ningún umbral la recupera.",
+    limitWindow: "Cada punto son doce días. La franja que ve el satélite es más angosta que este tramo de río, así que una imagen del río entero necesita una vuelta completa.",
+    limitDelta: "El Delta no publica número. En la fecha de validación no hubo escena óptica limpia sobre el tramo, así que la máscara nunca se pudo puntuar ahí: no se sabe que esté mal, pero tampoco que esté bien.",
     limitUrban: "Las superficies lisas y secas también se leen como agua: asfalto, suelo desnudo húmedo y, en una pasada, una ciudad entera cerca de Posadas. No hay máscara de zonas urbanas todavía.",
-    limitFloor: "Todos los números son un piso, no un total.",
+    limitFloor: "Todos los números de esta página son un piso, no un total.",
 
     alsoHeading: "Más sobre la superficie de agua",
     alsoFlood: "Superficie, tramo por tramo",
     alsoFloodWhy: "la serie de cada tramo y su relación con la altura en la estación de referencia.",
     alsoMap: "El mapa animado",
-    alsoMapWhy: "las mismas pasadas sobre el fondo satelital, tramo por tramo, con el río entero.",
+    alsoMapWhy: "las mismas ventanas sobre el fondo satelital, tramo por tramo.",
     alsoGauges: "El río hoy",
-    alsoGaugesWhy: "la altura medida en cada estación del INA, que es la verdad de terreno detrás de todo esto.",
+    alsoGaugesWhy: "la altura medida en cada estación del INA, la verdad de terreno detrás de todo esto.",
 
     provHeading: "De dónde sale cada número",
+    provLead: "Nada en esta página es un número escrito a mano: cada cifra se lee de los datos publicados, que se pueden descargar.",
     provMeasuredLabel: "Medido", provCalculatedLabel: "Calculado acá", provMissingLabel: "Sin dato",
     provMeasured: "La retrodispersión del radar Sentinel-1 de la ESA, el agua óptica de Sentinel-2 contra la que se validó, y la altura sobre el drenaje más cercano de MERIT Hydro.",
-    provCalculated: "La máscara de agua, la superficie por tramo y por pasada, el total del río y el puntaje contra el agua óptica.",
+    provCalculated: "La máscara de agua, la superficie por tramo y por ventana, el total del río y el puntaje contra el agua óptica.",
     provMissing: "El Delta. Está medido pero no publicado, porque la máscara no se pudo validar ahí contra agua óptica.",
 
+    placeAlert: "Alertas oficiales del INA",
+    placeCode: "Código abierto",
+    placeData: "Método y datos",
+    colViews: "Vistas", colSurface: "Superficie", colRiver: "El río",
+    colSkill: "Puntaje", colWave: "La onda de crecida", colDrivers: "Lluvia y ENSO",
+    backTop: "Volver arriba",
     method: "Sentinel-1 GRD (VH), compuestos de 12 días, 60 m. Validado contra Sentinel-2 MNDWI. Altura sobre el drenaje: MERIT Hydro. Agua permanente: JRC Global Surface Water.",
-    credits: "Datos de la ESA (Copernicus), el JRC y el INA. Código abierto.",
+    credits: "Datos de la ESA (Copernicus), el JRC y el INA.",
   },
   en: {
     chartLow: "lowest",
-    chartNow: "now",
+    chartNow: "latest",
     htmlLang: "en", locale: "en-GB",
     title: "The Paraná from space",
-    subtitle: "How much ground the river covers, measured by radar pass by pass",
-    langGroup: "Language", viewsNav: "Views",
+    titleA: "The Paraná",
+    titleB: "from space",
+    subtitle: "How much ground the river covers, measured by radar every twelve days along 1,477 km.",
+    langGroup: "Language", viewsNav: "Views", homeLink: "Home",
     skipLink: "Skip to content",
+    ctaFilm: "Step through the year",
     viewSpace: "From space",
     viewMap: "Map",
     viewToday: "The river today",
     viewMethod: "Method",
     noticeStrong: "This is not an alert system.",
-    noticeBody: "This site measures; it does not warn, does not forecast, and is not an official risk map. Alerts, evacuations and official forecasts are published by Argentina's Instituto Nacional del Agua:",
+    noticeBody: "This site measures; it does not warn, does not forecast, and is not an official risk map. Alerts and official forecasts are published by Argentina's Instituto Nacional del Agua:",
     officialLink: "INA's hydrological alert system",
+    mastNote: "The river's corridors in Sentinel-2 false colour: vegetation green, water dark blue, bare ground pink.",
 
-    riverUnavailable: "The whole-river figure is not being published: it is measured once over the union of the corridors, which overlap, and that measurement has not been made yet. The stretches below are unaffected — each is measured over its own corridor.",
-    areaCap: "km² of open water detected by radar",
+    riverUnavailable: "The whole-river figure is not being published: it is measured once over the union of the corridors, which overlap, and that measurement has not been made yet. The stretches are unaffected: each is measured over its own corridor.",
+    areaCap: "km² of open water",
+    tileWindow: (from_, to) => `Radar composite, ${from_} – ${to}`,
     areaNote: (from_, to, extra, low, lowDays, many) =>
       `A twelve-day composite, ${from_} to ${to}. That is ${extra} km² more than the ` +
       (many
@@ -274,27 +479,27 @@ const T = {
         : `lowest pass in the one-year record (${low} km², ${lowDays}).`),
     floodNote: (now, low, times) =>
       `Outside the permanent channel, which is the water that is not normally ` +
-      `there: ${now} km² in this pass against ${low} km² in the lowest, ` +
+      `there: ${now} km² in this window against ${low} km² in the lowest, ` +
       `${times} times as much. This figure has not been validated against optical ` +
       `water; the total water has.`,
     areaNoteFlat: (from_, to) =>
       `A twelve-day composite, ${from_} to ${to}.`,
     ageNote: (n) =>
       n <= 1 ? "Measured yesterday." :
-      `Measured ${n} days ago. Updated when a valid observation becomes ` +
-      `available, at most every twelve days, not daily.`,
+      `Measured ${n} days ago. Updated when a twelve-day window closes with the ` +
+      `whole river observed, not daily.`,
     passLabel: "Window measured",
     reachLabel: "Reach measured",
     riseLabel: "Against the record low",
     windowValue: (from_, to) => `${from_} – ${to}`,
-    reachValue: (km, n) => `${km} km of river, ${n} validated stretches`,
-    sumWarning: "This figure adds up stretches whose corridors overlap, so it counts the water near each gauge twice — about 7% too much. The measurement over the dissolved corridor union replaces it as soon as it has been made.",
+    reachValue: (km, n) => `${km} km, ${n} stretches`,
+    sumWarning: "This figure adds up stretches whose corridors overlap, so it counts the water near each gauge twice. The measurement over the dissolved corridor union replaces it as soon as it has been made.",
 
-    chartHeading: "A year of river, pass by pass",
-    chartLead: "Each point is a twelve-day Sentinel-1 composite, and the date is when that window closes, not the day of a pass. The solid line is all open water. The dashed one leaves out the permanent channel. A break in the line is a cycle that could not be measured — it is not zero water.",
+    chartHeading: "A year of river, window by window",
+    chartLead: "Each point is a twelve-day Sentinel-1 composite, dated to the close of the window, not the day of a pass. The solid line is all open water; the dashed one leaves out the permanent channel. A break in the line is a cycle that could not be measured: it is not zero water.",
     chartGap: "cycle not measured",
     chartNone: "There is no whole-river series to chart while the whole-river figure is withheld. Each stretch still has its own, under “Surface, stretch by stretch”.",
-    chartTitle: "Water surface of the Paraná by satellite pass",
+    chartTitle: "Water surface of the Paraná by twelve-day window",
     chartDesc: (first, last, lo, hi, gaps) =>
       `Water surface from ${first} to ${last}, one point per twelve-day window. ` +
       `The lowest value is ${lo} km² and the highest ${hi} km².` +
@@ -302,54 +507,95 @@ const T = {
               `series; the line breaks there.` : ""),
     keyWater: "All water", keyFlood: "Without the permanent channel",
     axisKm2: "km²",
+    riseCap: "more open water than in the lowest windows of the year.",
+    lowCap: (days) => `km² in the lowest windows: the median of ${days}.`,
+
+    reachesHeading: "Eight stretches, one river",
+    reachesTitle: "From Puerto Iguazú to Villa Constitución",
+    reachesCap: "Each stretch runs from one INA gauge to the next and is measured over its own 20 km corridor.",
+    capIguazu: "Puerto Iguazú – Libertador",
+    capPosadas: "Posadas – Itá Ibaté",
+    capCorrientes: "Corrientes – Goya",
+    capParana: "Paraná – Villa Constitución",
+    altItaCorrientes: "False-colour satellite image of the Paraná between Itá Ibaté and Corrientes: the dark blue channel among green islands and fields.",
+    altLibertadorPosadas: "False-colour satellite image of the Paraná between Libertador and Posadas.",
+    altGoyaLaPaz: "False-colour satellite image of the Paraná between Goya and La Paz.",
+    altLaPazParana: "False-colour satellite image of the Paraná between La Paz and Paraná.",
+    altIguazuLibertador: "False-colour satellite image of the upper Paraná between Puerto Iguazú and Libertador, cut through forest.",
+    altPosadasIta: "False-colour satellite image of the Paraná between Posadas and Itá Ibaté, with the Yacyretá reservoir.",
+    altCorrientesGoya: "False-colour satellite image of the Paraná between Corrientes and Goya, braided into many arms.",
+    altParanaVilla: "False-colour satellite image of the Paraná between the city of Paraná and Villa Constitución.",
 
     loopHeading: "The whole river, a year",
+    filmLead: "Each frame is a twelve-day window. The blue is the permanent channel; the orange is the water the radar found beyond it. Stop the film and step through the windows one by one, each with the figure measured for it.",
     loopCaption: (km, n, first, last) =>
-      `${km} km of the Paraná, from Puerto Iguazú to Villa Constitución, over ${n} ` +
-      `twelve-day composites between ${first} and ${last}. Each frame is a window, ` +
-      `not an instant. The blue is the permanent ` +
-      `channel: water the JRC maps as always present, or still there through the ` +
-      `2021 bajante. It is a constant, not a measurement. The orange is the water ` +
-      `the radar found beyond it.`,
-    loopCaptionFlat: "The whole river, one satellite pass every twelve days. The blue is the permanent channel; the orange is the water measured beyond it.",
-    loopAlt: "Animation of the Paraná from Puerto Iguazú to Villa Constitución, one frame every twelve days across a year. The permanent channel in blue and radar-detected water in orange. The orange spreads along the river as the flood advances.",
+      `${km} km of the Paraná over ${n} twelve-day composites between ${first} and ${last}. ` +
+      `The permanent channel is water the JRC maps as always present, or still there ` +
+      `through the 2021 bajante: it is a constant, not a measurement.`,
+    loopCaptionFlat: "The whole river, one twelve-day window per frame. The blue is the permanent channel; the orange is the water measured beyond it.",
+    loopAlt: "Animation of the Paraná from Puerto Iguazú to Villa Constitución, one frame every twelve days across a year. The permanent channel in blue and radar-detected water in orange.",
+    stillAlt: (when) => `The Paraná in the window ${when}: permanent channel in blue, water detected beyond it in orange.`,
     playLoop: "Play the animation", pauseLoop: "Pause the animation",
+    scrubLabel: "Twelve-day window",
+    scrubUnit: "km² measured",
+    scrubNone: "no figure",
+    scrubValue: (when, km) => km ? `${when}, ${km} km²` : when,
+    filmFramesLabel: "Windows", filmWindowLabel: "Each",
+    filmRiverLabel: "River drawn", filmStretchesLabel: "Stretches",
+    filmWindowValue: (n) => `${n} days`,
+    filmRiverValue: (km) => `${km} km`,
 
     skillHeading: "How well the measurement works",
+    skillHeadA: "How well",
+    skillHeadB: "it works",
     skillLead: (against, n) =>
       `Each stretch measured against Sentinel-2 optical water around ${against}: ${n} ` +
       `stretches with a clear scene. The reference is a median of the clear scenes ` +
-      `within six days either side of that date, not a picture of that day. The last ` +
-      `column is what the old method scored on the same stretch.`,
-    skillCaveat: "Three limits belong with these numbers. The threshold was tuned against the same date it is scored on, so this is goodness-of-fit rather than an independent test. What is scored is total water, of which the permanent channel is 56% to 93%, so most of the figure measures whether the mask can find the river. And optical cannot see under vegetation either, which is the radar's main error: none of these numbers bounds it.",
-    skillCaption: "Comparison of two radar water-detection methods",
+      `within six days either side of that date. The last column is what the old ` +
+      `method scored on the same stretch.`,
+    skillCaveat: "Three limits belong with these numbers. The threshold was tuned against the same date it is scored on, so this is goodness-of-fit rather than an independent test. What is scored is total water, most of which is the permanent channel, so much of the figure measures whether the mask can find the river. And optical cannot see under vegetation either, which is the radar's main error: none of these numbers bounds it.",
+    skillCaption: "Score of the radar water mask against optical water, by stretch",
     skillMethod: "Stretch", skillRecall: "Found", skillPrecision: "Right", skillIou: "IoU",
     skillWas: "IoU before", skillWhole: "The whole measured river",
-    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together. For scale: on the Sen1Floods11 benchmark, threshold methods like this one score around 0.55 IoU and trained networks around 0.73, so 0.69 from a single global threshold is a reasonable result. A stretch that does not clear 0.45 publishes no figure. Nor does one that could never be measured against optical at all.",
+    skillWhat: "“Found” is how much of the water optical sees the radar finds. “Right” is how much of what the radar calls water really is. IoU puts the two together. On the Sen1Floods11 benchmark, threshold methods like this one score around 0.55 IoU and trained networks around 0.73. A stretch below the score floor publishes no figure, and nor does one that could never be measured against optical.",
 
     limitsHeading: "What this measurement cannot do",
-    limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. Of the water optical sees, the radar finds 80%; how much sits under vegetation is unmeasured, because optical cannot see it either. No threshold recovers it.",
-    limitWindow: "Each point is twelve days, not an instant. The satellite's swath is narrower than this run of river, so a picture of the whole river needs a full repeat cycle.",
+    limitsHeadA: "What this measurement",
+    limitsHeadB: "cannot do",
+    limitTreesName: "Water under trees",
+    limitUrbanName: "Smooth surfaces",
+    limitWindowName: "Twelve days, not an instant",
+    limitDeltaName: "The Delta",
+    limitFloorName: "A floor",
+    limitTrees: "Radar does not see water under trees. At C band the signal bounces off the canopy, so flooded forest and wetland read as land. How much water sits under vegetation is unmeasured, because optical cannot see it either. No threshold recovers it.",
+    limitWindow: "Each point is twelve days. The satellite's swath is narrower than this run of river, so a picture of the whole river needs a full repeat cycle.",
     limitDelta: "The Delta publishes no figure. On the validation date there was no clear optical scene over the stretch, so the mask could never be scored there: it is not known to be wrong, but it is not known to be right either.",
     limitUrban: "Smooth dry surfaces read as water too: tarmac, damp bare soil, and on one pass an entire city near Posadas. There is no settlement mask yet.",
-    limitFloor: "Every number here is a floor, not a total.",
+    limitFloor: "Every number on this page is a floor, not a total.",
 
     alsoHeading: "More on the water surface",
     alsoFlood: "Surface, stretch by stretch",
     alsoFloodWhy: "each stretch's series and how it tracks the stage at its reference gauge.",
     alsoMap: "The animated map",
-    alsoMapWhy: "the same passes over the satellite backdrop, stretch by stretch, for the whole river.",
+    alsoMapWhy: "the same windows over the satellite backdrop, stretch by stretch.",
     alsoGauges: "The river today",
-    alsoGaugesWhy: "the stage measured at each INA gauge, which is the ground truth behind all of this.",
+    alsoGaugesWhy: "the stage measured at each INA gauge, the ground truth behind all of this.",
 
     provHeading: "Where each number comes from",
+    provLead: "No number on this page is typed by hand: each figure is read from the published data, which can be downloaded.",
     provMeasuredLabel: "Measured", provCalculatedLabel: "Worked out here", provMissingLabel: "No data",
     provMeasured: "Backscatter from ESA's Sentinel-1 radar, the Sentinel-2 optical water it was validated against, and height above nearest drainage from MERIT Hydro.",
-    provCalculated: "The water mask, the surface per stretch and per pass, the river-wide total, and the score against optical water.",
+    provCalculated: "The water mask, the surface per stretch and per window, the river-wide total, and the score against optical water.",
     provMissing: "The Delta. It is measured but not published, because the mask could not be validated there against optical water.",
 
+    placeAlert: "Official alerts from INA",
+    placeCode: "Open source code",
+    placeData: "Method and data",
+    colViews: "Views", colSurface: "Surface", colRiver: "The river",
+    colSkill: "Score", colWave: "The flood wave", colDrivers: "Rain and ENSO",
+    backTop: "Back to top",
     method: "Sentinel-1 GRD (VH), 12-day composites, 60 m. Validated against Sentinel-2 MNDWI. Height above drainage: MERIT Hydro. Permanent water: JRC Global Surface Water.",
-    credits: "Data from ESA (Copernicus), the JRC and INA. Open source.",
+    credits: "Data from ESA (Copernicus), the JRC and INA.",
   },
 };
 
@@ -371,32 +617,24 @@ function setLang(next) {
   const t = T[lang];
   document.documentElement.lang = t.htmlLang;
   document.title = `${t.title} · ${lang === "es" ? "Crecida del Paraná" : "Paraná flood tracker"}`;
-  for (const el of document.querySelectorAll("[data-t]")) {
-    const v = t[el.dataset.t];
-    if (typeof v === "string") el.textContent = v;
+  for (const node of document.querySelectorAll("[data-t]")) {
+    const v = t[node.dataset.t];
+    if (typeof v === "string") node.textContent = v;
   }
-  for (const el of document.querySelectorAll("[data-t-aria]")) {
-    el.setAttribute("aria-label", t[el.dataset.tAria] || "");
+  for (const node of document.querySelectorAll("[data-t-aria]")) {
+    node.setAttribute("aria-label", t[node.dataset.tAria] || "");
   }
-  for (const el of document.querySelectorAll("[data-t-alt]")) {
-    el.setAttribute("alt", t[el.dataset.tAlt] || "");
+  for (const node of document.querySelectorAll("[data-t-alt]")) {
+    node.setAttribute("alt", t[node.dataset.tAlt] || "");
   }
   for (const b of document.querySelectorAll(".langs button")) {
     b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
   }
   document.getElementById("chartTitle").textContent = t.chartTitle;
-  loopToggle.setAttribute("aria-label", loopRunning ? t.pauseLoop : t.playLoop);
+  labelToggle();
   if (payload) render(payload);
   if (film) describeFilm(film);
   else document.getElementById("loopCaption").textContent = T[lang].loopCaptionFlat;
-}
-
-function describeFilm(data) {
-  const frames = data.frames || [];
-  if (!frames.length) return;
-  document.getElementById("loopCaption").textContent = T[lang].loopCaption(
-    num(Math.round(data.river_km || 0)), frames.length,
-    longDay(frames[0].end), longDay(frames[frames.length - 1].end));
 }
 
 function el(name, attrs, text) {
@@ -441,34 +679,36 @@ function drawChart(rows, data) {
   while (svg.lastChild && svg.lastChild !== keep) svg.removeChild(svg.lastChild);
   if (rows.length < 2) return;
 
-  const W = 760, H = 320, L = 58, R = 16, TOP = 16, B = 46;
+  const W = 860, H = 400, L = 62, R = 18, TOP = 22, B = 48;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   const plotW = W - L - R, plotH = H - TOP - B;
 
   const water = rows.map((r) => r.water_km2);
-  const top = Math.max(...water) * 1.08;
+  const top = Math.max(...water) * 1.1;
   const x = (i) => L + (rows.length === 1 ? plotW / 2 : (i * plotW) / (rows.length - 1));
   const y = (v) => TOP + plotH - (v / top) * plotH;
 
-  // Horizontal rules with their values, so the shape can be read as numbers.
-  // Round gridlines. Dividing the data maximum into four gave 2,626 /
-  // 5,253 / 7,879 / 10,506 - four numbers nobody can hold in their head
-  // and none of them a quantity anyone would choose to mark.
+  // Round values marked as tone bands rather than ruled lines, so the shape
+  // can still be read as numbers.
   const step = niceStep(top / 4);
+  let band = 0;
   for (let value = 0; value <= top; value += step) {
-    svg.appendChild(el("line", {
-      x1: L, x2: W - R, y1: y(value), y2: y(value),
-      stroke: "var(--line)", "stroke-width": 1,
-    }));
+    const upper = Math.min(value + step, top);
+    if (band % 2 === 0) {
+      svg.appendChild(el("rect", {
+        x: L, width: plotW, y: y(upper), height: y(value) - y(upper),
+        fill: "var(--surface)", opacity: 0.55,
+      }));
+    }
+    band += 1;
     svg.appendChild(el("text", {
-      x: L - 8, y: y(value) + 4, "text-anchor": "end",
-      fill: "var(--ink-faint)", "font-size": 11,
+      x: L - 10, y: y(value) + 5, "text-anchor": "end",
+      fill: "var(--muted)", "font-size": 14,
     }, num(value)));
   }
-  // Inside the plot rather than over the top tick, which it sat on.
   svg.appendChild(el("text", {
-    x: L + 4, y: TOP + 10, "text-anchor": "start",
-    fill: "var(--ink-faint)", "font-size": 11,
+    x: L + 6, y: TOP + 14, "text-anchor": "start",
+    fill: "var(--muted)", "font-size": 14,
   }, t.axisKm2));
 
   // Cycles that could not be measured are absent from the series, not
@@ -484,6 +724,20 @@ function drawChart(rows, data) {
     return (b - a) / DAY > (data.window_days || 12) * 1.5;
   };
 
+  // And the gap is marked, so the break reads as "not measured" rather
+  // than as a rendering fault: a tone column with its label.
+  for (let i = 0; i < rows.length - 1; i += 1) {
+    if (!gapAfter(i)) continue;
+    svg.appendChild(el("rect", {
+      x: x(i) + 4, width: Math.max(4, x(i + 1) - x(i) - 8), y: TOP, height: plotH,
+      fill: "var(--water)", opacity: 0.6,
+    }));
+    svg.appendChild(el("text", {
+      x: (x(i) + x(i + 1)) / 2, y: TOP + plotH - 10, "text-anchor": "middle",
+      fill: "var(--ink)", "font-size": 14,
+    }, t.chartGap));
+  }
+
   const path = (values, dashed) => {
     const parts = values.map((v, i) => {
       const point = `${x(i).toFixed(1)} ${y(v).toFixed(1)}`;
@@ -492,40 +746,25 @@ function drawChart(rows, data) {
     });
     const attrs = {
       d: parts.join(" "), fill: "none",
-      stroke: dashed ? "var(--evac)" : "var(--accent)",
-      "stroke-width": dashed ? 2 : 2.6, "stroke-linejoin": "round",
+      stroke: dashed ? "var(--flood)" : "var(--channel)",
+      "stroke-width": dashed ? 2.4 : 3, "stroke-linejoin": "round",
     };
-    if (dashed) attrs["stroke-dasharray"] = "5 4";
+    if (dashed) attrs["stroke-dasharray"] = "7 4";
     svg.appendChild(el("path", attrs));
   };
   path(water, false);
   path(rows.map((r) => r.flood_km2), true);
 
-  // And the gap is marked, so the break reads as "not measured" rather
-  // than as a rendering fault.
-  for (let i = 0; i < rows.length - 1; i += 1) {
-    if (!gapAfter(i)) continue;
-    const mid = (x(i) + x(i + 1)) / 2;
-    svg.appendChild(el("line", {
-      x1: mid, x2: mid, y1: TOP, y2: TOP + plotH,
-      stroke: "var(--ink-faint)", "stroke-width": 1, "stroke-dasharray": "2 3",
-    }));
-    svg.appendChild(el("text", {
-      x: mid, y: TOP + 10, "text-anchor": "middle",
-      fill: "var(--ink-faint)", "font-size": 10,
-    }, t.chartGap));
-  }
-
   for (let i = 0; i < rows.length; i += 1) {
     svg.appendChild(el("circle", {
-      cx: x(i), cy: y(water[i]), r: 2.6, fill: "var(--accent)",
+      cx: x(i), cy: y(water[i]), r: 3, fill: "var(--channel)",
     }));
   }
 
   // A date label roughly every other month, and always the last one. The
   // last is chosen first and the run works backwards from it, because
   // forcing it on at the end put it on top of the label before it.
-  const GAP = 76;
+  const GAP = 92;
   const labels = [rows.length - 1];
   for (let i = rows.length - 2; i >= 0; i -= 1) {
     if (x(labels[labels.length - 1]) - x(i) >= GAP) labels.push(i);
@@ -533,8 +772,8 @@ function drawChart(rows, data) {
   labels.reverse();
   for (const i of labels) {
     svg.appendChild(el("text", {
-      x: x(i), y: H - B + 20, "text-anchor": "middle",
-      fill: "var(--ink-faint)", "font-size": 11,
+      x: x(i), y: H - B + 26, "text-anchor": i === rows.length - 1 ? "end" : "middle",
+      fill: "var(--muted)", "font-size": 14,
     }, dayLabel(rows[i].day)));
   }
 
@@ -550,15 +789,13 @@ function drawChart(rows, data) {
     if (index < 0) continue;
     const cx = x(index), cy = y(water[index]);
     svg.appendChild(el("circle", {
-      cx, cy, r: 5, fill: "none",
-      stroke: index === lastAt ? "var(--evac)" : "var(--ink-faint)",
-      "stroke-width": 2,
+      cx, cy, r: 7, fill: index === lastAt ? "var(--accent)" : "var(--white)",
+      stroke: "var(--ink)", "stroke-width": 2,
     }));
-    const dx = anchor === "end" ? -10 : 10;
+    const dx = anchor === "end" ? -12 : 12;
     svg.appendChild(el("text", {
-      x: cx + dx, y: cy - 12, "text-anchor": anchor,
-      fill: index === lastAt ? "var(--evac)" : "var(--ink-faint)",
-      "font-size": 11.5, "font-weight": index === lastAt ? 650 : 500,
+      x: cx + dx, y: cy - 14, "text-anchor": anchor,
+      fill: "var(--ink)", "font-size": 14, "font-weight": index === lastAt ? 500 : 400,
     }, `${t[key]} ${num(Math.round(water[index]))}`));
   }
 
@@ -576,6 +813,7 @@ function drawSkill(skill) {
   const t = T[lang];
   const body = document.getElementById("skillRows");
   body.textContent = "";
+  const heads = [t.skillRecall, t.skillPrecision, t.skillIou, t.skillWas];
 
   // One row per stretch, because a single river-wide figure hides that the
   // method is near 0.9 in the gorge and near 0.5 below Corrientes, and
@@ -588,11 +826,12 @@ function drawSkill(skill) {
     th.textContent = label;
     tr.appendChild(th);
     const cells = [now.recall, now.precision, now.iou, before && before.iou];
-    for (const v of cells) {
+    cells.forEach((v, i) => {
       const td = document.createElement("td");
+      td.dataset.label = heads[i];
       td.textContent = v === null || v === undefined ? "–" : num(v, 2);
       tr.appendChild(td);
-    }
+    });
     body.appendChild(tr);
   };
 
@@ -609,8 +848,8 @@ function drawSkill(skill) {
 function render(data) {
   const t = T[lang];
   // Every row here is one measurement over the dissolved union of the
-  // corridors, so there is no longer a "complete" flag to filter on: a
-  // cycle that could not be measured in full is absent rather than low.
+  // corridors: a cycle that could not be measured in full is absent
+  // rather than low.
   const rows = data.river || [];
   const latest = data.latest, low = data.lowest;
 
@@ -630,6 +869,8 @@ function render(data) {
     const from_ = windowStart(latest), to = latest.day;
     document.getElementById("area").textContent = num(Math.round(latest.water_km2));
     document.getElementById("areaCap").textContent = t.areaCap;
+    document.getElementById("tileWindow").textContent =
+      t.tileWindow(dayLabel(from_), dayLabel(to));
     document.getElementById("areaNote").textContent = low && low.day !== latest.day
       ? t.areaNote(longDay(from_), longDay(to),
                    num(Math.round(latest.water_km2 - low.water_km2)),
@@ -652,27 +893,32 @@ function render(data) {
       beyond.hidden = true;
     }
 
-    // A total summed from overlapping corridors says so. Once the union
-    // measurement lands, rows carry `stretches` as a list and this goes.
+    // A total summed from overlapping corridors says so. Rows measured
+    // over the union carry `stretches` as a list.
     const summed = document.getElementById("sumWarning");
     summed.textContent = t.sumWarning;
     summed.hidden = Array.isArray(latest.stretches);
-
-    document.getElementById("headline").hidden = false;
 
     document.getElementById("passWindow").textContent =
       t.windowValue(dayLabel(from_), dayLabel(to));
     document.getElementById("reach").textContent = t.reachValue(
       num(Math.round(riverKm(data))),
       Array.isArray(latest.stretches) ? latest.stretches.length : latest.stretches);
-    document.getElementById("rise").textContent = low
+    const rise = low
       ? `+${num(Math.round(((latest.water_km2 / low.water_km2) - 1) * 100))}%`
       : "–";
+    document.getElementById("rise").textContent = rise;
+    document.getElementById("riseTile").textContent = rise;
     document.getElementById("meta").hidden = false;
+    if (low) {
+      document.getElementById("lowTile").textContent = num(Math.round(low.water_km2));
+      document.getElementById("lowCap").textContent = t.lowCap(anchorDays(low));
+    }
   }
 
   drawChart(rows, data);
   if (data.skill) drawSkill(data.skill);
+  if (film) describeFilm(film);
 }
 
 // The twelve days a cycle covers. Rows measured over the corridor union
@@ -704,18 +950,26 @@ function riverKm(data) {
   return (data.stretches || []).reduce((sum, s) => sum + (s.river_km || 0), 0);
 }
 
-// -- the animation ---------------------------------------------------------
+// -- the film and the scrubber ----------------------------------------------
 
 const loopImg = document.getElementById("loop");
 const loopFrame = document.getElementById("loopFrame");
 const loopToggle = document.getElementById("loopToggle");
+const still = document.getElementById("still");
+const scrub = document.getElementById("scrub");
 let loopRunning = true;
+
+function labelToggle() {
+  const label = loopRunning ? T[lang].pauseLoop : T[lang].playLoop;
+  loopToggle.textContent = label;
+  loopToggle.setAttribute("aria-label", label);
+}
 
 function freezeLoop() {
   // A GIF cannot be paused, so the first frame is painted to a canvas and
   // the canvas is shown in its place.
   const w = loopImg.naturalWidth, h = loopImg.naturalHeight;
-  if (w && h) {
+  if (w && h && still.hidden) {
     loopFrame.width = w;
     loopFrame.height = h;
     loopFrame.getContext("2d").drawImage(loopImg, 0, 0);
@@ -724,15 +978,16 @@ function freezeLoop() {
   }
   loopRunning = false;
   loopToggle.classList.remove("playing");
-  loopToggle.setAttribute("aria-label", T[lang].playLoop);
+  labelToggle();
 }
 
 function runLoop() {
   loopFrame.hidden = true;
+  still.hidden = true;
   loopImg.hidden = false;
   loopRunning = true;
   loopToggle.classList.add("playing");
-  loopToggle.setAttribute("aria-label", T[lang].pauseLoop);
+  labelToggle();
 }
 
 loopToggle.addEventListener("click", () => (loopRunning ? freezeLoop() : runLoop()));
@@ -744,11 +999,90 @@ function settleLoop() {
 if (loopImg.complete) settleLoop();
 else loopImg.addEventListener("load", settleLoop);
 
+// The one thing a reader can do here: hold one window still. Each frame is
+// shown with the whole-river figure published for that same window, read
+// from the measurement, not from the label painted on the picture.
+function frameRows() {
+  return (film && film.frames) || [];
+}
+
+function figureFor(end) {
+  const rows = (payload && payload.river) || [];
+  const row = rows.find((r) => r.day === end);
+  return row ? row.water_km2 : null;
+}
+
+function showFrame(index) {
+  const frames = frameRows();
+  const frame = frames[index];
+  if (!frame) return;
+  const t = T[lang];
+  const when = t.windowValue(dayLabel(frame.start || windowStart({ day: frame.end })),
+                             dayLabel(frame.end));
+  const km = figureFor(frame.end);
+  document.getElementById("scrubWhen").textContent = when;
+  const fig = document.getElementById("scrubKm");
+  fig.textContent = km === null ? t.scrubNone : num(Math.round(km));
+  fig.classList.toggle("none", km === null);
+  scrub.value = String(index);
+  scrub.setAttribute("aria-valuetext",
+    t.scrubValue(when, km === null ? null : num(Math.round(km))));
+  return { frame, when };
+}
+
+scrub.addEventListener("input", () => {
+  const shown = showFrame(Number(scrub.value));
+  if (!shown) return;
+  if (loopRunning) freezeLoop();
+  if (!shown.frame.still) return;
+  still.src = shown.frame.still;
+  still.alt = T[lang].stillAlt(shown.when);
+  still.hidden = false;
+  loopImg.hidden = true;
+  loopFrame.hidden = true;
+});
+
+function describeFilm(data) {
+  const frames = data.frames || [];
+  if (!frames.length) return;
+  const t = T[lang];
+  document.getElementById("loopCaption").textContent = t.loopCaption(
+    num(Math.round(data.river_km || 0)), frames.length,
+    longDay(frames[0].end), longDay(frames[frames.length - 1].end));
+  document.getElementById("filmFrames").textContent = num(frames.length);
+  document.getElementById("filmWindow").textContent = t.filmWindowValue(data.window_days || 12);
+  document.getElementById("filmRiver").textContent = t.filmRiverValue(num(Math.round(data.river_km || 0)));
+  document.getElementById("filmStretches").textContent = num((data.stretches || []).length);
+  scrub.max = String(frames.length - 1);
+  scrub.disabled = false;
+  const at = still.hidden ? frames.length - 1 : Number(scrub.value);
+  showFrame(at);
+}
+
 for (const b of document.querySelectorAll(".langs button")) {
   b.addEventListener("click", () => setLang(b.dataset.lang));
 }
 
 setLang(pickLang());
+
+// Entrances: each part of a section rises once as it comes into view. The
+// hidden state is set by the .js class only, so without script nothing is
+// ever hidden.
+(function motion() {
+  const root = document.documentElement;
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("ready")));
+  const parts = document.querySelectorAll(".rise");
+  if (!("IntersectionObserver" in window)) {
+    parts.forEach((p) => p.classList.add("in"));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  parts.forEach((p) => io.observe(p));
+})();
 
 fetch("data/river_film.json", { cache: "no-cache" })
   .then((r) => (r.ok ? r.json() : null))
