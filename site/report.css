@@ -400,7 +400,7 @@ footer.close {
 }
 .close .wordmark {
   font-family: var(--display); text-transform: uppercase;
-  font-size: 33vw; line-height: 0.8; letter-spacing: -0.02em; margin-left: -0.03em;
+  font-size: 45vw; line-height: 0.8; letter-spacing: -0.02em; margin-left: -0.03em;
   margin: 0; white-space: nowrap;
 }
 .close .row1 {
@@ -492,7 +492,7 @@ footer.close {
   table.skill td::before { content: attr(data-label); display: block; font-size: 0.8125rem; color: var(--muted); }
   table.skill tr.now td::before { color: var(--radar-soft); }
   .limits li, .also li { grid-template-columns: 1fr; }
-  .close .wordmark { font-size: 33vw; }
+  .close .wordmark { font-size: 45vw; }
   .linkcols { grid-template-columns: 1fr 1fr; }
   footer.close { min-height: 0; }
   .close .legal { padding-top: 72px; }

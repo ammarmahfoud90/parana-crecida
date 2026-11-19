@@ -1,35 +1,45 @@
 <!doctype html>
-<html lang="es" data-theme="auto">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Método y límites · Crecida del Paraná</title>
 <meta name="description" content="Cómo se mide cada cosa en este sitio, con qué datos, y qué no se puede concluir de ellos.">
-<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c1214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,400&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#content" data-t="skipLink"></a>
-<div class="wrap">
-
-  <header>
-    <div>
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="subtitle"></p>
-    </div>
-    <div class="langs" role="group" data-t-aria="langGroup">
-      <button type="button" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
-
+<header class="topbar">
+  <a class="mark" href="index.html">Paraná</a>
   <nav class="views" data-t-aria="viewsNav">
     <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
     <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" aria-current="page" data-t="viewMethod"></a>
   </nav>
+  <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+</header>
+<div class="strip" aria-hidden="true">
+  <div><img src="media/basemap/villa_constitucion_ibicuy.webp" width="2048" height="1453" alt="" decoding="async"></div>
+  <div class="f1"></div>
+  <div><img src="media/basemap/parana_villa_constitucion.webp" width="864" height="2048" alt="" decoding="async"></div>
+  <div><img src="media/basemap/goya_la_paz.webp" width="734" height="2048" alt="" decoding="async"></div>
+  <div class="f2"></div>
+  <div><img src="media/basemap/libertador_posadas.webp" width="2048" height="1848" alt="" decoding="async"></div>
+</div>
+<div class="wrap">
+  <div class="pagehead">
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="subtitle"></p>
+  </div>
 
   <main id="content" class="prose" tabindex="-1">
 
@@ -187,9 +197,13 @@
 
   </main>
 
-  <footer>
+  <footer class="close">
+    <p class="wordmark" aria-hidden="true">Paraná</p>
+    <div class="legal">
+    <p class="places"><a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a></p>
     <p data-t="credits"></p>
     <p><a href="https://github.com/ammarmahfoud90/parana-crecida" target="_blank" rel="noopener" data-t="repoLink"></a></p>
+    </div>
   </footer>
 
 </div>
@@ -576,5 +590,6 @@ Promise.all([
 
 setLang(lang);
 </script>
+<script src="site.js" defer></script>
 </body>
 </html>

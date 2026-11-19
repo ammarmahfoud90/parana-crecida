@@ -1,35 +1,45 @@
 <!doctype html>
-<html lang="es" data-theme="auto">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Superficie, tramo por tramo · Crecida del Paraná</title>
 <meta name="description" content="La superficie de agua medida por radar en cada tramo del Paraná, pasada por pasada, con el puntaje de validación de cada uno.">
-<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c1214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,400&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#content" data-t="skipLink"></a>
-<div class="wrap">
-
-  <header>
-    <div>
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="subtitle"></p>
-    </div>
-    <div class="langs" role="group" data-t-aria="langGroup">
-      <button type="button" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
-
+<header class="topbar">
+  <a class="mark" href="index.html">Paraná</a>
   <nav class="views" data-t-aria="viewsNav">
     <a href="index.html" aria-current="page" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
     <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
+  <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+</header>
+<div class="strip" aria-hidden="true">
+  <div><img src="media/basemap/corrientes_goya.webp" width="806" height="2048" alt="" decoding="async"></div>
+  <div class="f1"></div>
+  <div><img src="media/basemap/ita_ibate_corrientes.webp" width="2048" height="682" alt="" decoding="async"></div>
+  <div><img src="media/basemap/goya_la_paz.webp" width="734" height="2048" alt="" decoding="async"></div>
+  <div class="f2"></div>
+  <div><img src="media/basemap/posadas_ita_ibate.webp" width="2048" height="664" alt="" decoding="async"></div>
+</div>
+<div class="wrap">
+  <div class="pagehead">
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="subtitle"></p>
+  </div>
 
   <main id="content" tabindex="-1">
 
@@ -69,11 +79,11 @@
     <span><i class="flood"></i><span data-t="keyFlood"></span></span>
   </div>
 
-  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem;margin-top:18px"
+  <p class="cap measure"
      id="skillLine"></p>
   <p class="cap measure" data-t="skillCaveat"
-     style="color:var(--ink-soft);font-size:.9rem"></p>
-  <p class="cap measure" style="color:var(--ink-soft);font-size:.9rem" data-t="floorNote"></p>
+    ></p>
+  <p class="cap measure" data-t="floorNote"></p>
 
   <section id="withheld" hidden>
     <h2 class="section major" data-t="withheldHeading"></h2>
@@ -102,9 +112,13 @@
   </section>
   </main>
 
-  <footer>
+  <footer class="close">
+    <p class="wordmark" aria-hidden="true">Paraná</p>
+    <div class="legal">
+    <p class="places"><a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a></p>
     <p data-t="method"></p>
     <p data-t="credits"></p>
+    </div>
   </footer>
 </div>
 
@@ -334,12 +348,12 @@ function drawChart(stretch) {
     }));
     svg.appendChild(el("text", {
       x: L - 8, y: y(value) + 4, "text-anchor": "end",
-      fill: "var(--ink-faint)", "font-size": 11,
+      fill: "var(--ink-faint)", "font-size": 13,
     }, num(value)));
   }
   svg.appendChild(el("text", {
     x: L + 4, y: TOP + 10, "text-anchor": "start",
-    fill: "var(--ink-faint)", "font-size": 11,
+    fill: "var(--ink-faint)", "font-size": 13,
   }, t.axisKm2));
 
   const path = (values, dashed) => {
@@ -373,7 +387,7 @@ function drawChart(stretch) {
   for (const i of marks) {
     svg.appendChild(el("text", {
       x: x(i), y: H - B + 20, "text-anchor": "middle",
-      fill: "var(--ink-faint)", "font-size": 11,
+      fill: "var(--ink-faint)", "font-size": 13,
     }, dayLabel(days[i])));
   }
 
@@ -482,5 +496,6 @@ fetch("data/floodwater.json", { cache: "no-cache" })
     box.hidden = false;
   });
 </script>
+<script src="site.js" defer></script>
 </body>
 </html>

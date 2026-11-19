@@ -1,35 +1,45 @@
 <!doctype html>
-<html lang="es" data-theme="auto">
+<html lang="es" class="app">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aguas arriba · Crecida del Paraná</title>
 <meta name="description" content="Lo que empuja al Paraná: las represas, el aporte del Iguazú y el estado del Niño.">
-<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c1214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,400&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#content" data-t="skipLink"></a>
-<div class="wrap">
-
-  <header>
-    <div>
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="subtitle"></p>
-    </div>
-    <div class="langs" role="group" data-t-aria="langGroup">
-      <button type="button" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
-
+<header class="topbar">
+  <a class="mark" href="index.html">Paraná</a>
   <nav class="views" data-t-aria="viewsNav">
     <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" data-t="viewMap"></a>
     <a href="gauges.html" aria-current="page" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
+  <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+</header>
+<div class="strip" aria-hidden="true">
+  <div><img src="media/basemap/libertador_posadas.webp" width="2048" height="1848" alt="" decoding="async"></div>
+  <div class="f1"></div>
+  <div><img src="media/basemap/puerto_iguazu_libertador.webp" width="996" height="2048" alt="" decoding="async"></div>
+  <div><img src="media/basemap/posadas_ita_ibate.webp" width="2048" height="664" alt="" decoding="async"></div>
+  <div class="f2"></div>
+  <div><img src="media/basemap/corrientes_goya.webp" width="806" height="2048" alt="" decoding="async"></div>
+</div>
+<div class="wrap">
+  <div class="pagehead">
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="subtitle"></p>
+  </div>
 
   <main id="content" tabindex="-1">
 
@@ -49,13 +59,13 @@
   <h2 class="section" data-t="flowsHeading"></h2>
   <div class="drivers" id="drivers"></div>
 
-  <h2 class="section" style="margin-top:28px" data-t="rainHeading"></h2>
+  <h2 class="section" data-t="rainHeading"></h2>
   <div class="rain" id="rain"></div>
-  <p class="cap" style="color:var(--ink-faint);font-size:.82rem" id="rainNote"></p>
+  <p class="cap" id="rainNote"></p>
 
-  <h2 class="section" style="margin-top:28px" data-t="printedHeading"></h2>
+  <h2 class="section" data-t="printedHeading"></h2>
   <div class="printed" id="printed"></div>
-  <p class="cap" style="color:var(--ink-faint);font-size:.82rem" data-t="printedNote"></p>
+  <p class="cap" data-t="printedNote"></p>
 
   
   <section class="provenance" aria-labelledby="provHeading">
@@ -68,9 +78,13 @@
   </section>
   </main>
 
-  <footer>
+  <footer class="close">
+    <p class="wordmark" aria-hidden="true">Paraná</p>
+    <div class="legal">
+    <p class="places"><a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a></p>
     <p data-t="method"></p>
     <p data-t="credits"></p>
+    </div>
   </footer>
 </div>
 
@@ -473,5 +487,6 @@ fetch("data/drivers.json", { cache: "no-cache" })
     box.hidden = false;
   });
 </script>
+<script src="site.js" defer></script>
 </body>
 </html>

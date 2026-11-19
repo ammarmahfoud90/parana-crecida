@@ -1,36 +1,46 @@
 <!doctype html>
-<html lang="es" data-theme="auto">
+<html lang="es" class="app">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mapa de la crecida · Crecida del Paraná</title>
 <meta name="description" content="Mapa del Paraná del límite con Brasil a Villa Constitución: altura del río día a día, agua detectada por radar, estaciones y departamentos.">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c1214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Imbue:opsz,wght@10..100,400&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#content" data-t="skipLink"></a>
-<div class="wrap wide">
-
-  <header>
-    <div>
-      <h1 data-t="title"></h1>
-      <p class="sub" data-t="subtitle"></p>
-    </div>
-    <div class="langs" role="group" data-t-aria="langGroup">
-      <button type="button" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
-
+<header class="topbar">
+  <a class="mark" href="index.html">Paraná</a>
   <nav class="views" data-t-aria="viewsNav">
     <a href="index.html" data-t="viewSpace"></a>
     <a href="map.html" aria-current="page" data-t="viewMap"></a>
     <a href="gauges.html" data-t="viewToday"></a>
     <a href="method.html" data-t="viewMethod"></a>
   </nav>
+  <div class="langs" role="group" data-t-aria="langGroup">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+</header>
+<div class="strip" aria-hidden="true">
+  <div><img src="media/basemap/posadas_ita_ibate.webp" width="2048" height="664" alt="" decoding="async"></div>
+  <div class="f1"></div>
+  <div><img src="media/basemap/puerto_iguazu_libertador.webp" width="996" height="2048" alt="" decoding="async"></div>
+  <div><img src="media/basemap/la_paz_parana.webp" width="1745" height="2048" alt="" decoding="async"></div>
+  <div class="f2"></div>
+  <div><img src="media/basemap/ita_ibate_corrientes.webp" width="2048" height="682" alt="" decoding="async"></div>
+</div>
+<div class="wrap wide">
+  <div class="pagehead">
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="subtitle"></p>
+  </div>
 
   <main id="content" tabindex="-1">
 
@@ -42,7 +52,7 @@
 
   <div id="error" class="err" role="alert" hidden></div>
 
-  <div id="map" role="application" data-t-aria="mapLabel"></div>
+  <div id="map" data-ui role="application" data-t-aria="mapLabel"></div>
 
   <div class="baseswitch" role="group" data-t-aria="baseGroup">
     <button type="button" data-base="street" aria-pressed="true" data-t="baseStreet"></button>
@@ -71,7 +81,7 @@
   </div>
 
   <p class="cap" id="baseNote" hidden></p>
-  <p class="cap" id="modeNote" style="color:var(--ink-faint);font-size:.82rem;margin-top:12px"></p>
+  <p class="cap" id="modeNote"></p>
 
   
   <section class="provenance" aria-labelledby="provHeading">
@@ -84,9 +94,13 @@
   </section>
   </main>
 
-  <footer>
+  <footer class="close">
+    <p class="wordmark" aria-hidden="true">Paraná</p>
+    <div class="legal">
+    <p class="places"><a href="https://alerta.ina.gob.ar/" target="_blank" rel="noopener" data-t="officialLink"></a></p>
     <p data-t="method"></p>
     <p data-t="credits"></p>
+    </div>
   </footer>
 </div>
 
@@ -450,7 +464,7 @@ function addGauges(geo) {
         : tt.popupLevel(fmt(live.value, 2), live.unit === "m3/s" ? "m³/s" : "m");
       return `<b>${p.name}</b><br>${reading}<br>` +
              `<span style="color:${statusColour(live.status)}">${status}</span><br>` +
-             `<span style="color:#8b8984">${tt.popupKm(fmt(p.river_km, 0))}</span>`;
+             `<span style="color:var(--ink-soft)">${tt.popupKm(fmt(p.river_km, 0))}</span>`;
     };
     marker.bindPopup(marker.options.buildPopup());
     marker.bindTooltip(p.name, { direction: "right", offset: [8, 0] });
@@ -538,5 +552,6 @@ Promise.all([
   box.hidden = false;
 });
 </script>
+<script src="site.js" defer></script>
 </body>
 </html>
