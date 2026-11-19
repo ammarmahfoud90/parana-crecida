@@ -1,3 +1,5 @@
-river film - 2026-11-19T00:24:28-03:00
+river film - 2026-11-19T10:49:14-03:00
 
-newest cycle 2026-11-09 is already drawn; nothing to render
+31 frames over 1,477 km
+last frame 2026-11-10, 9,247 km2
+film -> media/river.gif

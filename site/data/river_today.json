@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-19T00:24:35-03:00",
+ "generated_at": "2026-11-19T10:52:18-03:00",
  "last_data_day": "2026-11-18",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -704,8 +704,8 @@
    ],
    "unit": "m",
    "day": "2026-11-18",
-   "value": 1.22,
-   "change": 0.38,
+   "value": 1.2,
+   "change": 0.36,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
@@ -760,16 +760,16 @@
    "river_km": 1149.9
   },
   "water": {
-   "km2": 3764.4,
-   "day": "2026-10-22",
-   "ratio": 1.7,
-   "flood_km2": 1753.6,
-   "driest_day": "2026-02-12",
-   "driest_km2": 2219.1,
+   "km2": 9247.2,
+   "day": "2026-11-10",
+   "ratio": 2.0,
+   "flood_km2": 4634.4,
+   "driest_day": "2026-04-08",
+   "driest_km2": 4684.7,
    "driest_over": [
-    "2026-01-31",
-    "2026-02-12",
-    "2026-04-13"
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20"
    ],
    "river_km": 1477.3,
    "stretches": 8

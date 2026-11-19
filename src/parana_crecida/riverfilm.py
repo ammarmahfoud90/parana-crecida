@@ -58,6 +58,12 @@ log = logging.getLogger(__name__)
 
 DEFAULT_GIF = Path("site/media/river.gif")
 DEFAULT_FRAME_DIR = Path("site/media/river")
+#: One light still per window, published beside the GIF. The front page
+#: lets a reader hold any window still, and a GIF cannot be seeked; the
+#: full PNG frames stay out of the repository (11 MB), these do not (about
+#: 40 KB each).
+DEFAULT_STILL_DIR = Path("site/media/film")
+STILL_QUALITY = 72
 DEFAULT_INDEX = Path("site/data/river_film.json")
 
 #: One Sentinel-1 repeat cycle.
@@ -265,6 +271,22 @@ MONTHS_ES = ("ene", "feb", "mar", "abr", "may", "jun",
              "jul", "ago", "sep", "oct", "nov", "dic")
 
 
+def write_still(frame, end: date, still_dir: Path = DEFAULT_STILL_DIR) -> str:
+    """Save one window as a light WebP and return its path from the site root."""
+    still_dir.mkdir(parents=True, exist_ok=True)
+    path = still_dir / f"frame_{end.isoformat()}.webp"
+    frame.convert("RGB").save(path, "WEBP", quality=STILL_QUALITY, method=6)
+    return f"media/{still_dir.name}/{path.name}"
+
+
+def prune_stills(still_dir: Path, kept: set[str]) -> None:
+    """Remove stills of windows this film no longer draws."""
+    for stale in sorted(still_dir.glob("frame_*.webp")):
+        if stale.name not in kept:
+            stale.unlink()
+            log.info("removed superseded still %s", stale.name)
+
+
 def render(
     *,
     gif_path: Path = DEFAULT_GIF,
@@ -276,6 +298,7 @@ def render(
     today: date | None = None,
     skill_path: Path | None = None,
     keep_frames: bool = KEEP_FRAMES,
+    still_dir: Path = DEFAULT_STILL_DIR,
 ) -> dict:
     """Render the film, write the GIF, and return what was drawn."""
     from PIL import Image
@@ -338,7 +361,8 @@ def render(
             kept.add(f"river_{end.isoformat()}.png")
         frames.append(frame.convert("RGB"))
         rows.append({"start": start.isoformat(), "end": end.isoformat(),
-                     "water_km2": round(total, 1) if total is not None else None})
+                     "water_km2": round(total, 1) if total is not None else None,
+                     "still": write_still(frame, end, still_dir)})
         log.info("frame %s  %s km2", end, "–" if total is None else f"{total:.0f}")
 
     if not frames:
@@ -351,6 +375,8 @@ def render(
             if stale.name not in kept:
                 stale.unlink()
                 log.info("removed superseded frame %s", stale.name)
+
+    prune_stills(still_dir, {Path(r["still"]).name for r in rows})
 
     palette = [f.quantize(colors=GIF_COLOURS, method=Image.MEDIANCUT) for f in frames]
     durations = [FRAME_MS] * len(palette)

@@ -542,6 +542,35 @@ def test_the_index_distinguishes_a_withheld_total_from_a_broken_one():
     )
 
 
+def test_every_window_the_film_offers_has_a_published_still():
+    """The window selector shows a still per window, and the full PNG frames
+    are not in the repository. A still that is not published is a blank
+    picture on the live site and a working one on the machine that drew it.
+    """
+    index = SITE / "data/river_film.json"
+    if not index.exists():
+        pytest.skip("no film exported yet")
+    film = json.loads(index.read_text(encoding="utf-8"))
+    for frame in film["frames"]:
+        assert frame.get("still"), f"{frame['end']} has no still"
+        assert (SITE / frame["still"]).exists(), f"missing {frame['still']}"
+        assert not frame["still"].startswith("media/river/"), (
+            "that directory is not committed, so the live site would 404"
+        )
+
+
+def test_the_film_labels_each_window_with_the_published_figure():
+    """Not a sum of overlapping corridors, which ran ~30% above it."""
+    index, water = SITE / "data/river_film.json", SITE / "data/floodwater.json"
+    if not index.exists() or not water.exists():
+        pytest.skip("nothing exported yet")
+    film = json.loads(index.read_text(encoding="utf-8"))
+    river = {r["day"]: r["water_km2"]
+             for r in json.loads(water.read_text(encoding="utf-8")).get("river") or []}
+    for frame in film["frames"]:
+        assert frame["water_km2"] == river.get(frame["end"]), frame["end"]
+
+
 def test_the_chart_breaks_rather_than_drawing_across_a_gap():
     """A cycle nobody measured must not be rendered as a straight line."""
     text = (SITE / "index.html").read_text(encoding="utf-8")

@@ -1,11 +1,11 @@
 {
  "schema": 3,
- "note": "Open water from Sentinel-1 VH below -25 dB and above the -30 dB noise floor, bounded by height above nearest drainage. One threshold for the whole river, tuned against Sentinel-2 optical water during a flood rather than against the channel at low flow. water_km2 is all water; flood_km2 excludes the permanent channel.",
+ "note": "Open water from Sentinel-1 VH below -25 dB, bounded by height above nearest drainage. One threshold for the whole river, tuned against Sentinel-2 optical water during a flood rather than against the channel at low flow. water_km2 is all water; flood_km2 excludes the permanent channel.",
  "method": "vh-threshold/hand",
  "vh_threshold_db": -25.0,
- "vh_floor_db": -30.0,
  "hand_limit_m": 10.0,
  "window_days": 12,
+ "mask_version": "vh<-25dB+hand<=10m/mosaic/12d-inclusive/v3",
  "window": "Window ends are grid dates, not acquisition dates: the grid is a sequence of 12-day bins whose phase comes from whenever this series was first built. Each cycle's observation block carries the window start and end, the acquisition dates inside it, the scene count, the relative orbits and the platforms.",
  "min_coverage": 0.95,
  "skill": {
@@ -187,8 +187,716 @@
    "corridor_km2": 6896,
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-10",
+      "2025-11-11"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-22",
+      "2025-11-23"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-04",
+      "2025-12-05"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-16",
+      "2025-12-17"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-28",
+      "2025-12-29"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-09",
+      "2026-01-10"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-21",
+      "2026-01-22"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-02",
+      "2026-02-03"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-14",
+      "2026-02-15"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-26",
+      "2026-02-27"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-10",
+      "2026-03-11"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-22",
+      "2026-03-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-04-22",
+      "2026-04-27",
+      "2026-04-29"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-04",
+      "2026-05-09",
+      "2026-05-11"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-16",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-28",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-06-09",
+      "2026-06-14",
+      "2026-06-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-06-21",
+      "2026-06-26",
+      "2026-06-28"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-10"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-22"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-15"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-27"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-08"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-20"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-14"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 6881.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-26"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 6881.2,
      "coverage": 0.998,
      "acq_days": [
@@ -217,28 +925,10 @@
  "stage_correlation_note": "How each stretch's water area moves with the stage at the gauge below it, over the published cycles. Context, not validation: extent at a given stage depends on topography, connectivity, vegetation and whether the wave is rising or falling, so a weak correlation is expected. A negative one means the reach is measuring something that is not the river.",
  "river": [
   {
-   "day": "2025-11-20",
-   "window_start": "2025-11-09",
-   "water_km2": 2497.5,
-   "flood_km2": 556.1,
-   "seen_km2": 55672.2,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2025-12-14",
-   "window_start": "2025-12-03",
-   "water_km2": 2415.2,
-   "flood_km2": 575.9,
+   "day": "2025-11-15",
+   "window_start": "2025-11-04",
+   "water_km2": 5724.0,
+   "flood_km2": 1266.7,
    "seen_km2": 55672.3,
    "coverage": 0.997,
    "stretches": [
@@ -253,10 +943,10 @@
    ]
   },
   {
-   "day": "2025-12-26",
-   "window_start": "2025-12-15",
-   "water_km2": 2387.3,
-   "flood_km2": 376.4,
+   "day": "2025-11-27",
+   "window_start": "2025-11-16",
+   "water_km2": 5228.5,
+   "flood_km2": 846.2,
    "seen_km2": 55672.2,
    "coverage": 0.997,
    "stretches": [
@@ -271,10 +961,46 @@
    ]
   },
   {
-   "day": "2026-01-07",
-   "window_start": "2025-12-27",
-   "water_km2": 2719.7,
-   "flood_km2": 708.6,
+   "day": "2025-12-09",
+   "window_start": "2025-11-28",
+   "water_km2": 5374.5,
+   "flood_km2": 944.6,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2025-12-21",
+   "window_start": "2025-12-10",
+   "water_km2": 5067.4,
+   "flood_km2": 659.0,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-01-02",
+   "window_start": "2025-12-22",
+   "water_km2": 5094.4,
+   "flood_km2": 713.3,
    "seen_km2": 55672.2,
    "coverage": 0.997,
    "stretches": [
@@ -289,10 +1015,10 @@
    ]
   },
   {
-   "day": "2026-01-19",
-   "window_start": "2026-01-08",
-   "water_km2": 2310.2,
-   "flood_km2": 375.6,
+   "day": "2026-01-14",
+   "window_start": "2026-01-03",
+   "water_km2": 4891.0,
+   "flood_km2": 554.6,
    "seen_km2": 55672.2,
    "coverage": 0.997,
    "stretches": [
@@ -307,64 +1033,10 @@
    ]
   },
   {
-   "day": "2026-01-31",
-   "window_start": "2026-01-20",
-   "water_km2": 2175.2,
-   "flood_km2": 349.3,
-   "seen_km2": 55672.3,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-02-12",
-   "window_start": "2026-02-01",
-   "water_km2": 2219.1,
-   "flood_km2": 412.3,
-   "seen_km2": 55672.3,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-02-24",
-   "window_start": "2026-02-13",
-   "water_km2": 2331.2,
-   "flood_km2": 339.2,
-   "seen_km2": 55672.3,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-03-08",
-   "window_start": "2026-02-25",
-   "water_km2": 2347.9,
-   "flood_km2": 379.3,
+   "day": "2026-01-26",
+   "window_start": "2026-01-15",
+   "water_km2": 4858.9,
+   "flood_km2": 493.4,
    "seen_km2": 55672.2,
    "coverage": 0.997,
    "stretches": [
@@ -379,10 +1051,10 @@
    ]
   },
   {
-   "day": "2026-03-20",
-   "window_start": "2026-03-09",
-   "water_km2": 2295.8,
-   "flood_km2": 398.9,
+   "day": "2026-02-07",
+   "window_start": "2026-01-27",
+   "water_km2": 4865.9,
+   "flood_km2": 477.4,
    "seen_km2": 55672.3,
    "coverage": 0.997,
    "stretches": [
@@ -397,10 +1069,82 @@
    ]
   },
   {
-   "day": "2026-04-01",
-   "window_start": "2026-03-21",
-   "water_km2": 2280.7,
-   "flood_km2": 254.1,
+   "day": "2026-02-19",
+   "window_start": "2026-02-08",
+   "water_km2": 4864.3,
+   "flood_km2": 498.5,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-03-03",
+   "window_start": "2026-02-20",
+   "water_km2": 4842.1,
+   "flood_km2": 493.7,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-03-15",
+   "window_start": "2026-03-04",
+   "water_km2": 4820.4,
+   "flood_km2": 487.1,
+   "seen_km2": 55672.2,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-03-27",
+   "window_start": "2026-03-16",
+   "water_km2": 4650.5,
+   "flood_km2": 329.3,
+   "seen_km2": 55672.3,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-04-08",
+   "window_start": "2026-03-28",
+   "water_km2": 4684.7,
+   "flood_km2": 372.6,
    "seen_km2": 55674.2,
    "coverage": 0.997,
    "stretches": [
@@ -415,10 +1159,10 @@
    ]
   },
   {
-   "day": "2026-04-13",
-   "window_start": "2026-04-02",
-   "water_km2": 2241.5,
-   "flood_km2": 305.6,
+   "day": "2026-04-20",
+   "window_start": "2026-04-09",
+   "water_km2": 4766.9,
+   "flood_km2": 427.8,
    "seen_km2": 55674.1,
    "coverage": 0.997,
    "stretches": [
@@ -433,10 +1177,10 @@
    ]
   },
   {
-   "day": "2026-04-25",
-   "window_start": "2026-04-14",
-   "water_km2": 2493.4,
-   "flood_km2": 360.1,
+   "day": "2026-05-02",
+   "window_start": "2026-04-21",
+   "water_km2": 4900.2,
+   "flood_km2": 559.3,
    "seen_km2": 55674.6,
    "coverage": 0.997,
    "stretches": [
@@ -451,10 +1195,28 @@
    ]
   },
   {
-   "day": "2026-05-07",
-   "window_start": "2026-04-26",
-   "water_km2": 2560.9,
-   "flood_km2": 452.4,
+   "day": "2026-05-14",
+   "window_start": "2026-05-03",
+   "water_km2": 4955.5,
+   "flood_km2": 587.6,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-05-26",
+   "window_start": "2026-05-15",
+   "water_km2": 5413.9,
+   "flood_km2": 1019.3,
    "seen_km2": 55674.6,
    "coverage": 0.997,
    "stretches": [
@@ -469,28 +1231,10 @@
    ]
   },
   {
-   "day": "2026-05-19",
-   "window_start": "2026-05-08",
-   "water_km2": 2455.0,
-   "flood_km2": 622.4,
-   "seen_km2": 55674.4,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-06-12",
-   "window_start": "2026-06-01",
-   "water_km2": 2525.8,
-   "flood_km2": 499.7,
+   "day": "2026-06-07",
+   "window_start": "2026-05-27",
+   "water_km2": 5194.5,
+   "flood_km2": 871.1,
    "seen_km2": 55674.6,
    "coverage": 0.997,
    "stretches": [
@@ -505,10 +1249,64 @@
    ]
   },
   {
-   "day": "2026-06-24",
-   "window_start": "2026-06-13",
-   "water_km2": 2247.5,
-   "flood_km2": 446.2,
+   "day": "2026-06-19",
+   "window_start": "2026-06-08",
+   "water_km2": 4849.5,
+   "flood_km2": 491.4,
+   "seen_km2": 55674.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-07-13",
+   "window_start": "2026-07-02",
+   "water_km2": 6355.0,
+   "flood_km2": 1902.7,
+   "seen_km2": 55673.8,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-07-25",
+   "window_start": "2026-07-14",
+   "water_km2": 5695.9,
+   "flood_km2": 1278.6,
+   "seen_km2": 55673.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-08-06",
+   "window_start": "2026-07-26",
+   "water_km2": 5432.9,
+   "flood_km2": 1002.3,
    "seen_km2": 55673.7,
    "coverage": 0.997,
    "stretches": [
@@ -523,11 +1321,11 @@
    ]
   },
   {
-   "day": "2026-07-06",
-   "window_start": "2026-06-25",
-   "water_km2": 3849.6,
-   "flood_km2": 1701.1,
-   "seen_km2": 55674.2,
+   "day": "2026-08-18",
+   "window_start": "2026-08-07",
+   "water_km2": 5641.5,
+   "flood_km2": 1157.9,
+   "seen_km2": 55673.7,
    "coverage": 0.997,
    "stretches": [
     "corrientes_goya",
@@ -541,11 +1339,11 @@
    ]
   },
   {
-   "day": "2026-07-18",
-   "window_start": "2026-07-07",
-   "water_km2": 3325.5,
-   "flood_km2": 1297.6,
-   "seen_km2": 55673.8,
+   "day": "2026-08-30",
+   "window_start": "2026-08-19",
+   "water_km2": 5686.2,
+   "flood_km2": 1231.5,
+   "seen_km2": 55673.7,
    "coverage": 0.997,
    "stretches": [
     "corrientes_goya",
@@ -559,137 +1357,101 @@
    ]
   },
   {
-   "day": "2026-07-30",
-   "window_start": "2026-07-19",
-   "water_km2": 2735.9,
-   "flood_km2": 740.6,
+   "day": "2026-09-11",
+   "window_start": "2026-08-31",
+   "water_km2": 5664.9,
+   "flood_km2": 1186.1,
+   "seen_km2": 55673.7,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-09-23",
+   "window_start": "2026-09-12",
+   "water_km2": 5912.4,
+   "flood_km2": 1436.1,
+   "seen_km2": 55673.7,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-10-05",
+   "window_start": "2026-09-24",
+   "water_km2": 6167.6,
+   "flood_km2": 1666.1,
+   "seen_km2": 55673.7,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-10-17",
+   "window_start": "2026-10-06",
+   "water_km2": 5993.6,
+   "flood_km2": 1550.8,
+   "seen_km2": 55673.0,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-10-29",
+   "window_start": "2026-10-18",
+   "water_km2": 8260.6,
+   "flood_km2": 3678.9,
+   "seen_km2": 55672.6,
+   "coverage": 0.997,
+   "stretches": [
+    "corrientes_goya",
+    "goya_la_paz",
+    "ita_ibate_corrientes",
+    "la_paz_parana",
+    "libertador_posadas",
+    "parana_villa_constitucion",
+    "posadas_ita_ibate",
+    "puerto_iguazu_libertador"
+   ]
+  },
+  {
+   "day": "2026-11-10",
+   "window_start": "2026-10-30",
+   "water_km2": 9247.2,
+   "flood_km2": 4634.4,
    "seen_km2": 55673.6,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-08-11",
-   "window_start": "2026-07-31",
-   "water_km2": 3135.7,
-   "flood_km2": 900.6,
-   "seen_km2": 55673.8,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-08-23",
-   "window_start": "2026-08-12",
-   "water_km2": 2955.6,
-   "flood_km2": 832.4,
-   "seen_km2": 55673.6,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-09-04",
-   "window_start": "2026-08-24",
-   "water_km2": 2699.6,
-   "flood_km2": 667.2,
-   "seen_km2": 55673.8,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-09-16",
-   "window_start": "2026-09-05",
-   "water_km2": 3413.9,
-   "flood_km2": 1270.9,
-   "seen_km2": 55673.6,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-09-28",
-   "window_start": "2026-09-17",
-   "water_km2": 3206.8,
-   "flood_km2": 1391.7,
-   "seen_km2": 55673.8,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-10-10",
-   "window_start": "2026-09-29",
-   "water_km2": 3319.7,
-   "flood_km2": 1169.9,
-   "seen_km2": 55673.1,
-   "coverage": 0.997,
-   "stretches": [
-    "corrientes_goya",
-    "goya_la_paz",
-    "ita_ibate_corrientes",
-    "la_paz_parana",
-    "libertador_posadas",
-    "parana_villa_constitucion",
-    "posadas_ita_ibate",
-    "puerto_iguazu_libertador"
-   ]
-  },
-  {
-   "day": "2026-10-22",
-   "window_start": "2026-10-11",
-   "water_km2": 3764.4,
-   "flood_km2": 1753.6,
-   "seen_km2": 55672.8,
    "coverage": 0.997,
    "stretches": [
     "corrientes_goya",
@@ -706,32 +1468,17 @@
  "river_unavailable": null,
  "river_gaps": [
   {
-   "day": "2025-12-02",
-   "reason": "channel detection implausible",
-   "channel_share_of_median": 0.834
-  },
-  {
-   "day": "2026-05-31",
-   "reason": "channel detection implausible",
-   "channel_share_of_median": 0.845
-  },
-  {
-   "day": "2026-11-03",
-   "reason": "channel detection implausible",
-   "channel_share_of_median": 0.885
-  },
-  {
-   "day": "2026-11-15",
-   "reason": "channel detection implausible",
-   "channel_share_of_median": 0.834
+   "day": "2026-07-01",
+   "reason": "river not fully observed",
+   "coverage": 0.888
   }
  ],
  "latest": {
-  "day": "2026-10-22",
-  "window_start": "2026-10-11",
-  "water_km2": 3764.4,
-  "flood_km2": 1753.6,
-  "seen_km2": 55672.8,
+  "day": "2026-11-10",
+  "window_start": "2026-10-30",
+  "water_km2": 9247.2,
+  "flood_km2": 4634.4,
+  "seen_km2": 55673.6,
   "coverage": 0.997,
   "stretches": [
    "corrientes_goya",
@@ -745,23 +1492,23 @@
   ]
  },
  "lowest": {
-  "day": "2026-02-12",
-  "water_km2": 2219.1,
-  "flood_km2": 412.3,
+  "day": "2026-04-08",
+  "water_km2": 4684.7,
+  "flood_km2": 372.6,
   "over_cycles": [
-   "2026-01-31",
-   "2026-02-12",
-   "2026-04-13"
+   "2026-03-27",
+   "2026-04-08",
+   "2026-04-20"
   ]
  },
  "highest": {
-  "day": "2026-10-22",
-  "water_km2": 3764.4,
-  "flood_km2": 1753.6,
+  "day": "2026-10-29",
+  "water_km2": 8260.6,
+  "flood_km2": 3678.9,
   "over_cycles": [
-   "2026-07-06",
-   "2026-09-16",
-   "2026-10-22"
+   "2026-07-13",
+   "2026-10-29",
+   "2026-11-10"
   ]
  },
  "stretches": [
@@ -774,37 +1521,37 @@
    "river_km": 189.3,
    "corridor_km2": 7979,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     231.8,
@@ -837,7 +1584,7 @@
     221.3,
     222.3,
     232.1,
-    146.9
+    227.0
    ],
    "flood_km2": [
     25.2,
@@ -870,12 +1617,671 @@
     17.3,
     23.8,
     26.8,
-    18.3
+    23.0
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2025-11-06",
+      "2025-11-10"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2025-11-18",
+      "2025-11-22"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2025-11-30",
+      "2025-12-04"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2025-12-12",
+      "2025-12-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2025-12-24",
+      "2025-12-28"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-01-05",
+      "2026-01-09"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-01-17",
+      "2026-01-21"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-01-29",
+      "2026-02-02"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-02-10",
+      "2026-02-14"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-02-22",
+      "2026-02-26"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-03-06",
+      "2026-03-10"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-03-18",
+      "2026-03-22"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-03-30",
+      "2026-04-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-04-11",
+      "2026-04-15"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-27",
+      "2026-04-28"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 7949.2,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-05-05"
+     ],
+     "scenes": 2,
+     "orbits": [
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-21",
+      "2026-05-22"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-05-29",
+      "2026-05-30",
+      "2026-06-02",
+      "2026-06-03"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-06-11",
+      "2026-06-15"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 7949.9,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-06-23",
+      "2026-06-29"
+     ],
+     "scenes": 4,
+     "orbits": [
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-11"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-23"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-07-27",
+      "2026-08-04"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-28"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-09"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-21"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 7950.0,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-09-25",
+      "2026-10-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 7949.3,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-10-15"
+     ],
+     "scenes": 2,
+     "orbits": [
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 7949.2,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-10-27"
+     ],
+     "scenes": 2,
+     "orbits": [
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 7950.0,
      "coverage": 0.996,
      "acq_days": [
@@ -900,7 +2306,7 @@
    "iou": 0.83,
    "recall": 0.84,
    "precision": 0.98,
-   "stage_correlation": -0.16
+   "stage_correlation": 0.33
   },
   {
    "key": "libertador_posadas",
@@ -911,37 +2317,37 @@
    "river_km": 149.6,
    "corridor_km2": 6625,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     344.6,
@@ -974,7 +2380,7 @@
     349.4,
     373.7,
     364.9,
-    159.5
+    361.6
    ],
    "flood_km2": [
     10.0,
@@ -1007,12 +2413,769 @@
     11.5,
     35.3,
     26.1,
-    17.0
+    23.0
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-05",
+      "2025-11-06",
+      "2025-11-10",
+      "2025-11-11",
+      "2025-11-12"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-18",
+      "2025-11-22",
+      "2025-11-23",
+      "2025-11-24"
+     ],
+     "scenes": 5,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-29",
+      "2025-11-30",
+      "2025-12-04",
+      "2025-12-05",
+      "2025-12-06"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-11",
+      "2025-12-12",
+      "2025-12-16",
+      "2025-12-17",
+      "2025-12-18"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-23",
+      "2025-12-24",
+      "2025-12-28",
+      "2025-12-29",
+      "2025-12-30"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-04",
+      "2026-01-05",
+      "2026-01-09",
+      "2026-01-10",
+      "2026-01-11"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-16",
+      "2026-01-17",
+      "2026-01-21",
+      "2026-01-22",
+      "2026-01-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-28",
+      "2026-01-29",
+      "2026-02-02",
+      "2026-02-03",
+      "2026-02-04"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-09",
+      "2026-02-10",
+      "2026-02-14",
+      "2026-02-15",
+      "2026-02-16"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-21",
+      "2026-02-22",
+      "2026-02-26",
+      "2026-02-27",
+      "2026-02-28"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-05",
+      "2026-03-06",
+      "2026-03-10",
+      "2026-03-11",
+      "2026-03-12"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-17",
+      "2026-03-18",
+      "2026-03-22",
+      "2026-03-23",
+      "2026-03-24"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-29",
+      "2026-03-30",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 5,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-11",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 5,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29"
+     ],
+     "scenes": 7,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 6601.7,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-05-05",
+      "2026-05-11"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-29",
+      "2026-05-30",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-11",
+      "2026-06-15",
+      "2026-06-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 6602.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-23",
+      "2026-06-29"
+     ],
+     "scenes": 4,
+     "orbits": [
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-11"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-23"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-04"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-28"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-09"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-21"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 6602.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26",
+      "2026-10-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 6601.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-08",
+      "2026-10-15"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 6601.8,
+     "coverage": 0.996,
+     "acq_days": [
+      "2026-10-20",
+      "2026-10-27"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 6602.6,
      "coverage": 0.997,
      "acq_days": [
@@ -1039,7 +3202,7 @@
    "iou": 0.9,
    "recall": 0.9,
    "precision": 0.99,
-   "stage_correlation": 0.03
+   "stage_correlation": 0.13
   },
   {
    "key": "posadas_ita_ibate",
@@ -1050,37 +3213,36 @@
    "river_km": 163.3,
    "corridor_km2": 7551,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     1857.7,
@@ -1102,7 +3264,6 @@
     1766.9,
     1724.8,
     1766.6,
-    1300.2,
     1838.8,
     1806.5,
     1820.3,
@@ -1113,7 +3274,7 @@
     1890.2,
     1851.5,
     2360.0,
-    587.4
+    2167.1
    ],
    "flood_km2": [
     136.8,
@@ -1135,7 +3296,6 @@
     49.4,
     64.3,
     51.1,
-    17.1,
     117.7,
     92.6,
     101.9,
@@ -1146,12 +3306,748 @@
     166.3,
     155.7,
     630.3,
-    225.0
+    438.2
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-05",
+      "2025-11-06",
+      "2025-11-10",
+      "2025-11-11",
+      "2025-11-12"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-18",
+      "2025-11-22",
+      "2025-11-23",
+      "2025-11-24"
+     ],
+     "scenes": 5,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-29",
+      "2025-11-30",
+      "2025-12-04",
+      "2025-12-05",
+      "2025-12-06"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-11",
+      "2025-12-12",
+      "2025-12-16",
+      "2025-12-17",
+      "2025-12-18"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-23",
+      "2025-12-24",
+      "2025-12-28",
+      "2025-12-29",
+      "2025-12-30"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-04",
+      "2026-01-05",
+      "2026-01-09",
+      "2026-01-10",
+      "2026-01-11"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-16",
+      "2026-01-17",
+      "2026-01-21",
+      "2026-01-22",
+      "2026-01-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-28",
+      "2026-01-29",
+      "2026-02-02",
+      "2026-02-03",
+      "2026-02-04"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-09",
+      "2026-02-10",
+      "2026-02-14",
+      "2026-02-15",
+      "2026-02-16"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-21",
+      "2026-02-22",
+      "2026-02-26",
+      "2026-02-27",
+      "2026-02-28"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-05",
+      "2026-03-06",
+      "2026-03-10",
+      "2026-03-11",
+      "2026-03-12"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-17",
+      "2026-03-18",
+      "2026-03-22",
+      "2026-03-23",
+      "2026-03-24"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-29",
+      "2026-03-30",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 5,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-11",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29"
+     ],
+     "scenes": 6,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-05",
+      "2026-05-11"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-29",
+      "2026-05-30",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 8,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-11",
+      "2026-06-15",
+      "2026-06-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-11"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-23"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-04"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-16"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-28"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-09"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-21"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26",
+      "2026-10-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      61,
+      68,
+      170
+     ],
+     "passes": [
+      "ASCENDING",
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-08",
+      "2026-10-15"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 7524.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-20",
+      "2026-10-27"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      170
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 7524.6,
      "coverage": 0.997,
      "acq_days": [
@@ -1174,11 +4070,19 @@
      ]
     }
    ],
-   "gaps": [],
+   "gaps": [
+    {
+     "day": "2026-07-01",
+     "reason": "corridor not fully observed",
+     "coverage": 0.5,
+     "seen_km2": 3778.8,
+     "scenes": 2
+    }
+   ],
    "iou": 0.87,
    "recall": 0.92,
    "precision": 0.94,
-   "stage_correlation": -0.09
+   "stage_correlation": 0.77
   },
   {
    "key": "ita_ibate_corrientes",
@@ -1189,37 +4093,36 @@
    "river_km": 169.5,
    "corridor_km2": 7781,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     830.4,
@@ -1241,7 +4144,6 @@
     703.5,
     698.5,
     710.8,
-    338.4,
     853.4,
     744.7,
     769.5,
@@ -1252,7 +4154,7 @@
     811.2,
     761.9,
     1430.7,
-    521.1
+    1295.9
    ],
    "flood_km2": [
     214.2,
@@ -1274,7 +4176,6 @@
     94.9,
     89.4,
     101.3,
-    37.7,
     233.1,
     149.4,
     164.0,
@@ -1285,12 +4186,659 @@
     193.3,
     187.3,
     796.3,
-    340.6
+    659.8
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-11"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-23"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-05"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-17"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-29"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-10"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-22"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-03"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-15"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-27"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-11"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-23"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-04"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-29"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-11"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-27",
+      "2026-05-28",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-16"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-04",
+      "2026-07-09"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-16",
+      "2026-07-21"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-28",
+      "2026-08-02"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-09",
+      "2026-08-14"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-21",
+      "2026-08-26"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-02",
+      "2026-09-07"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-14",
+      "2026-09-19"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-26",
+      "2026-10-01"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-08",
+      "2026-10-13"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 7754.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-20",
+      "2026-10-25"
+     ],
+     "scenes": 2,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 7754.0,
      "coverage": 0.997,
      "acq_days": [
@@ -1310,11 +4858,19 @@
      ]
     }
    ],
-   "gaps": [],
+   "gaps": [
+    {
+     "day": "2026-07-01",
+     "reason": "corridor not fully observed",
+     "coverage": 0.513,
+     "seen_km2": 3993.6,
+     "scenes": 2
+    }
+   ],
    "iou": 0.64,
    "recall": 0.76,
    "precision": 0.8,
-   "stage_correlation": 0.44
+   "stage_correlation": 0.8
   },
   {
    "key": "corrientes_goya",
@@ -1325,37 +4881,37 @@
    "river_km": 212.4,
    "corridor_km2": 9474,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     770.4,
@@ -1388,7 +4944,7 @@
     741.5,
     836.9,
     1691.9,
-    1150.8
+    2047.6
    ],
    "flood_km2": [
     143.2,
@@ -1421,12 +4977,708 @@
     115.0,
     214.4,
     1043.4,
-    855.3
+    1388.9
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-11"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-23"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-05"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-17"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-29"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-10"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 9441.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-22"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-03"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-15"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 9441.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-27"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 9441.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-11"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 9441.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-23"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-04"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 9442.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 9443.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-29"
+     ],
+     "scenes": 9,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 9443.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-11"
+     ],
+     "scenes": 9,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 9443.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 11,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 9443.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-27",
+      "2026-05-28",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 11,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 9443.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-16"
+     ],
+     "scenes": 9,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 9443.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-21",
+      "2026-06-27",
+      "2026-06-28"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 9443.1,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-04",
+      "2026-07-09",
+      "2026-07-10"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-16",
+      "2026-07-21",
+      "2026-07-22"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 9443.1,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-28",
+      "2026-08-02",
+      "2026-08-03"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-09",
+      "2026-08-14",
+      "2026-08-15"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 9443.1,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-21",
+      "2026-08-26",
+      "2026-08-27"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-02",
+      "2026-09-07",
+      "2026-09-08"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 9443.1,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-14",
+      "2026-09-19",
+      "2026-09-20"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-26",
+      "2026-10-01"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-08",
+      "2026-10-13",
+      "2026-10-14"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 9443.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-20",
+      "2026-10-25",
+      "2026-10-26"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 9443.1,
      "coverage": 0.997,
      "acq_days": [
@@ -1452,7 +5704,7 @@
    "iou": 0.48,
    "recall": 0.69,
    "precision": 0.61,
-   "stage_correlation": 0.72
+   "stage_correlation": 0.76
   },
   {
    "key": "goya_la_paz",
@@ -1463,37 +5715,37 @@
    "river_km": 218.2,
    "corridor_km2": 9501,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     831.4,
@@ -1526,7 +5778,7 @@
     941.7,
     931.4,
     1448.0,
-    1460.6
+    2340.5
    ],
    "flood_km2": [
     199.1,
@@ -1559,12 +5811,740 @@
     313.2,
     301.2,
     801.0,
-    1138.0
+    1675.1
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-10",
+      "2025-11-11"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-22",
+      "2025-11-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-04",
+      "2025-12-05"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-16",
+      "2025-12-17"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-28",
+      "2025-12-29"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-09",
+      "2026-01-10"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-21",
+      "2026-01-22"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-02",
+      "2026-02-03"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-14",
+      "2026-02-15"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-26",
+      "2026-02-27"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 9472.3,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-10",
+      "2026-03-11"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 9472.2,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-22",
+      "2026-03-23"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-27",
+      "2026-04-29"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-09",
+      "2026-05-11"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 12,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-27",
+      "2026-05-28",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 12,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-14",
+      "2026-06-16"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 9473.9,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-21",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-09",
+      "2026-07-10"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 9473.4,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-21",
+      "2026-07-22"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-02",
+      "2026-08-03"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 9473.4,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-14",
+      "2026-08-15"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-26",
+      "2026-08-27"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 9473.4,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-07",
+      "2026-09-08"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-19",
+      "2026-09-20"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26",
+      "2026-10-01"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-13",
+      "2026-10-14"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 9473.5,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-25",
+      "2026-10-26"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 9473.5,
      "coverage": 0.997,
      "acq_days": [
@@ -1591,7 +6571,7 @@
    "iou": 0.53,
    "recall": 0.7,
    "precision": 0.69,
-   "stage_correlation": 0.85
+   "stage_correlation": 0.78
   },
   {
    "key": "la_paz_parana",
@@ -1602,37 +6582,37 @@
    "river_km": 153.6,
    "corridor_km2": 7103,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     728.2,
@@ -1665,7 +6645,7 @@
     841.8,
     725.0,
     838.9,
-    669.2
+    1054.1
    ],
    "flood_km2": [
     209.5,
@@ -1698,12 +6678,720 @@
     303.7,
     185.8,
     286.9,
-    385.2
+    494.0
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-10",
+      "2025-11-11"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-22",
+      "2025-11-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-04",
+      "2025-12-05"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-16",
+      "2025-12-17"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-28",
+      "2025-12-29"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-09",
+      "2026-01-10"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-21",
+      "2026-01-22"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-02",
+      "2026-02-03"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-14",
+      "2026-02-15"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-26",
+      "2026-02-27"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-10",
+      "2026-03-11"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-22",
+      "2026-03-23"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-04-22",
+      "2026-04-27",
+      "2026-04-29"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-04",
+      "2026-05-09",
+      "2026-05-11"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-16",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-05-28",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 10,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-09",
+      "2026-06-14",
+      "2026-06-16"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 7084.0,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-06-21",
+      "2026-06-26",
+      "2026-06-28"
+     ],
+     "scenes": 8,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 7083.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-10"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 7083.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-22"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 7083.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-03"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 7083.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-15"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 7083.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-27"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 7083.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-08"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 7083.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-20"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 7083.7,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 7083.8,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-14"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 7083.6,
+     "coverage": 0.997,
+     "acq_days": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-26"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 7083.6,
      "coverage": 0.997,
      "acq_days": [
@@ -1729,7 +7417,7 @@
    "iou": 0.67,
    "recall": 0.8,
    "precision": 0.8,
-   "stage_correlation": 0.41
+   "stage_correlation": 0.66
   },
   {
    "key": "parana_villa_constitucion",
@@ -1740,37 +7428,37 @@
    "river_km": 221.4,
    "corridor_km2": 9621,
    "days": [
-    "2025-11-14",
-    "2025-11-26",
-    "2025-12-08",
-    "2025-12-20",
-    "2026-01-01",
-    "2026-01-13",
-    "2026-01-25",
-    "2026-02-06",
-    "2026-02-18",
-    "2026-03-02",
-    "2026-03-14",
-    "2026-03-26",
-    "2026-04-07",
-    "2026-04-19",
-    "2026-05-01",
-    "2026-05-13",
-    "2026-05-25",
-    "2026-06-06",
-    "2026-06-18",
-    "2026-06-30",
-    "2026-07-12",
-    "2026-07-24",
-    "2026-08-05",
-    "2026-08-17",
-    "2026-08-29",
-    "2026-09-10",
-    "2026-09-22",
-    "2026-10-04",
-    "2026-10-16",
-    "2026-10-28",
-    "2026-11-09"
+    "2025-11-15",
+    "2025-11-27",
+    "2025-12-09",
+    "2025-12-21",
+    "2026-01-02",
+    "2026-01-14",
+    "2026-01-26",
+    "2026-02-07",
+    "2026-02-19",
+    "2026-03-03",
+    "2026-03-15",
+    "2026-03-27",
+    "2026-04-08",
+    "2026-04-20",
+    "2026-05-02",
+    "2026-05-14",
+    "2026-05-26",
+    "2026-06-07",
+    "2026-06-19",
+    "2026-07-01",
+    "2026-07-13",
+    "2026-07-25",
+    "2026-08-06",
+    "2026-08-18",
+    "2026-08-30",
+    "2026-09-11",
+    "2026-09-23",
+    "2026-10-05",
+    "2026-10-17",
+    "2026-10-29",
+    "2026-11-10"
    ],
    "water_km2": [
     1108.1,
@@ -1803,7 +7491,7 @@
     1404.5,
     1279.4,
     1361.0,
-    807.5
+    1357.1
    ],
    "flood_km2": [
     481.8,
@@ -1836,12 +7524,720 @@
     751.4,
     621.7,
     691.1,
-    531.9
+    687.8
    ],
    "observation": [
     {
-     "window_start": "2026-10-29",
-     "window_end": "2026-11-09",
+     "window_start": "2025-11-04",
+     "window_end": "2025-11-15",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-04",
+      "2025-11-05",
+      "2025-11-10",
+      "2025-11-11"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-16",
+     "window_end": "2025-11-27",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-16",
+      "2025-11-22",
+      "2025-11-23"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-11-28",
+     "window_end": "2025-12-09",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-11-28",
+      "2025-11-29",
+      "2025-12-04",
+      "2025-12-05"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-10",
+     "window_end": "2025-12-21",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-16",
+      "2025-12-17"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2025-12-22",
+     "window_end": "2026-01-02",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2025-12-22",
+      "2025-12-23",
+      "2025-12-28",
+      "2025-12-29"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-03",
+     "window_end": "2026-01-14",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-03",
+      "2026-01-04",
+      "2026-01-09",
+      "2026-01-10"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-15",
+     "window_end": "2026-01-26",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-15",
+      "2026-01-16",
+      "2026-01-21",
+      "2026-01-22"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-01-27",
+     "window_end": "2026-02-07",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-01-27",
+      "2026-01-28",
+      "2026-02-02",
+      "2026-02-03"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-08",
+     "window_end": "2026-02-19",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-02-08",
+      "2026-02-09",
+      "2026-02-14",
+      "2026-02-15"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-02-20",
+     "window_end": "2026-03-03",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-26",
+      "2026-02-27"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-04",
+     "window_end": "2026-03-15",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-04",
+      "2026-03-05",
+      "2026-03-10",
+      "2026-03-11"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-16",
+     "window_end": "2026-03-27",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-16",
+      "2026-03-17",
+      "2026-03-22",
+      "2026-03-23"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-03-28",
+     "window_end": "2026-04-08",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-03",
+      "2026-04-04"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C"
+     ]
+    },
+    {
+     "window_start": "2026-04-09",
+     "window_end": "2026-04-20",
+     "seen_km2": 9599.2,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+     ],
+     "scenes": 7,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-04-21",
+     "window_end": "2026-05-02",
+     "seen_km2": 9598.9,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-04-22",
+      "2026-04-27",
+      "2026-04-29"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-03",
+     "window_end": "2026-05-14",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-04",
+      "2026-05-09",
+      "2026-05-11"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-15",
+     "window_end": "2026-05-26",
+     "seen_km2": 9598.9,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-16",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-05-27",
+     "window_end": "2026-06-07",
+     "seen_km2": 9598.9,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-05-28",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04"
+     ],
+     "scenes": 6,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-08",
+     "window_end": "2026-06-19",
+     "seen_km2": 9598.9,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-06-09",
+      "2026-06-14",
+      "2026-06-16"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-06-20",
+     "window_end": "2026-07-01",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-06-21",
+      "2026-06-26",
+      "2026-06-28"
+     ],
+     "scenes": 5,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "A",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-02",
+     "window_end": "2026-07-13",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-10"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-14",
+     "window_end": "2026-07-25",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-22"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-07-26",
+     "window_end": "2026-08-06",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-07-27",
+      "2026-07-28",
+      "2026-08-03"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-07",
+     "window_end": "2026-08-18",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-15"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-19",
+     "window_end": "2026-08-30",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-27"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-08-31",
+     "window_end": "2026-09-11",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-01",
+      "2026-09-02",
+      "2026-09-08"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-12",
+     "window_end": "2026-09-23",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-20"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-09-24",
+     "window_end": "2026-10-05",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-09-25",
+      "2026-09-26"
+     ],
+     "scenes": 3,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-06",
+     "window_end": "2026-10-17",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-14"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-18",
+     "window_end": "2026-10-29",
+     "seen_km2": 9599.0,
+     "coverage": 0.998,
+     "acq_days": [
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-26"
+     ],
+     "scenes": 4,
+     "orbits": [
+      68,
+      141
+     ],
+     "passes": [
+      "DESCENDING"
+     ],
+     "platforms": [
+      "C",
+      "D"
+     ]
+    },
+    {
+     "window_start": "2026-10-30",
+     "window_end": "2026-11-10",
      "seen_km2": 9598.9,
      "coverage": 0.998,
      "acq_days": [
@@ -1867,7 +8263,7 @@
    "iou": 0.61,
    "recall": 0.79,
    "precision": 0.72,
-   "stage_correlation": 0.54
+   "stage_correlation": 0.71
   }
  ]
 }
