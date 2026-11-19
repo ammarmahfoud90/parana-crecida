@@ -382,42 +382,51 @@ def test_every_published_stretch_cleared_the_floor():
 # -- the incremental rebuild ----------------------------------------------
 
 
-def test_the_cycle_grid_is_anchored_to_what_was_measured():
-    """A daily job must not invent a new set of windows every morning.
+def test_the_cycle_grid_does_not_depend_on_the_day_it_runs():
+    """Cycle ends are a fixed epoch plus whole windows.
 
-    Computing the grid backwards from today moves every date by a day each
-    run, so the series would never grow: each morning would measure a
-    fresh set of windows and discard the old. The map frames did exactly
-    that and left fifteen orphaned images in the repository.
+    The grid used to be anchored to "today" on a cold start, so the date
+    axis was an artefact of when someone first ran the build - and when a
+    rebuild ran over two days, eight stretches landed on one phase and the
+    Delta and the whole-river series on another, seven days apart.
     """
+    from datetime import date as _date
+    from datetime import timedelta
+
+    from parana_crecida.floodwater import GRID_EPOCH, _grid, on_grid
+
+    runs = [_grid([], _date(2026, 11, 10) + timedelta(days=k), 12) for k in range(12)]
+    assert all(r == runs[0] for r in runs), "the grid moved with the run date"
+    assert all(on_grid(d) for d in runs[0])
+    assert on_grid(GRID_EPOCH)
+
+
+def test_a_new_cycle_appears_only_once_its_window_has_passed():
     from datetime import date as _date
 
     from parana_crecida.floodwater import _grid
 
-    known = ["2026-10-04", "2026-10-16", "2026-10-28"]
-
-    # Nothing until a full repeat cycle has passed.
-    assert _grid(known, _date(2026, 10, 30), 12) == []
-    assert _grid(known, _date(2026, 11, 8), 12) == []
-
-    # Then one cycle, on the grid the series already sits on.
-    assert _grid(known, _date(2026, 11, 9), 12) == [_date(2026, 11, 9)]
-
-    # And it keeps that grid rather than drifting with the run date.
-    assert _grid(known, _date(2026, 11, 21), 12) == [
-        _date(2026, 11, 9), _date(2026, 11, 21),
+    known = ["2026-10-29", "2026-11-10"]
+    assert _grid(known, _date(2026, 11, 12), 12) == []
+    assert _grid(known, _date(2026, 11, 21), 12) == []
+    assert _grid(known, _date(2026, 11, 22), 12) == [_date(2026, 11, 22)]
+    # Several missed cycles come back together, oldest first.
+    assert _grid(known, _date(2026, 12, 4), 12) == [
+        _date(2026, 11, 22), _date(2026, 12, 4),
     ]
 
 
 def test_an_empty_table_asks_for_a_whole_year():
     from datetime import date as _date
 
-    from parana_crecida.floodwater import KEEP_CYCLES, _grid
+    from parana_crecida.floodwater import KEEP_CYCLES, _grid, on_grid
 
-    grid = _grid([], _date(2026, 10, 28), 12)
+    grid = _grid([], _date(2026, 11, 17), 12)
     assert len(grid) == KEEP_CYCLES
     assert grid == sorted(grid), "the grid must run oldest first"
-    assert grid[-1] == _date(2026, 10, 28)
+    # The newest cycle is the latest grid date not after the run date.
+    assert grid[-1] == _date(2026, 11, 10)
+    assert all(on_grid(d) for d in grid)
 
 
 def test_a_gap_moves_the_grid_on_rather_than_stalling_it():
@@ -425,23 +434,21 @@ def test_a_gap_moves_the_grid_on_rather_than_stalling_it():
 
     The anchor is the last window *attempted*, not the last one measured.
     Anchoring on measurements alone would park the series in front of the
-    first unobservable window and re-measure it every morning, never
-    reaching the cycles behind it.
+    first unobservable window and re-measure it every morning.
     """
     from datetime import date as _date
 
     from parana_crecida.floodwater import _grid
 
-    measured = ["2026-10-04", "2026-10-16"]
-    gap = "2026-10-28"  # rebuild() stores {"day": ..., "reason": ...}
+    measured = ["2026-10-17", "2026-10-29"]
+    gap = "2026-11-10"  # rebuild() stores {"day": ..., "reason": ...}
 
     # On measurements alone the grid offers the gap again, for ever.
-    assert _grid(measured, _date(2026, 11, 9), 12) == [
-        _date(2026, 10, 28), _date(2026, 11, 9),
+    assert _grid(measured, _date(2026, 11, 22), 12) == [
+        _date(2026, 11, 10), _date(2026, 11, 22),
     ]
-
     # Counting the gap as attempted moves past it to the cycle behind.
-    assert _grid(measured + [gap], _date(2026, 11, 9), 12) == [_date(2026, 11, 9)]
+    assert _grid(measured + [gap], _date(2026, 11, 22), 12) == [_date(2026, 11, 22)]
 
 
 def test_the_grid_anchors_on_the_newest_attempt_whatever_the_order():
@@ -451,8 +458,25 @@ def test_the_grid_anchors_on_the_newest_attempt_whatever_the_order():
     from parana_crecida.floodwater import _grid
 
     assert _grid(
-        ["2026-10-16", "2026-11-09", "2026-10-28"], _date(2026, 11, 21), 12
-    ) == [_date(2026, 11, 21)]
+        ["2026-10-17", "2026-11-10", "2026-10-29"], _date(2026, 11, 22), 12
+    ) == [_date(2026, 11, 22)]
+
+
+def test_every_published_series_is_on_the_fixed_grid():
+    """The reaches and the river must describe the same windows."""
+    if not PUBLISHED.exists():
+        pytest.skip("nothing exported")
+    from datetime import date as _date
+
+    from parana_crecida.floodwater import on_grid
+
+    payload = json.loads(PUBLISHED.read_text(encoding="utf-8"))
+    for stretch in payload["stretches"]:
+        off = [d for d in stretch["days"] if not on_grid(_date.fromisoformat(d))]
+        assert not off, f"{stretch['key']} has cycles off the grid: {off[:3]}"
+    off = [r["day"] for r in payload.get("river") or []
+           if not on_grid(_date.fromisoformat(r["day"]))]
+    assert not off, f"the river series has cycles off the grid: {off[:3]}"
 
 
 def test_nothing_observed_is_not_zero_water():

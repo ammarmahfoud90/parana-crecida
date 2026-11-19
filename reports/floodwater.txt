@@ -1,15 +1,15 @@
-water surface - 2026-11-19T00:24:25-03:00
+water surface - 2026-11-19T10:17:26-03:00
 
 VH < -25.0 dB, HAND <= 10.0 m, 12-day composites
 newest usable pass: 2026-11-17
-  Puerto Iguazú -> Libertador: 31 cycles, 2025-11-14 to 2026-11-09, latest 147 km2
-  Libertador -> Posadas: 31 cycles, 2025-11-14 to 2026-11-09, latest 160 km2
-  Posadas -> Itá Ibaté: 31 cycles, 2025-11-14 to 2026-11-09, latest 587 km2
-  Itá Ibaté -> Corrientes: 31 cycles, 2025-11-14 to 2026-11-09, latest 521 km2
-  Corrientes -> Goya: 31 cycles, 2025-11-14 to 2026-11-09, latest 1,151 km2
-  Goya -> La Paz: 31 cycles, 2025-11-14 to 2026-11-09, latest 1,461 km2
-  La Paz -> Paraná: 31 cycles, 2025-11-14 to 2026-11-09, latest 669 km2
-  Paraná -> Villa Constitución: 31 cycles, 2025-11-14 to 2026-11-09, latest 808 km2
-  Villa Constitución -> Ibicuy: 31 cycles, 2025-11-14 to 2026-11-09, latest 392 km2
+  Puerto Iguazú -> Libertador: 31 cycles, 2025-11-15 to 2026-11-10, latest 227 km2
+  Libertador -> Posadas: 31 cycles, 2025-11-15 to 2026-11-10, latest 362 km2
+  Posadas -> Itá Ibaté: 30 cycles, 2025-11-15 to 2026-11-10, latest 2,167 km2
+  Itá Ibaté -> Corrientes: 30 cycles, 2025-11-15 to 2026-11-10, latest 1,296 km2
+  Corrientes -> Goya: 31 cycles, 2025-11-15 to 2026-11-10, latest 2,048 km2
+  Goya -> La Paz: 31 cycles, 2025-11-15 to 2026-11-10, latest 2,340 km2
+  La Paz -> Paraná: 31 cycles, 2025-11-15 to 2026-11-10, latest 1,054 km2
+  Paraná -> Villa Constitución: 31 cycles, 2025-11-15 to 2026-11-10, latest 1,357 km2
+  Villa Constitución -> Ibicuy: 31 cycles, 2025-11-15 to 2026-11-10, latest 547 km2
 
-water surface -> data/floodwater.json
+water surface -> data\floodwater.json

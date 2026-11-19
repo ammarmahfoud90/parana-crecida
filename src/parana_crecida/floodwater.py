@@ -408,35 +408,51 @@ def series(
 KEEP_CYCLES = 31
 
 
+#: The day every cycle grid is counted from. Cycle ends are this date plus
+#: a whole number of windows, so every series - each stretch, and the
+#: river over the union - samples the same twelve-day windows however and
+#: whenever it was built.
+#:
+#: The grid used to be anchored to "today" on a cold start. That made the
+#: date axis an artefact of the day someone first ran the build, and when a
+#: rebuild ran over two days, eight stretches landed on one phase and the
+#: Delta and the whole-river series on another, seven days apart: the
+#: river figure and the reaches it is made of described different windows.
+#:
+#: Any fixed date works; this one is on the phase the published reaches
+#: already had, so moving to it re-measured nothing that was right.
+GRID_EPOCH = date(2026, 1, 2)
+
+
+def on_grid(day: date, window_days: int = WINDOW_DAYS) -> bool:
+    """Whether ``day`` is a cycle end on the fixed grid."""
+    return (day - GRID_EPOCH).days % window_days == 0
+
+
 def _grid(known: list[str], last: date, window_days: int) -> list[date]:
-    """The cycle ends that should exist, anchored to the ones that do.
+    """The cycle ends that should exist and have not been attempted yet.
 
-    Computing the grid backwards from today moves every date by a day each
-    time it runs, so a daily job would measure a brand new set of windows
-    every morning and never add to the series it already had. The map
-    frames did exactly that and left a full set of orphaned images behind.
-
-    So the grid is anchored to the last cycle already attempted, and a new
-    one is added only once a full window has passed since it.
+    Every cycle end is ``GRID_EPOCH`` plus a whole number of windows, so the
+    grid is the same on every machine and every day; it is never derived
+    from the date the job happens to run. A new cycle appears only once its
+    whole window has passed.
 
     ``known`` is every window end already accounted for - measured or
-    recorded as a gap. Anchoring on measurements alone would stall the
-    series on the first unobservable window and re-measure it every day
-    for ever.
+    recorded as a gap. A gap counts, so the series moves past a window
+    nobody could observe instead of retrying it for ever.
 
-    The dates this returns are window **ends**, not acquisition dates.
-    The grid is a sequence of bins whose phase comes from whenever the
-    series was first built; the acquisitions that fall inside each bin are
-    recorded separately, per cycle.
+    The dates this returns are window **ends**, not acquisition dates. The
+    acquisitions inside each window are recorded per cycle.
     """
+    # The newest cycle end on the grid that is not after ``last``.
+    newest = last - timedelta(days=(last - GRID_EPOCH).days % window_days)
     if not known:
-        return [last - timedelta(days=window_days * i) for i in range(KEEP_CYCLES - 1, -1, -1)]
+        return [newest - timedelta(days=window_days * i)
+                for i in range(KEEP_CYCLES - 1, -1, -1)]
     anchor = date.fromisoformat(max(known))
-    fresh = []
-    while anchor + timedelta(days=window_days) <= last:
-        anchor = anchor + timedelta(days=window_days)
-        fresh.append(anchor)
-    return fresh
+    return [newest - timedelta(days=window_days * i)
+            for i in range((newest - anchor).days // window_days - 1, -1, -1)
+            if newest - timedelta(days=window_days * i) > anchor]
 
 
 def rebuild(
@@ -490,6 +506,12 @@ def rebuild(
             row["corridor_km2"] = round(
                 float(corridor.area(1000).divide(1e6).getInfo()))
 
+        if any(not on_grid(date.fromisoformat(d), window_days)
+               for d in row["days"]):
+            log.warning("%s was measured on another grid phase; measuring "
+                        "it again on the fixed one", stretch.key)
+            for field in ("days", "water_km2", "flood_km2", "observation", "gaps"):
+                row[field] = []
         attempted = list(row["days"]) + [
             g["day"] for g in (row.get("gaps") or []) if g.get("day")
         ]
@@ -575,6 +597,11 @@ def rebuild(
     keys = sorted(published_keys())
     publishing = [s for s in fl.load_corridors() if s.key in keys]
     river = payload.get("river") or []
+    if any(not on_grid(date.fromisoformat(r["day"]), window_days) for r in river):
+        log.warning("the river series was measured on another grid phase; "
+                    "measuring it again on the fixed one")
+        river = []
+        payload["river_gaps"] = []
     union = union_geometry(publishing)
     union_km2 = round(float(union.area(1000).divide(1e6).getInfo()))
 
