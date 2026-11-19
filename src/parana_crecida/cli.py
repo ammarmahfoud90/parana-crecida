@@ -1169,6 +1169,12 @@ def film(project: str | None, force: bool, report: Path | None) -> None:
     frames = existing.get("frames") or []
     drawn = frames[-1]["end"] if frames else None
 
+    # A drawing on another grid phase is drawn again: its windows match no
+    # published figure, and its later date would block every redraw.
+    from .floodwater import on_grid as _on_grid
+    from datetime import date as _date
+    if drawn and not _on_grid(_date.fromisoformat(drawn)):
+        force = True
     if not force and newest and drawn and newest <= drawn:
         rep.say(f"newest cycle {newest} is already drawn; nothing to render")
         rep.write(report)
@@ -1270,6 +1276,12 @@ def mapframes(project: str | None, cycles: int, px: int, force: bool,
 
         frames = _json.loads(DEFAULT_INDEX.read_text(encoding="utf-8")).get("frames") or []
         drawn = frames[-1]["end"] if frames else None
+    # A drawing on another grid phase is drawn again: its windows match no
+    # published figure, and its later date would block every redraw.
+    from .floodwater import on_grid as _on_grid
+    from datetime import date as _date
+    if drawn and not _on_grid(_date.fromisoformat(drawn)):
+        force = True
     if not force and newest and drawn and newest <= drawn:
         rep.say(f"newest cycle {newest} is already drawn; nothing to render")
         rep.write(report)

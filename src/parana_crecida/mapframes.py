@@ -155,8 +155,12 @@ def render(
     if not stretches:
         raise ValueError("no stretch cleared the skill floor")
 
+    from .floodwater import cycle_end_on_or_before
+
     today = today or date.today()
-    last = today - timedelta(days=fl.LAG_DAYS)
+    # On the fixed cycle grid, so each overlay is the same window as the
+    # figure published for it (see floodwater.GRID_EPOCH).
+    last = cycle_end_on_or_before(today - timedelta(days=fl.LAG_DAYS), window_days)
     union = union_geometry(stretches)
     region = union.bounds()
     coords = region.getInfo()["coordinates"][0]

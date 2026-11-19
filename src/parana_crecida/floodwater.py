@@ -424,6 +424,15 @@ KEEP_CYCLES = 31
 GRID_EPOCH = date(2026, 1, 2)
 
 
+def cycle_end_on_or_before(day: date, window_days: int = WINDOW_DAYS) -> date:
+    """The newest cycle end on the fixed grid that is not after ``day``.
+
+    The map frames and the river film draw their windows from this too, so
+    a picture always shows the same twelve days as the figure beside it.
+    """
+    return day - timedelta(days=(day - GRID_EPOCH).days % window_days)
+
+
 def on_grid(day: date, window_days: int = WINDOW_DAYS) -> bool:
     """Whether ``day`` is a cycle end on the fixed grid."""
     return (day - GRID_EPOCH).days % window_days == 0

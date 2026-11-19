@@ -287,13 +287,24 @@ def render(
     log.info("drawing %d stretches: %s", len(stretches),
              ", ".join(s.key for s in stretches))
 
+    from .floodwater import cycle_end_on_or_before
+
     today = today or date.today()
-    last = today - timedelta(days=fl.LAG_DAYS)
+    # On the fixed cycle grid, so each frame is the same window as the
+    # figure published for it. Counting back from "today" drew windows that
+    # moved with the run date and matched no published measurement.
+    last = cycle_end_on_or_before(today - timedelta(days=fl.LAG_DAYS), window_days)
     region, bounds = union_bounds(stretches)
 
     base = backdrop(bounds, px=px)
 
     frame_dir.mkdir(parents=True, exist_ok=True)
+    kept: set[str] = set()
+    published = {
+        r["day"]: r["water_km2"]
+        for r in (fw.load().get("river") or [])
+        if r.get("water_km2") is not None
+    }
     frames, rows = [], []
     for index in range(cycles - 1, -1, -1):
         end = last - timedelta(days=window_days * index)
@@ -313,26 +324,18 @@ def render(
             layer = layer.resize(base.size, Image.NEAREST)
         frame = Image.alpha_composite(base, layer)
 
-        total = 0.0
-        for stretch in stretches:
-            corridor = fl.corridor_geometry(stretch)
-            try:
-                km2 = fw.area_km2(corridor, fw.water_mask(corridor, start, end))
-            except Exception as error:  # pragma: no cover - Earth Engine
-                log.warning("  area %s %s: %s", stretch.key, end, error)
-                total = None
-                break
-            # A frame whose total is missing one stretch is not a smaller
-            # river, so the label goes blank rather than low.
-            if km2 is None:
-                log.warning("  area %s %s: nothing observed", stretch.key, end)
-                total = None
-                break
-            total += km2
+        # The label is the published whole-river figure for this window,
+        # measured once over the dissolved union of the corridors. It used
+        # to be a sum of the stretches, whose corridors overlap by about
+        # 9,900 km2 of channel, so every frame carried a total some 30%
+        # above the figure printed beside the film. A window with no
+        # published figure is labelled blank, not low.
+        total = published.get(end.isoformat())
 
         _label(frame, end, total, locale_month=MONTHS_ES)
         if keep_frames:
             frame.convert("RGB").save(frame_dir / f"river_{end.isoformat()}.png")
+            kept.add(f"river_{end.isoformat()}.png")
         frames.append(frame.convert("RGB"))
         rows.append({"start": start.isoformat(), "end": end.isoformat(),
                      "water_km2": round(total, 1) if total is not None else None})
@@ -340,6 +343,14 @@ def render(
 
     if not frames:
         raise RuntimeError("every frame failed; nothing was written")
+
+    # Frames from a run on another grid phase, which this one did not
+    # replace. Left behind they are served beside windows they do not match.
+    if keep_frames:
+        for stale in sorted(frame_dir.glob("river_*.png")):
+            if stale.name not in kept:
+                stale.unlink()
+                log.info("removed superseded frame %s", stale.name)
 
     palette = [f.quantize(colors=GIF_COLOURS, method=Image.MEDIANCUT) for f in frames]
     durations = [FRAME_MS] * len(palette)
