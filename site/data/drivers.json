@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-20T00:11:53-03:00",
+ "generated_at": "2026-11-20T17:35:12-03:00",
  "window": {
   "start": "2025-11-20",
   "end": "2026-11-20"
@@ -1489,14 +1489,14 @@
     22000.0,
     22000.0,
     21500.0,
-    21500.0
+    21900.0
    ],
    "latest": {
     "day": "2026-11-19",
-    "value": 21500.0,
-    "percentile": 99.7
+    "value": 21900.0,
+    "percentile": 100.0
    },
-   "change_7d": -4800.0,
+   "change_7d": -4400.0,
    "alert": 25000.0,
    "evacuation": 30000.0
   },
@@ -5224,14 +5224,14 @@
     17840.7,
     17840.6,
     17217.1,
-    15297.1
+    17364.1
    ],
    "latest": {
     "day": "2026-11-19",
-    "value": 15297.1,
-    "percentile": 79.7
+    "value": 17364.1,
+    "percentile": 91.1
    },
-   "change_7d": -6640.4,
+   "change_7d": -4573.4,
    "alert": 25000.0,
    "evacuation": 30000.0
   }
@@ -5250,13 +5250,13 @@
    "station": "Represa Itaipú",
    "river": "Paraná",
    "unit": "m3/s",
-   "value": 13300.0,
-   "trend": "falling",
+   "value": 16700.0,
+   "trend": "rising",
    "alert": 20000.0,
    "evacuation": 25000.0
   }
  ],
- "report_date": "2026-11-19",
+ "report_date": "2026-11-20",
  "rainfall": {
   "source": "NASA/GPM_L3/IMERG_V07",
   "fetched_on": "2026-11-20",
@@ -5270,7 +5270,7 @@
     "key": "alto_parana",
     "area_km2": 834192,
     "recent_days": 7,
-    "recent_mm": 51.6,
+    "recent_mm": 41.4,
     "wettest_day": {
      "day": "2026-11-02",
      "mm": 23.48
@@ -5639,14 +5639,14 @@
      8.81,
      3.78,
      6.95,
-     18.71
+     8.48
     ]
    },
    {
     "key": "iguazu",
     "area_km2": 67536,
     "recent_days": 7,
-    "recent_mm": 40.5,
+    "recent_mm": 34.0,
     "wettest_day": {
      "day": "2026-10-24",
      "mm": 88.58
@@ -6015,7 +6015,7 @@
      8.6,
      0.48,
      8.84,
-     8.47
+     1.97
     ]
    }
   ]
