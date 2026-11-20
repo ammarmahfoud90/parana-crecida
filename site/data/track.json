@@ -2,8 +2,8 @@
  "schema": 2,
  "note": "Where the crest is, and which gauges below it are still rising. No arrival dates: they were measured at a 23% hit rate with a 9-day median error and withdrawn. See `skill`.",
  "withdrawn": "Arrival-date projections (expected, earliest, latest) were removed from this file in schema 2. They were published here for some months after the page stopped showing them. Anything relying on those fields was relying on a projection this project does not stand behind.",
- "generated_for": "2026-11-19",
- "as_of": "2026-11-18",
+ "generated_for": "2026-11-20",
+ "as_of": "2026-11-19",
  "reason": null,
  "anchor": {
   "series_id": "26270",
@@ -11,11 +11,11 @@
   "river_km": 1149.9,
   "peak_day": "2026-11-14",
   "peak_value": 6.43,
-  "last_day": "2026-11-18",
-  "last_value": 6.42,
-  "days_since_peak": 4,
+  "last_day": "2026-11-19",
+  "last_value": 6.38,
+  "days_since_peak": 5,
   "rise_m": 2.59,
-  "fall_m": 0.01,
+  "fall_m": 0.05,
   "confirmed": false
  },
  "projections": [
@@ -43,7 +43,7 @@
    "river_km": 1369.1,
    "km_from_anchor": 219.2,
    "legs": 3,
-   "percentile_now": 96.8,
+   "percentile_now": 97.7,
    "state": "rising"
   },
   {
@@ -52,7 +52,7 @@
    "river_km": 1390.5,
    "km_from_anchor": 240.6,
    "legs": 4,
-   "percentile_now": 97.9,
+   "percentile_now": 98.4,
    "state": "rising"
   },
   {
@@ -61,11 +61,11 @@
    "river_km": 1440.5,
    "km_from_anchor": 290.6,
    "legs": 5,
-   "percentile_now": 85.7,
+   "percentile_now": 85.5,
    "state": "rising"
   }
  ],
- "generated_at": "2026-11-19T21:43:53-03:00",
+ "generated_at": "2026-11-20T00:11:54-03:00",
  "skill": {
   "schema": 1,
   "note": "The tracker run over the record as it would have run on the day, scored against the first local maximum each gauge then reached. The baseline is the same projection with no travel time in it: the crest arriving everywhere on the day the anchor peaked.",
