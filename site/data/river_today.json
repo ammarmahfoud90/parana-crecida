@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-21T00:13:19-03:00",
+ "generated_at": "2026-11-21T16:32:53-03:00",
  "last_data_day": "2026-11-20",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -704,8 +704,8 @@
    ],
    "unit": "m",
    "day": "2026-11-20",
-   "value": 1.05,
-   "change": 0.08,
+   "value": 1.02,
+   "change": 0.05,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
@@ -754,10 +754,10 @@
    "to": "Diamante"
   },
   "front": {
-   "gauge": "Hernandarias",
-   "day": "2026-11-14",
+   "gauge": "Rosario",
+   "day": "2026-11-17",
    "confirmed": false,
-   "river_km": 1149.9
+   "river_km": 1390.5
   },
   "water": {
    "km2": 9247.2,
