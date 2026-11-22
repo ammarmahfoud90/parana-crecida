@@ -1,7 +1,7 @@
-water surface - 2026-11-21T20:29:10-03:00
+water surface - 2026-11-21T23:13:29-03:00
 
 VH < -25.0 dB, HAND <= 10.0 m, 12-day composites
-newest usable pass: 2026-11-19
+newest usable pass: 2026-11-20
   Puerto Iguazú -> Libertador: 31 cycles, 2025-11-15 to 2026-11-10, latest 227 km2
   Libertador -> Posadas: 31 cycles, 2025-11-15 to 2026-11-10, latest 362 km2
   Posadas -> Itá Ibaté: 30 cycles, 2025-11-15 to 2026-11-10, latest 2,167 km2
