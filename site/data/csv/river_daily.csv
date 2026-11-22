@@ -1977,7 +1977,7 @@ day,series_id,gauge,branch,river_km,value,unit,percentile_for_day_of_year,flags
 2026-11-18,26684,Yacyreta afluente,main,,21500.0,m3/s,100.0,flow regulated
 2026-11-19,26684,Yacyreta afluente,main,,21900.0,m3/s,100.0,flow regulated
 2026-11-20,26684,Yacyreta afluente,main,,21500.0,m3/s,99.2,flow regulated
-2026-11-21,26684,Yacyreta afluente,main,,21800.0,m3/s,98.7,flow regulated
+2026-11-21,26684,Yacyreta afluente,main,,21500.0,m3/s,97.9,flow regulated
 2026-05-26,26685,Yacyreta efluente,main,,9700.0,m3/s,18.2,flow regulated
 2026-05-27,26685,Yacyreta efluente,main,,9900.0,m3/s,19.8,flow regulated
 2026-05-28,26685,Yacyreta efluente,main,,10600.0,m3/s,25.0,flow regulated
