@@ -1,5 +1,6 @@
-ina thresholds - 2026-11-22T20:40:22-03:00
+ina thresholds - 2026-11-22T23:43:46-03:00
 
+  2026-11-23: HTTP 404, 195 bytes
   2026-11-22: HTTP 404, 195 bytes
   2026-11-21: HTTP 404, 195 bytes
   2026-11-20: 2704 KB -> reporte_diario_2026-11-20.pdf
