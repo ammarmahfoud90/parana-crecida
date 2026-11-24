@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-24T01:00:30-03:00",
+ "generated_at": "2026-11-24T03:00:21-03:00",
  "last_data_day": "2026-11-23",
  "data_age_days": 1,
  "freshness": "1 day behind",
@@ -754,10 +754,10 @@
    "to": "Diamante"
   },
   "front": {
-   "gauge": "Rosario",
-   "day": "2026-11-17",
+   "gauge": "San Lorenzo",
+   "day": "2026-11-19",
    "confirmed": false,
-   "river_km": 1390.5
+   "river_km": 1369.1
   },
   "water": {
    "km2": 10586.0,
