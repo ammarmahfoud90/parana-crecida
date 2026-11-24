@@ -14,7 +14,7 @@
  ],
  "window_days": 12,
  "px": 1400,
- "generated_for": "2026-11-19",
+ "generated_for": "2026-11-24",
  "stretches": [
   {
    "key": "puerto_iguazu_libertador",
@@ -67,12 +67,6 @@
  ],
  "river_km": 1477.3,
  "frames": [
-  {
-   "start": "2025-11-04",
-   "end": "2025-11-15",
-   "water_km2": 5724.0,
-   "still": "media/film/frame_2025-11-15.webp"
-  },
   {
    "start": "2025-11-16",
    "end": "2025-11-27",
@@ -252,6 +246,12 @@
    "end": "2026-11-10",
    "water_km2": 9247.2,
    "still": "media/film/frame_2026-11-10.webp"
+  },
+  {
+   "start": "2026-11-11",
+   "end": "2026-11-22",
+   "water_km2": 10586.0,
+   "still": "media/film/frame_2026-11-22.webp"
   }
  ]
 }
