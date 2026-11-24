@@ -1,20 +1,3 @@
-map frames - 2026-11-23T21:08:23-03:00
+map frames - 2026-11-24T01:00:21-03:00
 
-15 frames, 12-day composites
-bounds [[-33.40284093276644, -60.965610503748394], [-25.37773545648117, -54.38158070902789]]
-
-  2026-05-27 .. 2026-06-07     6,120 km2   puer:217  libe:309  posa:1,725  ita:698  corr:741  goya:784  la:755  para:891
-  2026-06-08 .. 2026-06-19     5,741 km2   puer:221  libe:343  posa:1,767  ita:711  corr:730  goya:684  la:556  para:729
-  2026-06-20 .. 2026-07-01     5,204 km2   puer:206  libe:348  posa:1,300  ita:338  corr:759  goya:763  la:655  para:834
-  2026-07-02 .. 2026-07-13     7,453 km2   puer:206  libe:343  posa:1,839  ita:853  corr:795  goya:949  la:946  para:1,523
-  2026-07-14 .. 2026-07-25     6,684 km2   puer:208  libe:345  posa:1,806  ita:745  corr:745  goya:872  la:766  para:1,198
-  2026-07-26 .. 2026-08-06     6,397 km2   puer:208  libe:342  posa:1,820  ita:770  corr:733  goya:884  la:654  para:988
-  2026-08-07 .. 2026-08-18     6,617 km2   puer:209  libe:344  posa:1,828  ita:823  corr:745  goya:797  la:708  para:1,163
-  2026-08-19 .. 2026-08-30     6,643 km2   puer:215  libe:346  posa:1,833  ita:800  corr:782  goya:814  la:684  para:1,169
-  2026-08-31 .. 2026-09-11     6,651 km2   puer:219  libe:349  posa:1,833  ita:730  corr:798  goya:864  la:778  para:1,080
-  2026-09-12 .. 2026-09-23     6,905 km2   puer:217  libe:349  posa:1,840  ita:786  corr:736  goya:827  la:765  para:1,386
-  2026-09-24 .. 2026-10-05     7,202 km2   puer:221  libe:349  posa:1,890  ita:811  corr:742  goya:942  la:842  para:1,404
-  2026-10-06 .. 2026-10-17     6,982 km2   puer:222  libe:374  posa:1,852  ita:762  corr:837  goya:931  la:725  para:1,279
-  2026-10-18 .. 2026-10-29     9,728 km2   puer:232  libe:365  posa:2,360  ita:1,431  corr:1,692  goya:1,448  la:839  para:1,361
-  2026-10-30 .. 2026-11-10    10,851 km2   puer:227  libe:362  posa:2,167  ita:1,296  corr:2,048  goya:2,340  la:1,054  para:1,357
-  2026-11-11 .. 2026-11-22    12,329 km2   puer:216  libe:349  posa:1,997  ita:1,091  corr:1,654  goya:2,831  la:1,951  para:2,240
+newest cycle 2026-11-22 is already drawn; nothing to render
