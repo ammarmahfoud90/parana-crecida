@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-11-25T01:54:42-03:00",
+ "generated_at": "2026-11-25T18:52:11-03:00",
  "window": {
   "start": "2025-11-25",
   "end": "2026-11-25"
@@ -1489,14 +1489,14 @@
     21500.0,
     21700.0,
     21900.0,
-    22300.0
+    24500.0
    ],
    "latest": {
     "day": "2026-11-24",
-    "value": 22300.0,
-    "percentile": 98.6
+    "value": 24500.0,
+    "percentile": 100.0
    },
-   "change_7d": 300.0,
+   "change_7d": 2500.0,
    "alert": 25000.0,
    "evacuation": 30000.0
   },
@@ -2236,14 +2236,14 @@
     21900.0,
     21900.0,
     21800.0,
-    22000.0
+    22100.0
    ],
    "latest": {
     "day": "2026-11-24",
-    "value": 22000.0,
-    "percentile": 94.5
+    "value": 22100.0,
+    "percentile": 94.6
    },
-   "change_7d": 100.0,
+   "change_7d": 200.0,
    "alert": 25000.0,
    "evacuation": 30000.0
   },
@@ -5224,14 +5224,14 @@
     18322.4,
     18329.5,
     18466.3,
-    17757.5
+    19849.5
    ],
    "latest": {
     "day": "2026-11-24",
-    "value": 17757.5,
-    "percentile": 91.9
+    "value": 19849.5,
+    "percentile": 97.1
    },
-   "change_7d": -83.1,
+   "change_7d": 2008.9,
    "alert": 25000.0,
    "evacuation": 30000.0
   }
@@ -5256,7 +5256,7 @@
    "evacuation": 25000.0
   }
  ],
- "report_date": "2026-11-24",
+ "report_date": "2026-11-25",
  "rainfall": {
   "source": "NASA/GPM_L3/IMERG_V07",
   "fetched_on": "2026-11-25",

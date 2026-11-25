@@ -1,12 +1,12 @@
 {
  "schema": 1,
- "generated_at": "2026-11-25T01:54:42-03:00",
+ "generated_at": "2026-11-25T18:52:10-03:00",
  "last_data_day": "2026-11-24",
  "data_age_days": 1,
  "freshness": "1 day behind",
  "official_source_url": "https://alerta.ina.gob.ar/",
  "thresholds": {
-  "source_date": "2026-11-24",
+  "source_date": "2026-11-25",
   "gauges_with_values": 15
  },
  "validation": {
@@ -704,8 +704,8 @@
    ],
    "unit": "m",
    "day": "2026-11-24",
-   "value": 1.18,
-   "change": 0.35,
+   "value": 1.17,
+   "change": 0.34,
    "change_days": 1,
    "alert": null,
    "evacuation": null,
